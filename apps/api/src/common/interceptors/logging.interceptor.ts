@@ -8,7 +8,6 @@ import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { LoggerService } from '../logger/logger.service';
 import { Request, Response } from 'express';
-import { HttpRequestData, HttpResponseData } from '../types';
 
 export interface LoggedRequest {
   method: string;
@@ -92,13 +91,14 @@ export class LoggingInterceptor implements NestInterceptor {
       }),
       catchError((error) => {
         const duration = Date.now() - startTime;
+        const errorObj = error as Error & { status?: number };
         const loggedError = {
           type: 'error',
-          statusCode: error.status || 500,
+          statusCode: errorObj.status || 500,
           error: {
-            name: error.name,
-            message: error.message,
-            stack: error.stack,
+            name: errorObj.name,
+            message: errorObj.message,
+            stack: errorObj.stack,
           },
           duration,
           request: {
@@ -111,7 +111,7 @@ export class LoggingInterceptor implements NestInterceptor {
         // Log error response
         this.logger.error(
           'Request failed',
-          error.stack,
+          errorObj.stack,
           'HTTP',
           loggedError,
         );
@@ -125,7 +125,9 @@ export class LoggingInterceptor implements NestInterceptor {
     return (request as Request & { user?: { userId: string } }).user?.userId;
   }
 
-  private sanitizeHeaders(headers: Record<string, unknown>): Record<string, string> {
+  private sanitizeHeaders(
+    headers: Record<string, unknown>,
+  ): Record<string, string> {
     const sanitized: Record<string, string> = {};
     const sensitiveHeaders = ['authorization', 'cookie', 'x-api-key'];
 
@@ -144,7 +146,7 @@ export class LoggingInterceptor implements NestInterceptor {
     if (!body || typeof body !== 'object') return undefined;
 
     const sensitiveFields = ['password', 'token', 'secret', 'key'];
-    const sanitized = { ...body as Record<string, unknown> };
+    const sanitized = { ...(body as Record<string, unknown>) };
 
     for (const field of sensitiveFields) {
       if (sanitized[field]) {
@@ -162,7 +164,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const stringified = JSON.stringify(data);
     if (stringified.length > 1000) {
       return {
-        ...data as Record<string, unknown>,
+        ...(data as Record<string, unknown>),
         _truncated: true,
         _originalSize: stringified.length,
       };
@@ -180,4 +182,4 @@ export class LoggingInterceptor implements NestInterceptor {
       'Unknown'
     );
   }
-} 
+}

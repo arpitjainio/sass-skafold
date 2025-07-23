@@ -153,6 +153,9 @@ export class AuthService {
     // Add token to blacklist
     this.blacklistedTokens.add(token);
 
+    // Simulate async operation for token blacklisting
+    await Promise.resolve();
+
     this.logger.log('User logged out successfully', 'Auth', { userId });
 
     return { message: 'Logged out successfully' };

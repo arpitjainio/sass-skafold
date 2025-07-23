@@ -1,12 +1,12 @@
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   message?: string;
   errors?: string[];
-  meta?: {
+  meta: {
     timestamp: string;
-    path?: string;
-    method?: string;
+    path: string;
+    method: string;
     duration?: number;
     pagination?: {
       page: number;

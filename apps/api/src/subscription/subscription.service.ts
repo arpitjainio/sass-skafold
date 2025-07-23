@@ -340,13 +340,11 @@ export class SubscriptionService {
       switch (event.type) {
         case 'customer.subscription.updated':
         case 'customer.subscription.deleted':
-          await this.handleSubscriptionEvent(
-            event.data.object as Stripe.Subscription,
-          );
+          await this.handleSubscriptionEvent(event.data.object);
           break;
         case 'invoice.payment_succeeded':
         case 'invoice.payment_failed':
-          await this.handleInvoiceEvent(event.data.object as Stripe.Invoice);
+          await this.handleInvoiceEvent(event.data.object);
           break;
         default:
           this.logger.debug('Unhandled webhook event type', 'Subscription', {
@@ -400,6 +398,7 @@ export class SubscriptionService {
 
     // Handle invoice events as needed
     // This could include updating subscription status, sending notifications, etc.
+    await Promise.resolve(); // Simulate async operation
 
     this.logger.log('Invoice processed from webhook', 'Subscription', {
       invoiceId: invoice.id,

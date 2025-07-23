@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 import { Request, Response } from 'express';
 import { ApiResponse } from '../interfaces/api-response.interface';
 
-export interface TransformedResponse<T = any> {
+export interface TransformedResponse<T = unknown> {
   success: boolean;
   data?: T;
   message?: string;
@@ -19,6 +19,35 @@ export interface TransformedResponse<T = any> {
     path: string;
     method: string;
     duration?: number;
+    pagination?: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+    };
+  };
+}
+
+interface ErrorResponse {
+  message?: string;
+  errors?: string[];
+  error?: string;
+  statusCode?: number;
+  status?: number;
+}
+
+interface PaginatedResponse {
+  data: unknown[];
+  message?: string;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
   };
 }
 
@@ -34,6 +63,7 @@ export class ResponseTransformInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         const duration = Date.now() - startTime;
+        const timestamp = new Date().toISOString();
 
         // If the response is already in our standard format, return as is
         if (this.isStandardResponse(data)) {
@@ -41,6 +71,7 @@ export class ResponseTransformInterceptor implements NestInterceptor {
             ...data,
             meta: {
               ...data.meta,
+              timestamp: data.meta?.timestamp || timestamp,
               path: request.url,
               method: request.method,
               duration,
@@ -50,12 +81,15 @@ export class ResponseTransformInterceptor implements NestInterceptor {
 
         // If it's an error response, handle it
         if (this.isErrorResponse(data)) {
+          const errorData = data as ErrorResponse;
           return {
             success: false,
-            message: data.message || 'An error occurred',
-            errors: data.errors || [data.message || 'An error occurred'],
+            message: errorData.message || 'An error occurred',
+            errors: errorData.errors || [
+              errorData.message || 'An error occurred',
+            ],
             meta: {
-              timestamp: new Date().toISOString(),
+              timestamp,
               path: request.url,
               method: request.method,
               duration,
@@ -65,16 +99,17 @@ export class ResponseTransformInterceptor implements NestInterceptor {
 
         // If it's a paginated response, handle it
         if (this.isPaginatedResponse(data)) {
+          const paginatedData = data as PaginatedResponse;
           return {
             success: true,
-            data: data.data,
-            message: data.message || 'Data retrieved successfully',
+            data: paginatedData.data,
+            message: paginatedData.message || 'Data retrieved successfully',
             meta: {
-              timestamp: new Date().toISOString(),
+              timestamp,
               path: request.url,
               method: request.method,
               duration,
-              pagination: data.pagination,
+              pagination: paginatedData.pagination,
             },
           };
         }
@@ -85,7 +120,7 @@ export class ResponseTransformInterceptor implements NestInterceptor {
           data,
           message: this.generateDefaultMessage(request.method),
           meta: {
-            timestamp: new Date().toISOString(),
+            timestamp,
             path: request.url,
             method: request.method,
             duration,
@@ -95,31 +130,38 @@ export class ResponseTransformInterceptor implements NestInterceptor {
     );
   }
 
-  private isStandardResponse(data: any): data is ApiResponse {
+  private isStandardResponse(data: unknown): data is ApiResponse {
+    const obj = data as Record<string, unknown>;
     return (
-      data &&
+      data !== null &&
       typeof data === 'object' &&
-      typeof data.success === 'boolean' &&
-      data.meta &&
-      typeof data.meta === 'object'
+      'success' in data &&
+      typeof obj.success === 'boolean' &&
+      'meta' in data &&
+      typeof obj.meta === 'object'
     );
   }
 
-  private isErrorResponse(data: any): boolean {
+  private isErrorResponse(data: unknown): data is ErrorResponse {
     return (
-      data &&
+      data !== null &&
       typeof data === 'object' &&
-      (data.error || data.errors || data.statusCode || data.status)
+      ('error' in data ||
+        'errors' in data ||
+        'statusCode' in data ||
+        'status' in data)
     );
   }
 
-  private isPaginatedResponse(data: any): boolean {
+  private isPaginatedResponse(data: unknown): data is PaginatedResponse {
+    const obj = data as Record<string, unknown>;
     return (
-      data &&
+      data !== null &&
       typeof data === 'object' &&
-      Array.isArray(data.data) &&
-      data.pagination &&
-      typeof data.pagination === 'object'
+      'data' in data &&
+      Array.isArray(obj.data) &&
+      'pagination' in data &&
+      typeof obj.pagination === 'object'
     );
   }
 

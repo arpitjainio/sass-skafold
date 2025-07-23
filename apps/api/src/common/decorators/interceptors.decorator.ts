@@ -11,14 +11,18 @@ export const PERFORMANCE_MONITORING_KEY = 'performance_monitoring';
 export const REQUEST_LOGGING_KEY = 'request_logging';
 export const RESPONSE_TRANSFORM_KEY = 'response_transform';
 
+type DecoratorTarget = Function;
+type PropertyKey = string | symbol;
+type PropertyDescriptor = TypedPropertyDescriptor<unknown>;
+
 // Cache decorators
 export const Cache = (ttl?: number, key?: string) => {
   return (
-    target: any,
-    propertyKey?: string,
+    target: DecoratorTarget,
+    propertyKey?: PropertyKey,
     descriptor?: PropertyDescriptor,
   ) => {
-    if (descriptor) {
+    if (descriptor && propertyKey) {
       // Method decorator
       SetMetadata(CACHE_TTL_KEY, ttl)(target, propertyKey, descriptor);
       if (key) {
@@ -39,11 +43,11 @@ export const Cache = (ttl?: number, key?: string) => {
 // Performance monitoring decorators
 export const MonitorPerformance = (threshold?: number) => {
   return (
-    target: any,
-    propertyKey?: string,
+    target: DecoratorTarget,
+    propertyKey?: PropertyKey,
     descriptor?: PropertyDescriptor,
   ) => {
-    if (descriptor) {
+    if (descriptor && propertyKey) {
       // Method decorator
       SetMetadata(PERFORMANCE_MONITORING_KEY, threshold)(
         target,
@@ -62,11 +66,11 @@ export const MonitorPerformance = (threshold?: number) => {
 // Request logging decorators
 export const LogRequest = (level: 'debug' | 'log' | 'warn' = 'log') => {
   return (
-    target: any,
-    propertyKey?: string,
+    target: DecoratorTarget,
+    propertyKey?: PropertyKey,
     descriptor?: PropertyDescriptor,
   ) => {
-    if (descriptor) {
+    if (descriptor && propertyKey) {
       // Method decorator
       SetMetadata(REQUEST_LOGGING_KEY, level)(target, propertyKey, descriptor);
       UseInterceptors(RequestLoggingInterceptor)(
@@ -85,11 +89,11 @@ export const LogRequest = (level: 'debug' | 'log' | 'warn' = 'log') => {
 // Response transform decorators
 export const TransformResponse = (customMessage?: string) => {
   return (
-    target: any,
-    propertyKey?: string,
+    target: DecoratorTarget,
+    propertyKey?: PropertyKey,
     descriptor?: PropertyDescriptor,
   ) => {
-    if (descriptor) {
+    if (descriptor && propertyKey) {
       // Method decorator
       SetMetadata(RESPONSE_TRANSFORM_KEY, customMessage)(
         target,
@@ -117,62 +121,93 @@ export const ApiEndpoint = (options: {
   transform?: { message?: string };
 }) => {
   return (
-    target: any,
-    propertyKey?: string,
+    target: DecoratorTarget,
+    propertyKey?: PropertyKey,
     descriptor?: PropertyDescriptor,
   ) => {
-    const interceptors: any[] = [];
+    const interceptors: (
+      | typeof CachingInterceptor
+      | typeof PerformanceInterceptor
+      | typeof RequestLoggingInterceptor
+      | typeof ResponseTransformInterceptor
+    )[] = [];
 
     // Add caching if specified
     if (options.cache) {
-      SetMetadata(CACHE_TTL_KEY, options.cache.ttl)(
-        target,
-        propertyKey,
-        descriptor,
-      );
-      if (options.cache.key) {
-        SetMetadata(CACHE_KEY, options.cache.key)(
+      if (descriptor && propertyKey) {
+        SetMetadata(CACHE_TTL_KEY, options.cache.ttl)(
           target,
           propertyKey,
           descriptor,
         );
+        if (options.cache.key) {
+          SetMetadata(CACHE_KEY, options.cache.key)(
+            target,
+            propertyKey,
+            descriptor,
+          );
+        }
+      } else {
+        SetMetadata(CACHE_TTL_KEY, options.cache.ttl)(target);
+        if (options.cache.key) {
+          SetMetadata(CACHE_KEY, options.cache.key)(target);
+        }
       }
       interceptors.push(CachingInterceptor);
     }
 
     // Add performance monitoring if specified
     if (options.performance) {
-      SetMetadata(PERFORMANCE_MONITORING_KEY, options.performance.threshold)(
-        target,
-        propertyKey,
-        descriptor,
-      );
+      if (descriptor && propertyKey) {
+        SetMetadata(
+          PERFORMANCE_MONITORING_KEY,
+          options.performance.threshold,
+        )(
+          target,
+          propertyKey,
+          descriptor,
+        );
+      } else {
+        SetMetadata(PERFORMANCE_MONITORING_KEY, options.performance.threshold)(target);
+      }
       interceptors.push(PerformanceInterceptor);
     }
 
     // Add request logging if specified
     if (options.logging) {
-      SetMetadata(REQUEST_LOGGING_KEY, options.logging.level)(
-        target,
-        propertyKey,
-        descriptor,
-      );
+      if (descriptor && propertyKey) {
+        SetMetadata(REQUEST_LOGGING_KEY, options.logging.level)(
+          target,
+          propertyKey,
+          descriptor,
+        );
+      } else {
+        SetMetadata(REQUEST_LOGGING_KEY, options.logging.level)(target);
+      }
       interceptors.push(RequestLoggingInterceptor);
     }
 
     // Add response transform if specified
     if (options.transform) {
-      SetMetadata(RESPONSE_TRANSFORM_KEY, options.transform.message)(
-        target,
-        propertyKey,
-        descriptor,
-      );
+      if (descriptor && propertyKey) {
+        SetMetadata(RESPONSE_TRANSFORM_KEY, options.transform.message)(
+          target,
+          propertyKey,
+          descriptor,
+        );
+      } else {
+        SetMetadata(RESPONSE_TRANSFORM_KEY, options.transform.message)(target);
+      }
       interceptors.push(ResponseTransformInterceptor);
     }
 
     // Apply all interceptors
     if (interceptors.length > 0) {
-      UseInterceptors(...interceptors)(target, propertyKey, descriptor);
+      if (descriptor && propertyKey) {
+        UseInterceptors(...interceptors)(target, propertyKey, descriptor);
+      } else {
+        UseInterceptors(...interceptors)(target);
+      }
     }
   };
 };

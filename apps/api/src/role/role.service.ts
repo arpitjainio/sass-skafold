@@ -131,16 +131,15 @@ export class RoleService extends BaseService {
     let seededCount = 0;
 
     // Use Promise.all for better performance
-    const results = await Promise.all(
+    await Promise.all(
       defaultRoles.map(async (roleData) => {
         try {
-          const result = await this.prisma.role.upsert({
+          await this.prisma.role.upsert({
             where: { name: roleData.name },
             update: {},
             create: roleData,
           });
           seededCount++;
-          return result;
         } catch (error) {
           this.logError('Failed to seed role', error as Error, 'Role', {
             roleName: roleData.name,

@@ -62,12 +62,13 @@ export class PerformanceInterceptor implements NestInterceptor {
       catchError((error) => {
         const duration = Date.now() - startTime;
         const endMemory = process.memoryUsage();
+        const errorObj = error as Error & { status?: number };
 
         const metrics: PerformanceMetrics = {
           method: request.method,
           url: request.url,
           duration,
-          statusCode: error.status || 500,
+          statusCode: errorObj.status || 500,
           userId: this.extractUserId(request),
           timestamp: new Date().toISOString(),
           memoryUsage: {
@@ -79,7 +80,7 @@ export class PerformanceInterceptor implements NestInterceptor {
           },
         };
 
-        this.logPerformance(metrics, error);
+        this.logPerformance(metrics, errorObj);
         throw error;
       }),
     );
@@ -98,25 +99,25 @@ export class PerformanceInterceptor implements NestInterceptor {
         `Very slow request detected: ${method} ${url} took ${duration}ms`,
         error?.stack,
         'Performance',
-        metrics as any,
+        metrics as unknown as Record<string, unknown>,
       );
     } else if (duration >= this.SLOW_REQUEST_THRESHOLD) {
       this.logger.warn(
         `Slow request detected: ${method} ${url} took ${duration}ms`,
         'Performance',
-        metrics as any,
+        metrics as unknown as Record<string, unknown>,
       );
     } else if (duration > 500) {
       this.logger.log(
         `Moderate request time: ${method} ${url} took ${duration}ms`,
         'Performance',
-        metrics as any,
+        metrics as unknown as Record<string, unknown>,
       );
     } else {
       this.logger.debug(
         `Request completed: ${method} ${url} took ${duration}ms`,
         'Performance',
-        metrics as any,
+        metrics as unknown as Record<string, unknown>,
       );
     }
 
@@ -125,7 +126,7 @@ export class PerformanceInterceptor implements NestInterceptor {
       this.logger.warn(
         `High memory usage detected: ${metrics.memoryUsage.heapUsed}MB for ${method} ${url}`,
         'Performance',
-        metrics as any,
+        metrics as unknown as Record<string, unknown>,
       );
     }
   }

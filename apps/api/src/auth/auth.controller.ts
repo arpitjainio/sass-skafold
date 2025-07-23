@@ -24,42 +24,22 @@ import {
   WriteOperation,
 } from '../common/decorators/interceptors.decorator';
 
+interface AuthenticatedRequest extends Request {
+  user: {
+    userId: string;
+    email: string;
+  };
+}
+
 @Controller('auth')
-@ApiTags('Auth')
+@ApiTags('Authentication')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
-  @SensitiveOperation()
-  @ApiOperation({
-    summary: 'Register a new user',
-    description: 'Creates a new user account and returns authentication token',
-  })
-  @ApiBody({ type: RegisterDto })
-  @ApiResponse({
-    status: 201,
-    description: 'User registered successfully',
-    type: AuthResponseDto,
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'User already exists',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid input data',
-  })
-  async register(@Body() registerDto: RegisterDto): Promise<any> {
-    return this.authService.register(registerDto);
-  }
-
-  @UseGuards(LocalAuthGuard)
   @Post('login')
+  @UseGuards(LocalAuthGuard)
   @SensitiveOperation()
-  @ApiOperation({
-    summary: 'Login user',
-    description: 'Authenticates user with email and password',
-  })
+  @ApiOperation({ summary: 'User login' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({
     status: 200,
@@ -68,55 +48,46 @@ export class AuthController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Invalid credentials',
+    description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid input data',
-  })
-  async login(@Request() req, @Body() loginDto: LoginDto): Promise<any> {
+  async login(@Request() req: AuthenticatedRequest, @Body() loginDto: LoginDto): Promise<AuthResponseDto> {
     return this.authService.login(loginDto);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('logout')
-  @ApiBearerAuth()
+  @Post('register')
   @WriteOperation()
-  @ApiOperation({
-    summary: 'Logout user',
-    description: 'Logs out the current user and invalidates the JWT token',
+  @ApiOperation({ summary: 'User registration' })
+  @ApiBody({ type: RegisterDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Registration successful',
+    type: AuthResponseDto,
   })
+  @ApiResponse({
+    status: 409,
+    description: 'User already exists',
+  })
+  async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
+    return this.authService.register(registerDto);
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @SensitiveOperation()
+  @ApiOperation({ summary: 'User logout' })
   @ApiResponse({
     status: 200,
     description: 'Logout successful',
-    schema: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean', example: true },
-        data: {
-          type: 'object',
-          properties: {
-            message: { type: 'string', example: 'Logged out successfully' },
-          },
-        },
-        message: { type: 'string', example: 'Logged out successfully' },
-        meta: {
-          type: 'object',
-          properties: {
-            timestamp: { type: 'string' },
-          },
-        },
-      },
-    },
   })
   @ApiResponse({
     status: 401,
     description: 'Unauthorized',
   })
   async logout(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Headers('authorization') authHeader: string,
-  ): Promise<any> {
+  ): Promise<{ message: string }> {
     const token = authHeader?.replace('Bearer ', '');
     return this.authService.logout(token, req.user.userId);
   }

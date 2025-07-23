@@ -15,12 +15,15 @@ export interface CacheOptions {
   invalidate?: boolean; // Whether to invalidate cache
 }
 
+interface CacheEntry {
+  data: unknown;
+  timestamp: number;
+  ttl: number;
+}
+
 @Injectable()
 export class CachingInterceptor implements NestInterceptor {
-  private readonly cache = new Map<
-    string,
-    { data: any; timestamp: number; ttl: number }
-  >();
+  private readonly cache = new Map<string, CacheEntry>();
   private readonly DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
   private readonly MAX_CACHE_SIZE = 1000;
 
@@ -28,13 +31,10 @@ export class CachingInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const request = context.switchToHttp().getRequest<Request>();
-    const method = request.method;
-    const url = request.url;
+    const { method, url } = request;
 
     // Only cache GET requests
     if (method !== 'GET') {
-      // Invalidate cache for non-GET requests
-      this.invalidateCacheByPattern(url);
       return next.handle();
     }
 
@@ -72,7 +72,7 @@ export class CachingInterceptor implements NestInterceptor {
     return `${method}:${url}:${queryString}:${paramsString}`;
   }
 
-  private getFromCache(key: string): any | null {
+  private getFromCache(key: string): unknown {
     const cached = this.cache.get(key);
 
     if (!cached) return null;
@@ -86,7 +86,7 @@ export class CachingInterceptor implements NestInterceptor {
     return cached.data;
   }
 
-  private setCache(key: string, data: any, ttl: number): void {
+  private setCache(key: string, data: unknown, ttl: number): void {
     // Implement LRU eviction if cache is full
     if (this.cache.size >= this.MAX_CACHE_SIZE) {
       const firstKey = this.cache.keys().next().value;

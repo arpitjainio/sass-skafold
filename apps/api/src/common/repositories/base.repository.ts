@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import {
-  PrismaWhereInput,
-  PrismaIncludeInput,
-  PrismaSelectInput,
-  DeepPartial,
-} from '../types';
+import { PrismaWhereInput, PrismaIncludeInput, DeepPartial } from '../types';
 
 @Injectable()
 export abstract class BaseRepository<T> {
@@ -77,7 +72,7 @@ export abstract class BaseRepository<T> {
   }
 
   async count(where?: PrismaWhereInput): Promise<number> {
-    return this.prisma[this.modelName].count({
+    return await this.prisma[this.modelName].count({
       where,
     });
   }

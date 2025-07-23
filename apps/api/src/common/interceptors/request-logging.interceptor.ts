@@ -56,7 +56,7 @@ export class RequestLoggingInterceptor implements NestInterceptor {
     });
 
     // Add request timing to the request object for use in response interceptor
-    (request as any).startTime = startTime;
+    (request as Request & { startTime: number }).startTime = startTime;
 
     return next.handle();
   }
