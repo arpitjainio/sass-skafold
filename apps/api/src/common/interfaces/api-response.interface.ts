@@ -53,4 +53,4 @@ export interface SuccessResponse<T> {
     method?: string;
     duration?: number;
   };
-} 
+}

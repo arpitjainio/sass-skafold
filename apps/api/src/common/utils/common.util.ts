@@ -6,7 +6,8 @@ export class CommonUtil {
    * Generate a random string of specified length
    */
   static generateRandomString(length: number): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const chars =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -38,8 +39,8 @@ export class CommonUtil {
   static deepClone<T>(obj: T): T {
     if (obj === null || typeof obj !== 'object') return obj;
     if (obj instanceof Date) return new Date(obj.getTime()) as T;
-    if (Array.isArray(obj)) return obj.map(item => this.deepClone(item)) as T;
-    
+    if (Array.isArray(obj)) return obj.map((item) => this.deepClone(item)) as T;
+
     const cloned = {} as T;
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
@@ -54,12 +55,14 @@ export class CommonUtil {
    */
   static toCamelCase(obj: Record<string, unknown>): Record<string, unknown> {
     const result: Record<string, unknown> = {};
-    
+
     for (const [key, value] of Object.entries(obj)) {
-      const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+      const camelKey = key.replace(/_([a-z])/g, (_, letter) =>
+        letter.toUpperCase(),
+      );
       result[camelKey] = value;
     }
-    
+
     return result;
   }
 
@@ -68,12 +71,15 @@ export class CommonUtil {
    */
   static toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
     const result: Record<string, unknown> = {};
-    
+
     for (const [key, value] of Object.entries(obj)) {
-      const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+      const snakeKey = key.replace(
+        /[A-Z]/g,
+        (letter) => `_${letter.toLowerCase()}`,
+      );
       result[snakeKey] = value;
     }
-    
+
     return result;
   }
 
@@ -82,10 +88,10 @@ export class CommonUtil {
    */
   static debounce<T extends (...args: unknown[]) => unknown>(
     func: T,
-    wait: number
+    wait: number,
   ): (...args: Parameters<T>) => void {
     let timeout: NodeJS.Timeout;
-    
+
     return (...args: Parameters<T>) => {
       clearTimeout(timeout);
       timeout = setTimeout(() => func(...args), wait);
@@ -97,10 +103,10 @@ export class CommonUtil {
    */
   static throttle<T extends (...args: unknown[]) => unknown>(
     func: T,
-    limit: number
+    limit: number,
   ): (...args: Parameters<T>) => void {
     let inThrottle: boolean;
-    
+
     return (...args: Parameters<T>) => {
       if (!inThrottle) {
         func(...args);
@@ -116,25 +122,25 @@ export class CommonUtil {
   static async retry<T>(
     fn: () => Promise<T>,
     maxAttempts: number = 3,
-    baseDelay: number = 1000
+    baseDelay: number = 1000,
   ): Promise<T> {
     let lastError: Error;
-    
+
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         return await fn();
       } catch (error) {
         lastError = error as Error;
-        
+
         if (attempt === maxAttempts) {
           throw lastError;
         }
-        
+
         const delay = baseDelay * Math.pow(2, attempt - 1);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
-    
+
     throw lastError!;
   }
 
@@ -161,7 +167,11 @@ export class CommonUtil {
   /**
    * Truncate text to specified length
    */
-  static truncateText(text: string, maxLength: number, suffix: string = '...'): string {
+  static truncateText(
+    text: string,
+    maxLength: number,
+    suffix: string = '...',
+  ): string {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength - suffix.length) + suffix;
   }
@@ -172,7 +182,7 @@ export class CommonUtil {
   static calculatePagination(
     page: number,
     limit: number,
-    total: number
+    total: number,
   ): {
     page: number;
     limit: number;
@@ -184,7 +194,7 @@ export class CommonUtil {
   } {
     const totalPages = Math.ceil(total / limit);
     const offset = (page - 1) * limit;
-    
+
     return {
       page,
       limit,
@@ -200,14 +210,14 @@ export class CommonUtil {
    * Sleep for specified milliseconds
    */
   static sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
    * Get file extension from filename
    */
   static getFileExtension(filename: string): string {
-    return filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2);
+    return filename.slice(((filename.lastIndexOf('.') - 1) >>> 0) + 2);
   }
 
   /**
@@ -215,13 +225,13 @@ export class CommonUtil {
    */
   static formatBytes(bytes: number, decimals: number = 2): string {
     if (bytes === 0) return '0 Bytes';
-    
+
     const k = 1024;
     const dm = decimals < 0 ? 0 : decimals;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    
+
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
-} 
+}

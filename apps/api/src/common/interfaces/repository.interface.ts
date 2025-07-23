@@ -34,7 +34,9 @@ export interface IRoleRepository extends IBaseRepository<Role> {
 export interface ISubscriptionRepository extends IBaseRepository<Subscription> {
   findByUserId(userId: string): Promise<Subscription[]>;
   findByStripeId(stripeSubId: string): Promise<Subscription | null>;
-  updateByStripeId(stripeSubId: string, data: Partial<Subscription>): Promise<Subscription>;
+  updateByStripeId(
+    stripeSubId: string,
+    data: Partial<Subscription>,
+  ): Promise<Subscription>;
   deleteByStripeId(stripeSubId: string): Promise<Subscription>;
 }
- 

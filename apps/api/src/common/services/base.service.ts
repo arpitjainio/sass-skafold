@@ -20,7 +20,7 @@ export abstract class BaseService {
       this.logger.warn(`${entityName} not found`, context, { identifier });
       throw new NotFoundException(`${entityName} not found`);
     }
-    
+
     this.logger.debug(`${entityName} found`, context, { identifier });
     return entity;
   }
@@ -87,7 +87,9 @@ export abstract class BaseService {
   /**
    * Utility method to safely extract user ID from request
    */
-  protected extractUserId(request: { user?: { userId: string } }): string | undefined {
+  protected extractUserId(request: {
+    user?: { userId: string };
+  }): string | undefined {
     return request.user?.userId;
   }
 
@@ -99,8 +101,8 @@ export abstract class BaseService {
     requiredFields: (keyof T)[],
     context: string,
   ): void {
-    const missingFields = requiredFields.filter(field => !data[field]);
-    
+    const missingFields = requiredFields.filter((field) => !data[field]);
+
     if (missingFields.length > 0) {
       const errorMessage = `Missing required fields: ${missingFields.join(', ')}`;
       this.logWarning(errorMessage, context, { missingFields });
@@ -116,13 +118,13 @@ export abstract class BaseService {
     sensitiveFields: string[] = ['password', 'token', 'secret', 'key'],
   ): T {
     const sanitized = { ...data };
-    
+
     for (const field of sensitiveFields) {
       if (field in sanitized) {
         (sanitized as Record<string, unknown>)[field] = '[REDACTED]';
       }
     }
-    
+
     return sanitized;
   }
-} 
+}

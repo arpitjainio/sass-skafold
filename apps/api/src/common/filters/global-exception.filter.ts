@@ -28,10 +28,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse() as ExceptionResponse;
-      
+
       message = this.extractMessage(exceptionResponse, exception.message);
       errors = this.extractErrors(exceptionResponse, exception.message);
-      
+
       // Map HTTP status to error codes
       errorCode = this.mapStatusToErrorCode(status);
     } else if (exception instanceof Error) {
@@ -66,17 +66,26 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     response.status(status).json(errorResponse);
   }
 
-  private extractMessage(exceptionResponse: ExceptionResponse, fallbackMessage: string): string {
+  private extractMessage(
+    exceptionResponse: ExceptionResponse,
+    fallbackMessage: string,
+  ): string {
     if (typeof exceptionResponse.message === 'string') {
       return exceptionResponse.message;
     }
-    if (Array.isArray(exceptionResponse.message) && exceptionResponse.message.length > 0) {
+    if (
+      Array.isArray(exceptionResponse.message) &&
+      exceptionResponse.message.length > 0
+    ) {
       return exceptionResponse.message[0];
     }
     return fallbackMessage;
   }
 
-  private extractErrors(exceptionResponse: ExceptionResponse, fallbackMessage: string): string[] {
+  private extractErrors(
+    exceptionResponse: ExceptionResponse,
+    fallbackMessage: string,
+  ): string[] {
     if (Array.isArray(exceptionResponse.message)) {
       return exceptionResponse.message;
     }
@@ -122,4 +131,4 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       'Unknown'
     );
   }
-} 
+}

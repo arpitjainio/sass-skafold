@@ -55,7 +55,7 @@ export class ResponseUtil {
     meta?: Partial<ApiResponse['meta']>,
   ): SuccessResponse<PaginatedResponse<T>> {
     const totalPages = Math.ceil(total / limit);
-    
+
     return {
       success: true,
       data: {
@@ -121,4 +121,4 @@ export class ResponseUtil {
       },
     };
   }
-} 
+}

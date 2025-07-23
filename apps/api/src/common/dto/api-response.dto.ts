@@ -63,4 +63,4 @@ export class SubscriptionResponseDto {
 
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   updatedAt: Date;
-} 
+}

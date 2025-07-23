@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { 
-  PrismaWhereInput, 
-  PrismaIncludeInput, 
+import {
+  PrismaWhereInput,
+  PrismaIncludeInput,
   PrismaSelectInput,
-  DeepPartial 
+  DeepPartial,
 } from '../types';
 
 /**
@@ -26,26 +26,30 @@ export abstract class EnhancedBaseRepository<T> {
   ) {}
 
   /**
-   * Find by ID with optional caching
+   * Find by ID with caching
    */
-  async findById(
-    id: string, 
-    include?: PrismaIncludeInput,
-    useCache: boolean = true
-  ): Promise<T | null> {
-    const cacheKey = `findById:${id}:${JSON.stringify(include)}`;
-    
-    if (useCache) {
-      const cached = this.getFromCache(cacheKey);
-      if (cached) return cached;
+  async findById(id: string, include?: PrismaIncludeInput): Promise<T | null> {
+    const cacheKey = `${this.modelName}:${id}:${JSON.stringify(include || {})}`;
+
+    // Check cache first
+    const cached = this.getFromCache(cacheKey);
+    if (cached) {
+      this.logger.debug(
+        `Cache hit for ${this.modelName} findById`,
+        'Repository',
+        { id, cacheKey },
+      );
+      return cached;
     }
 
-    const result = await this.prisma[this.modelName].findUnique({
+    // Fetch from database
+    const result = (await this.prisma[this.modelName].findUnique({
       where: { id },
       include,
-    }) as Promise<T | null>;
+    })) as Promise<T | null>;
 
-    if (useCache && result) {
+    // Cache the result
+    if (result) {
       this.setCache(cacheKey, result);
     }
 
@@ -53,40 +57,92 @@ export abstract class EnhancedBaseRepository<T> {
   }
 
   /**
-   * Find many with optimized query patterns
+   * Find by unique field with caching
+   */
+  async findByUnique(
+    field: keyof T,
+    value: any,
+    include?: PrismaIncludeInput,
+  ): Promise<T | null> {
+    const cacheKey = `${this.modelName}:${String(field)}:${value}:${JSON.stringify(include || {})}`;
+
+    // Check cache first
+    const cached = this.getFromCache(cacheKey);
+    if (cached) {
+      this.logger.debug(
+        `Cache hit for ${this.modelName} findByUnique`,
+        'Repository',
+        { field, value, cacheKey },
+      );
+      return cached;
+    }
+
+    // Fetch from database
+    const result = (await this.prisma[this.modelName].findUnique({
+      where: { [field]: value },
+      include,
+    })) as Promise<T | null>;
+
+    // Cache the result
+    if (result) {
+      this.setCache(cacheKey, result);
+    }
+
+    return result;
+  }
+
+  /**
+   * Find many with caching
    */
   async findMany(
-    where?: PrismaWhereInput, 
+    where?: PrismaWhereInput,
     include?: PrismaIncludeInput,
-    orderBy?: Record<string, 'asc' | 'desc'>,
-    limit?: number
+    orderBy?: PrismaOrderByInput,
+    take?: number,
+    skip?: number,
   ): Promise<T[]> {
-    // Optimize query by limiting results if no specific limit provided
-    const queryLimit = limit || 100;
-    
-    return this.prisma[this.modelName].findMany({
+    const cacheKey = `${this.modelName}:findMany:${JSON.stringify({ where, include, orderBy, take, skip })}`;
+
+    // Check cache first
+    const cached = this.getFromCache(cacheKey);
+    if (cached) {
+      this.logger.debug(
+        `Cache hit for ${this.modelName} findMany`,
+        'Repository',
+        { cacheKey },
+      );
+      return cached as T[];
+    }
+
+    // Fetch from database
+    const result = (await this.prisma[this.modelName].findMany({
       where,
       include,
       orderBy,
-      take: queryLimit,
-    }) as Promise<T[]>;
+      take,
+      skip,
+    })) as Promise<T[]>;
+
+    // Cache the result
+    if (result && result.length > 0) {
+      this.setCache(cacheKey, result);
+    }
+
+    return result;
   }
 
   /**
    * Create with validation and optimization
    */
-  async create(
-    data: DeepPartial<T>, 
-    include?: PrismaIncludeInput
-  ): Promise<T> {
-    const result = await this.prisma[this.modelName].create({
+  async create(data: DeepPartial<T>, include?: PrismaIncludeInput): Promise<T> {
+    const result = (await this.prisma[this.modelName].create({
       data,
       include,
-    }) as Promise<T>;
+    })) as Promise<T>;
 
     // Invalidate related cache entries
     this.invalidateCache();
-    
+
     return result;
   }
 
@@ -94,19 +150,19 @@ export abstract class EnhancedBaseRepository<T> {
    * Update with cache invalidation
    */
   async update(
-    id: string, 
-    data: DeepPartial<T>, 
-    include?: PrismaIncludeInput
+    id: string,
+    data: DeepPartial<T>,
+    include?: PrismaIncludeInput,
   ): Promise<T> {
-    const result = await this.prisma[this.modelName].update({
+    const result = (await this.prisma[this.modelName].update({
       where: { id },
       data,
       include,
-    }) as Promise<T>;
+    })) as Promise<T>;
 
     // Invalidate cache for this specific entity
     this.invalidateCacheByPattern(`findById:${id}:*`);
-    
+
     return result;
   }
 
@@ -114,13 +170,13 @@ export abstract class EnhancedBaseRepository<T> {
    * Delete with cache cleanup
    */
   async delete(id: string): Promise<T> {
-    const result = await this.prisma[this.modelName].delete({
+    const result = (await this.prisma[this.modelName].delete({
       where: { id },
-    }) as Promise<T>;
+    })) as Promise<T>;
 
     // Invalidate cache for this specific entity
     this.invalidateCacheByPattern(`findById:${id}:*`);
-    
+
     return result;
   }
 
@@ -128,21 +184,21 @@ export abstract class EnhancedBaseRepository<T> {
    * Find unique with caching
    */
   async findUnique(
-    where: PrismaWhereInput, 
+    where: PrismaWhereInput,
     include?: PrismaIncludeInput,
-    useCache: boolean = true
+    useCache: boolean = true,
   ): Promise<T | null> {
     const cacheKey = `findUnique:${JSON.stringify(where)}:${JSON.stringify(include)}`;
-    
+
     if (useCache) {
       const cached = this.getFromCache(cacheKey);
       if (cached) return cached;
     }
 
-    const result = await this.prisma[this.modelName].findUnique({
+    const result = (await this.prisma[this.modelName].findUnique({
       where,
       include,
-    }) as Promise<T | null>;
+    })) as Promise<T | null>;
 
     if (useCache && result) {
       this.setCache(cacheKey, result);
@@ -155,23 +211,23 @@ export abstract class EnhancedBaseRepository<T> {
    * Find first with caching
    */
   async findFirst(
-    where: PrismaWhereInput, 
+    where: PrismaWhereInput,
     include?: PrismaIncludeInput,
     orderBy?: Record<string, 'asc' | 'desc'>,
-    useCache: boolean = true
+    useCache: boolean = true,
   ): Promise<T | null> {
     const cacheKey = `findFirst:${JSON.stringify(where)}:${JSON.stringify(include)}:${JSON.stringify(orderBy)}`;
-    
+
     if (useCache) {
       const cached = this.getFromCache(cacheKey);
       if (cached) return cached;
     }
 
-    const result = await this.prisma[this.modelName].findFirst({
+    const result = (await this.prisma[this.modelName].findFirst({
       where,
       include,
       orderBy,
-    }) as Promise<T | null>;
+    })) as Promise<T | null>;
 
     if (useCache && result) {
       this.setCache(cacheKey, result);
@@ -197,10 +253,16 @@ export abstract class EnhancedBaseRepository<T> {
     include?: PrismaIncludeInput,
     page: number = 1,
     limit: number = 10,
-    orderBy?: Record<string, 'asc' | 'desc'>
-  ): Promise<{ data: T[]; total: number; page: number; limit: number; totalPages: number }> {
+    orderBy?: Record<string, 'asc' | 'desc'>,
+  ): Promise<{
+    data: T[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     const skip = (page - 1) * limit;
-    
+
     // Use Promise.all for parallel execution
     const [data, total] = await Promise.all([
       this.prisma[this.modelName].findMany({
@@ -229,7 +291,7 @@ export abstract class EnhancedBaseRepository<T> {
    */
   async createMany(data: DeepPartial<T>[]): Promise<{ count: number }> {
     if (data.length === 0) return { count: 0 };
-    
+
     // Use createMany for better performance
     const result = await this.prisma[this.modelName].createMany({
       data: data as any[], // Type assertion needed for Prisma
@@ -237,7 +299,7 @@ export abstract class EnhancedBaseRepository<T> {
 
     // Invalidate cache after batch operation
     this.invalidateCache();
-    
+
     return result;
   }
 
@@ -246,7 +308,7 @@ export abstract class EnhancedBaseRepository<T> {
    */
   async updateMany(
     where: PrismaWhereInput,
-    data: DeepPartial<T>
+    data: DeepPartial<T>,
   ): Promise<{ count: number }> {
     const result = await this.prisma[this.modelName].updateMany({
       where,
@@ -255,7 +317,7 @@ export abstract class EnhancedBaseRepository<T> {
 
     // Invalidate cache after batch operation
     this.invalidateCache();
-    
+
     return result;
   }
 
@@ -269,7 +331,7 @@ export abstract class EnhancedBaseRepository<T> {
 
     // Invalidate cache after batch operation
     this.invalidateCache();
-    
+
     return result;
   }
 
@@ -280,7 +342,7 @@ export abstract class EnhancedBaseRepository<T> {
     where?: PrismaWhereInput,
     select?: PrismaSelectInput,
     orderBy?: Record<string, 'asc' | 'desc'>,
-    limit?: number
+    limit?: number,
   ): Promise<Partial<T>[]> {
     return this.prisma[this.modelName].findMany({
       where,
@@ -293,9 +355,7 @@ export abstract class EnhancedBaseRepository<T> {
   /**
    * Transaction wrapper for complex operations
    */
-  async transaction<R>(
-    fn: (tx: typeof this.prisma) => Promise<R>
-  ): Promise<R> {
+  async transaction<R>(fn: (tx: typeof this.prisma) => Promise<R>): Promise<R> {
     return this.prisma.$transaction(fn);
   }
 
@@ -305,13 +365,13 @@ export abstract class EnhancedBaseRepository<T> {
   private getFromCache(key: string): T | null {
     const cached = this.cache.get(key);
     if (!cached) return null;
-    
+
     // Check if cache is still valid
     if (Date.now() - cached.timestamp > this.CACHE_TTL) {
       this.cache.delete(key);
       return null;
     }
-    
+
     return cached.data;
   }
 
@@ -321,7 +381,7 @@ export abstract class EnhancedBaseRepository<T> {
       const firstKey = this.cache.keys().next().value;
       this.cache.delete(firstKey);
     }
-    
+
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
@@ -358,4 +418,4 @@ export abstract class EnhancedBaseRepository<T> {
   clearCache(): void {
     this.invalidateCache();
   }
-} 
+}

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { 
-  PrismaWhereInput, 
-  PrismaIncludeInput, 
+import {
+  PrismaWhereInput,
+  PrismaIncludeInput,
   PrismaSelectInput,
-  DeepPartial 
+  DeepPartial,
 } from '../types';
 
 @Injectable()
@@ -14,10 +14,7 @@ export abstract class BaseRepository<T> {
     protected readonly modelName: string,
   ) {}
 
-  async findById(
-    id: string, 
-    include?: PrismaIncludeInput
-  ): Promise<T | null> {
+  async findById(id: string, include?: PrismaIncludeInput): Promise<T | null> {
     return this.prisma[this.modelName].findUnique({
       where: { id },
       include,
@@ -25,8 +22,8 @@ export abstract class BaseRepository<T> {
   }
 
   async findMany(
-    where?: PrismaWhereInput, 
-    include?: PrismaIncludeInput
+    where?: PrismaWhereInput,
+    include?: PrismaIncludeInput,
   ): Promise<T[]> {
     return this.prisma[this.modelName].findMany({
       where,
@@ -34,10 +31,7 @@ export abstract class BaseRepository<T> {
     }) as Promise<T[]>;
   }
 
-  async create(
-    data: DeepPartial<T>, 
-    include?: PrismaIncludeInput
-  ): Promise<T> {
+  async create(data: DeepPartial<T>, include?: PrismaIncludeInput): Promise<T> {
     return this.prisma[this.modelName].create({
       data,
       include,
@@ -45,9 +39,9 @@ export abstract class BaseRepository<T> {
   }
 
   async update(
-    id: string, 
-    data: DeepPartial<T>, 
-    include?: PrismaIncludeInput
+    id: string,
+    data: DeepPartial<T>,
+    include?: PrismaIncludeInput,
   ): Promise<T> {
     return this.prisma[this.modelName].update({
       where: { id },
@@ -63,8 +57,8 @@ export abstract class BaseRepository<T> {
   }
 
   async findUnique(
-    where: PrismaWhereInput, 
-    include?: PrismaIncludeInput
+    where: PrismaWhereInput,
+    include?: PrismaIncludeInput,
   ): Promise<T | null> {
     return this.prisma[this.modelName].findUnique({
       where,
@@ -73,8 +67,8 @@ export abstract class BaseRepository<T> {
   }
 
   async findFirst(
-    where: PrismaWhereInput, 
-    include?: PrismaIncludeInput
+    where: PrismaWhereInput,
+    include?: PrismaIncludeInput,
   ): Promise<T | null> {
     return this.prisma[this.modelName].findFirst({
       where,
@@ -98,10 +92,10 @@ export abstract class BaseRepository<T> {
     include?: PrismaIncludeInput,
     page: number = 1,
     limit: number = 10,
-    orderBy?: Record<string, 'asc' | 'desc'>
+    orderBy?: Record<string, 'asc' | 'desc'>,
   ): Promise<{ data: T[]; total: number; page: number; limit: number }> {
     const skip = (page - 1) * limit;
-    
+
     const [data, total] = await Promise.all([
       this.prisma[this.modelName].findMany({
         where,
@@ -120,4 +114,4 @@ export abstract class BaseRepository<T> {
       limit,
     };
   }
-} 
+}

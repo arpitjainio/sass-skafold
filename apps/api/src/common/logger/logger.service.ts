@@ -32,12 +32,16 @@ export class LoggerService implements NestLoggerService {
       winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
       winston.format.errors({ stack: true }),
       winston.format.json(),
-      winston.format.printf(({ timestamp, level, message, context, trace, ...meta }) => {
-        const contextStr = context ? `[${context}] ` : '';
-        const traceStr = trace ? `\n${trace}` : '';
-        const metaStr = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
-        return `${timestamp} [${level.toUpperCase()}] ${contextStr}${message}${metaStr}${traceStr}`;
-      }),
+      winston.format.printf(
+        ({ timestamp, level, message, context, trace, ...meta }) => {
+          const contextStr = context ? `[${context}] ` : '';
+          const traceStr = trace ? `\n${trace}` : '';
+          const metaStr = Object.keys(meta).length
+            ? ` ${JSON.stringify(meta)}`
+            : '';
+          return `${timestamp} [${level.toUpperCase()}] ${contextStr}${message}${metaStr}${traceStr}`;
+        },
+      ),
     );
 
     // Define transports
@@ -101,7 +105,12 @@ export class LoggerService implements NestLoggerService {
     this.logger.info(message, { context, ...meta });
   }
 
-  error(message: string, trace?: string, context?: string, meta?: LogContext): void {
+  error(
+    message: string,
+    trace?: string,
+    context?: string,
+    meta?: LogContext,
+  ): void {
     this.logger.error(message, { context, trace, ...meta });
   }
 
@@ -126,7 +135,12 @@ export class LoggerService implements NestLoggerService {
     this.log(message, 'User', { userId, ...meta });
   }
 
-  logSubscription(message: string, userId?: string, subscriptionId?: string, meta?: LogContext): void {
+  logSubscription(
+    message: string,
+    userId?: string,
+    subscriptionId?: string,
+    meta?: LogContext,
+  ): void {
     this.log(message, 'Subscription', { userId, subscriptionId, ...meta });
   }
 
@@ -139,12 +153,25 @@ export class LoggerService implements NestLoggerService {
   }
 
   // Performance logging
-  logPerformance(operation: string, duration: number, context?: string, meta?: LogContext): void {
-    this.log(`Performance: ${operation} took ${duration}ms`, context, { duration, ...meta });
+  logPerformance(
+    operation: string,
+    duration: number,
+    context?: string,
+    meta?: LogContext,
+  ): void {
+    this.log(`Performance: ${operation} took ${duration}ms`, context, {
+      duration,
+      ...meta,
+    });
   }
 
   // Security logging
-  logSecurity(event: string, userId?: string, ip?: string, meta?: LogContext): void {
+  logSecurity(
+    event: string,
+    userId?: string,
+    ip?: string,
+    meta?: LogContext,
+  ): void {
     this.warn(`Security: ${event}`, 'Security', { userId, ip, ...meta });
   }
-} 
+}

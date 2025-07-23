@@ -20,7 +20,10 @@ export class PasswordUtil {
   /**
    * Validate password strength
    */
-  static validatePassword(password: string): { isValid: boolean; errors: string[] } {
+  static validatePassword(password: string): {
+    isValid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     if (password.length < 6) {
@@ -44,4 +47,4 @@ export class PasswordUtil {
       errors,
     };
   }
-} 
+}
