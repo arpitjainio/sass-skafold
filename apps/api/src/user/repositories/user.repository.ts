@@ -82,7 +82,9 @@ export class UserRepository implements IUserRepository {
     };
   }
 
-  async findWithSubscriptions(id: string): Promise<UserWithSubscriptions | null> {
+  async findWithSubscriptions(
+    id: string,
+  ): Promise<UserWithSubscriptions | null> {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -152,17 +154,21 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  async findUnique(where: PrismaWhereInput): Promise<UserWithoutPassword | null> {
+  async findUnique(
+    where: PrismaWhereInput,
+  ): Promise<UserWithoutPassword | null> {
     return this.prisma.user.findUnique({
       where: where as { id: string } | { email: string },
       omit: { password: true },
     });
   }
 
-  async findFirst(where: PrismaWhereInput): Promise<UserWithoutPassword | null> {
+  async findFirst(
+    where: PrismaWhereInput,
+  ): Promise<UserWithoutPassword | null> {
     return this.prisma.user.findFirst({
       where,
       omit: { password: true },
     });
   }
-} 
+}

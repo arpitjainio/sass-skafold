@@ -11,7 +11,8 @@ export class CreateSubscriptionDto {
   priceId: string;
 
   @ApiProperty({
-    description: 'Stripe customer ID (optional, will be created if not provided)',
+    description:
+      'Stripe customer ID (optional, will be created if not provided)',
     example: 'cus_1234567890',
     required: false,
   })
@@ -55,4 +56,4 @@ export class UpdateSubscriptionDto {
   @IsString()
   @IsNotEmpty()
   priceId: string;
-} 
+}
