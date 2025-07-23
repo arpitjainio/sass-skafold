@@ -117,7 +117,10 @@ export class ResponseUtil {
       message,
       meta: {
         timestamp: new Date().toISOString(),
-        ...meta,
+        path: meta?.path || '',
+        method: meta?.method || '',
+        duration: meta?.duration,
+        pagination: meta?.pagination,
       },
     };
   }

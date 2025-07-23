@@ -11,15 +11,11 @@ export const PERFORMANCE_MONITORING_KEY = 'performance_monitoring';
 export const REQUEST_LOGGING_KEY = 'request_logging';
 export const RESPONSE_TRANSFORM_KEY = 'response_transform';
 
-type DecoratorTarget = Function;
-type PropertyKey = string | symbol;
-type PropertyDescriptor = TypedPropertyDescriptor<unknown>;
-
 // Cache decorators
 export const Cache = (ttl?: number, key?: string) => {
   return (
-    target: DecoratorTarget,
-    propertyKey?: PropertyKey,
+    target: any,
+    propertyKey?: string | symbol,
     descriptor?: PropertyDescriptor,
   ) => {
     if (descriptor && propertyKey) {
@@ -43,8 +39,8 @@ export const Cache = (ttl?: number, key?: string) => {
 // Performance monitoring decorators
 export const MonitorPerformance = (threshold?: number) => {
   return (
-    target: DecoratorTarget,
-    propertyKey?: PropertyKey,
+    target: any,
+    propertyKey?: string | symbol,
     descriptor?: PropertyDescriptor,
   ) => {
     if (descriptor && propertyKey) {
@@ -66,8 +62,8 @@ export const MonitorPerformance = (threshold?: number) => {
 // Request logging decorators
 export const LogRequest = (level: 'debug' | 'log' | 'warn' = 'log') => {
   return (
-    target: DecoratorTarget,
-    propertyKey?: PropertyKey,
+    target: any,
+    propertyKey?: string | symbol,
     descriptor?: PropertyDescriptor,
   ) => {
     if (descriptor && propertyKey) {
@@ -89,8 +85,8 @@ export const LogRequest = (level: 'debug' | 'log' | 'warn' = 'log') => {
 // Response transform decorators
 export const TransformResponse = (customMessage?: string) => {
   return (
-    target: DecoratorTarget,
-    propertyKey?: PropertyKey,
+    target: any,
+    propertyKey?: string | symbol,
     descriptor?: PropertyDescriptor,
   ) => {
     if (descriptor && propertyKey) {
@@ -121,16 +117,11 @@ export const ApiEndpoint = (options: {
   transform?: { message?: string };
 }) => {
   return (
-    target: DecoratorTarget,
-    propertyKey?: PropertyKey,
+    target: any,
+    propertyKey?: string | symbol,
     descriptor?: PropertyDescriptor,
   ) => {
-    const interceptors: (
-      | typeof CachingInterceptor
-      | typeof PerformanceInterceptor
-      | typeof RequestLoggingInterceptor
-      | typeof ResponseTransformInterceptor
-    )[] = [];
+    const interceptors: any[] = [];
 
     // Add caching if specified
     if (options.cache) {
@@ -159,10 +150,7 @@ export const ApiEndpoint = (options: {
     // Add performance monitoring if specified
     if (options.performance) {
       if (descriptor && propertyKey) {
-        SetMetadata(
-          PERFORMANCE_MONITORING_KEY,
-          options.performance.threshold,
-        )(
+        SetMetadata(PERFORMANCE_MONITORING_KEY, options.performance.threshold)(
           target,
           propertyKey,
           descriptor,
