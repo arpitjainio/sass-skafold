@@ -50,7 +50,10 @@ export class AuthController {
     status: 401,
     description: 'Unauthorized',
   })
-  async login(@Request() req: AuthenticatedRequest, @Body() loginDto: LoginDto): Promise<AuthResponseDto> {
+  async login(
+    @Request() req: AuthenticatedRequest,
+    @Body() loginDto: LoginDto,
+  ): Promise<AuthResponseDto> {
     return this.authService.login(loginDto);
   }
 

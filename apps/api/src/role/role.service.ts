@@ -76,7 +76,7 @@ export class RoleService extends BaseService {
     return role;
   }
 
-  async assignRoleToUser(userId: string, roleId: string): Promise<any> {
+  async assignRoleToUser(userId: string, roleId: string): Promise<unknown> {
     this.logOperation('Assigning role to user', 'Role', { userId, roleId });
 
     const userRole = await this.prisma.userRole.create({

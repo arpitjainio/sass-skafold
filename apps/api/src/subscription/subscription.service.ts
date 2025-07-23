@@ -33,7 +33,7 @@ export class SubscriptionService {
     this.logger.log('Stripe client initialized', 'Subscription');
   }
 
-  async findByUserId(userId: string): Promise<any[]> {
+  async findByUserId(userId: string): Promise<unknown[]> {
     this.logger.debug('Finding subscriptions by user ID', 'Subscription', {
       userId,
     });
@@ -53,7 +53,7 @@ export class SubscriptionService {
     return subscriptions;
   }
 
-  async findByStripeId(stripeSubId: string): Promise<any> {
+  async findByStripeId(stripeSubId: string): Promise<unknown> {
     this.logger.debug('Finding subscription by Stripe ID', 'Subscription', {
       stripeSubId,
     });
@@ -80,7 +80,7 @@ export class SubscriptionService {
     priceId: string,
     customerId?: string,
     paymentMethodId?: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.log('Creating new subscription', 'Subscription', {
       userId,
       priceId,
@@ -194,7 +194,7 @@ export class SubscriptionService {
     userId: string,
     subscriptionId: string,
     cancelAtPeriodEnd = true,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.log('Canceling subscription', 'Subscription', {
       userId,
       subscriptionId,
@@ -266,7 +266,7 @@ export class SubscriptionService {
     userId: string,
     subscriptionId: string,
     priceId: string,
-  ): Promise<any> {
+  ): Promise<unknown> {
     this.logger.log('Updating subscription', 'Subscription', {
       userId,
       subscriptionId,

@@ -10,7 +10,7 @@ export class UserService {
     private logger: LoggerService,
   ) {}
 
-  async findById(id: string): Promise<any> {
+  async findById(id: string): Promise<unknown> {
     this.logger.debug('Finding user by ID', 'User', { userId: id });
 
     const user = await this.userRepository.findWithSubscriptions(id);
@@ -24,7 +24,7 @@ export class UserService {
     return user;
   }
 
-  async findByEmail(email: string): Promise<any> {
+  async findByEmail(email: string): Promise<unknown> {
     this.logger.debug('Finding user by email', 'User', { email });
 
     const user = await this.userRepository.findWithRoles(email);
@@ -38,7 +38,7 @@ export class UserService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<any> {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<unknown> {
     this.logger.log('Updating user', 'User', {
       userId: id,
       updates: updateUserDto,
@@ -50,7 +50,7 @@ export class UserService {
     return user;
   }
 
-  async getUserRoles(id: string): Promise<any> {
+  async getUserRoles(id: string): Promise<unknown> {
     this.logger.debug('Getting user roles', 'User', { userId: id });
 
     const user = await this.userRepository.findWithRoles(id);

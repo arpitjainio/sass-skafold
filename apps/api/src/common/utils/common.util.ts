@@ -58,7 +58,7 @@ export class CommonUtil {
 
     for (const [key, value] of Object.entries(obj)) {
       const camelKey = key.replace(/_([a-z])/g, (_, letter) =>
-        letter.toUpperCase(),
+        (letter as string).toUpperCase(),
       );
       result[camelKey] = value;
     }

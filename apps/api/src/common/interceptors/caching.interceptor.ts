@@ -90,10 +90,12 @@ export class CachingInterceptor implements NestInterceptor {
     // Implement LRU eviction if cache is full
     if (this.cache.size >= this.MAX_CACHE_SIZE) {
       const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
-      this.logger.debug('Cache eviction due to size limit', 'Caching', {
-        evictedKey: firstKey,
-      });
+      if (firstKey) {
+        this.cache.delete(firstKey);
+        this.logger.debug('Cache eviction due to size limit', 'Caching', {
+          evictedKey: firstKey,
+        });
+      }
     }
 
     this.cache.set(key, {

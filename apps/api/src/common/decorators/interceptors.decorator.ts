@@ -156,7 +156,10 @@ export const ApiEndpoint = (options: {
           descriptor,
         );
       } else {
-        SetMetadata(PERFORMANCE_MONITORING_KEY, options.performance.threshold)(target);
+        SetMetadata(
+          PERFORMANCE_MONITORING_KEY,
+          options.performance.threshold,
+        )(target);
       }
       interceptors.push(PerformanceInterceptor);
     }

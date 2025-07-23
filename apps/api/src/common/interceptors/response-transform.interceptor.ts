@@ -81,7 +81,7 @@ export class ResponseTransformInterceptor implements NestInterceptor {
 
         // If it's an error response, handle it
         if (this.isErrorResponse(data)) {
-          const errorData = data as ErrorResponse;
+          const errorData = data;
           return {
             success: false,
             message: errorData.message || 'An error occurred',
@@ -99,7 +99,7 @@ export class ResponseTransformInterceptor implements NestInterceptor {
 
         // If it's a paginated response, handle it
         if (this.isPaginatedResponse(data)) {
-          const paginatedData = data as PaginatedResponse;
+          const paginatedData = data;
           return {
             success: true,
             data: paginatedData.data,

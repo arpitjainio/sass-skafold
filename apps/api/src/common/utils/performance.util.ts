@@ -77,7 +77,7 @@ export class PerformanceUtil {
 
       descriptor.value = async function (...args: unknown[]) {
         return PerformanceUtil.measureAsync(
-          () => method.apply(this, args),
+          () => method.call(this, ...args),
           opName,
           (target as { constructor: { name: string } }).constructor.name,
         );

@@ -10,7 +10,8 @@ export abstract class BaseRepository<T> {
   ) {}
 
   async findById(id: string, include?: PrismaIncludeInput): Promise<T | null> {
-    return this.prisma[this.modelName].findUnique({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    return model.findUnique({
       where: { id },
       include,
     }) as Promise<T | null>;
@@ -20,14 +21,16 @@ export abstract class BaseRepository<T> {
     where?: PrismaWhereInput,
     include?: PrismaIncludeInput,
   ): Promise<T[]> {
-    return this.prisma[this.modelName].findMany({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    return model.findMany({
       where,
       include,
     }) as Promise<T[]>;
   }
 
   async create(data: DeepPartial<T>, include?: PrismaIncludeInput): Promise<T> {
-    return this.prisma[this.modelName].create({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    return model.create({
       data,
       include,
     }) as Promise<T>;
@@ -38,7 +41,8 @@ export abstract class BaseRepository<T> {
     data: DeepPartial<T>,
     include?: PrismaIncludeInput,
   ): Promise<T> {
-    return this.prisma[this.modelName].update({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    return model.update({
       where: { id },
       data,
       include,
@@ -46,7 +50,8 @@ export abstract class BaseRepository<T> {
   }
 
   async delete(id: string): Promise<T> {
-    return this.prisma[this.modelName].delete({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    return model.delete({
       where: { id },
     }) as Promise<T>;
   }
@@ -55,7 +60,8 @@ export abstract class BaseRepository<T> {
     where: PrismaWhereInput,
     include?: PrismaIncludeInput,
   ): Promise<T | null> {
-    return this.prisma[this.modelName].findUnique({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    return model.findUnique({
       where,
       include,
     }) as Promise<T | null>;
@@ -65,16 +71,18 @@ export abstract class BaseRepository<T> {
     where: PrismaWhereInput,
     include?: PrismaIncludeInput,
   ): Promise<T | null> {
-    return this.prisma[this.modelName].findFirst({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    return model.findFirst({
       where,
       include,
     }) as Promise<T | null>;
   }
 
   async count(where?: PrismaWhereInput): Promise<number> {
-    return await this.prisma[this.modelName].count({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    return model.count({
       where,
-    });
+    }) as Promise<number>;
   }
 
   async exists(where: PrismaWhereInput): Promise<boolean> {
@@ -90,9 +98,10 @@ export abstract class BaseRepository<T> {
     orderBy?: Record<string, 'asc' | 'desc'>,
   ): Promise<{ data: T[]; total: number; page: number; limit: number }> {
     const skip = (page - 1) * limit;
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
 
     const [data, total] = await Promise.all([
-      this.prisma[this.modelName].findMany({
+      model.findMany({
         where,
         include,
         skip,

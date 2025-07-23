@@ -63,10 +63,10 @@ export abstract class EnhancedBaseRepository<T> {
    */
   async findByUnique(
     field: keyof T,
-    value: any,
+    value: unknown,
     include?: PrismaIncludeInput,
   ): Promise<T | null> {
-    const cacheKey = `${this.modelName}:${String(field)}:${value}:${JSON.stringify(include || {})}`;
+    const cacheKey = `${this.modelName}:${String(field)}:${String(value)}:${JSON.stringify(include || {})}`;
 
     // Check cache first
     const cached = this.getFromCache(cacheKey);
@@ -80,7 +80,8 @@ export abstract class EnhancedBaseRepository<T> {
     }
 
     // Fetch from database
-    const result = (await this.prisma[this.modelName].findUnique({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    const result = (await model.findUnique({
       where: { [field]: value },
       include,
     })) as T | null;
@@ -117,7 +118,8 @@ export abstract class EnhancedBaseRepository<T> {
     }
 
     // Fetch from database
-    const result = (await this.prisma[this.modelName].findMany({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    const result = (await model.findMany({
       where,
       include,
       orderBy,
@@ -137,7 +139,8 @@ export abstract class EnhancedBaseRepository<T> {
    * Create with validation and optimization
    */
   async create(data: DeepPartial<T>, include?: PrismaIncludeInput): Promise<T> {
-    const result = (await this.prisma[this.modelName].create({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    const result = (await model.create({
       data,
       include,
     })) as T;
@@ -156,14 +159,15 @@ export abstract class EnhancedBaseRepository<T> {
     data: DeepPartial<T>,
     include?: PrismaIncludeInput,
   ): Promise<T> {
-    const result = (await this.prisma[this.modelName].update({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    const result = (await model.update({
       where: { id },
       data,
       include,
     })) as T;
 
-    // Invalidate cache for this specific entity
-    this.invalidateCacheByPattern(`${this.modelName}:${id}`);
+    // Invalidate related cache entries
+    this.invalidateCache();
 
     return result;
   }
@@ -172,7 +176,8 @@ export abstract class EnhancedBaseRepository<T> {
    * Delete with validation and optimization
    */
   async delete(id: string): Promise<T> {
-    const result = (await this.prisma[this.modelName].delete({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    const result = (await model.delete({
       where: { id },
     })) as T;
 
@@ -199,7 +204,8 @@ export abstract class EnhancedBaseRepository<T> {
       }
     }
 
-    const result = (await this.prisma[this.modelName].findUnique({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    const result = (await model.findUnique({
       where,
       include,
     })) as T | null;
@@ -229,7 +235,8 @@ export abstract class EnhancedBaseRepository<T> {
       }
     }
 
-    const result = (await this.prisma[this.modelName].findFirst({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    const result = (await model.findFirst({
       where,
       include,
       orderBy,
@@ -246,9 +253,10 @@ export abstract class EnhancedBaseRepository<T> {
    * Count with optimization
    */
   async count(where?: PrismaWhereInput): Promise<number> {
-    return await this.prisma[this.modelName].count({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    return model.count({
       where,
-    });
+    }) as Promise<number>;
   }
 
   /**
@@ -289,7 +297,8 @@ export abstract class EnhancedBaseRepository<T> {
    * Create many with optimization
    */
   async createMany(data: DeepPartial<T>[]): Promise<{ count: number }> {
-    const result = await this.prisma[this.modelName].createMany({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    const result = await model.createMany({
       data,
     });
 
@@ -306,7 +315,8 @@ export abstract class EnhancedBaseRepository<T> {
     where: PrismaWhereInput,
     data: DeepPartial<T>,
   ): Promise<{ count: number }> {
-    const result = await this.prisma[this.modelName].updateMany({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    const result = await model.updateMany({
       where,
       data,
     });
@@ -321,7 +331,8 @@ export abstract class EnhancedBaseRepository<T> {
    * Delete many with optimization
    */
   async deleteMany(where: PrismaWhereInput): Promise<{ count: number }> {
-    const result = await this.prisma[this.modelName].deleteMany({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    const result = await model.deleteMany({
       where,
     });
 
@@ -340,12 +351,13 @@ export abstract class EnhancedBaseRepository<T> {
     orderBy?: Record<string, 'asc' | 'desc'>,
     limit?: number,
   ): Promise<Partial<T>[]> {
-    return await this.prisma[this.modelName].findMany({
+    const model = this.prisma[this.modelName as keyof PrismaService] as any;
+    return model.findMany({
       where,
       select,
       orderBy,
       take: limit,
-    });
+    }) as Promise<Partial<T>[]>;
   }
 
   /**
@@ -360,6 +372,7 @@ export abstract class EnhancedBaseRepository<T> {
     const cached = this.cache.get(key);
     if (!cached) return null;
 
+    // Check if cache is expired
     if (Date.now() - cached.timestamp > this.CACHE_TTL) {
       this.cache.delete(key);
       return null;
@@ -372,10 +385,18 @@ export abstract class EnhancedBaseRepository<T> {
     // Implement LRU eviction if cache is full
     if (this.cache.size >= this.MAX_CACHE_SIZE) {
       const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
+      if (firstKey) {
+        this.cache.delete(firstKey);
+        this.logger.debug('Cache eviction due to size limit', 'Repository', {
+          evictedKey: firstKey,
+        });
+      }
     }
 
-    this.cache.set(key, { data, timestamp: Date.now() });
+    this.cache.set(key, {
+      data,
+      timestamp: Date.now(),
+    });
   }
 
   private invalidateCache(): void {
