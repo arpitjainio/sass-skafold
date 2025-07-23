@@ -1,12 +1,28 @@
-import { Controller, Post, Body, UseGuards, Request, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+  Headers,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AuthResponseDto } from '../common/dto/api-response.dto';
-import { SuccessResponse } from '../common/interfaces/api-response.interface';
+import {
+  SensitiveOperation,
+  WriteOperation,
+} from '../common/decorators/interceptors.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -14,6 +30,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
+  @SensitiveOperation()
   @ApiOperation({
     summary: 'Register a new user',
     description: 'Creates a new user account and returns authentication token',
@@ -32,12 +49,13 @@ export class AuthController {
     status: 400,
     description: 'Invalid input data',
   })
-  async register(@Body() registerDto: RegisterDto): Promise<SuccessResponse<any>> {
+  async register(@Body() registerDto: RegisterDto): Promise<any> {
     return this.authService.register(registerDto);
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @SensitiveOperation()
   @ApiOperation({
     summary: 'Login user',
     description: 'Authenticates user with email and password',
@@ -56,13 +74,14 @@ export class AuthController {
     status: 400,
     description: 'Invalid input data',
   })
-  async login(@Request() req, @Body() loginDto: LoginDto): Promise<SuccessResponse<any>> {
+  async login(@Request() req, @Body() loginDto: LoginDto): Promise<any> {
     return this.authService.login(loginDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @ApiBearerAuth()
+  @WriteOperation()
   @ApiOperation({
     summary: 'Logout user',
     description: 'Logs out the current user and invalidates the JWT token',
@@ -94,9 +113,11 @@ export class AuthController {
     status: 401,
     description: 'Unauthorized',
   })
-  async logout(@Request() req, @Headers('authorization') authHeader: string): Promise<SuccessResponse<any>> {
+  async logout(
+    @Request() req,
+    @Headers('authorization') authHeader: string,
+  ): Promise<any> {
     const token = authHeader?.replace('Bearer ', '');
     return this.authService.logout(token, req.user.userId);
   }
 }
- 
