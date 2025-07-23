@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { BaseService } from '../common/services/base.service';
 import { LoggerService } from '../common/logger/logger.service';
-import { SuccessResponse } from '../common/interfaces/api-response.interface';
 import { Role } from '../common/types';
 
 @Injectable()
@@ -14,9 +13,9 @@ export class RoleService extends BaseService {
     super(logger);
   }
 
-  async findAll(): Promise<SuccessResponse<Role[]>> {
+  async findAll(): Promise<Role[]> {
     this.logDebug('Finding all roles', 'Role');
-    
+
     const roles = await this.prisma.role.findMany({
       include: {
         users: {
@@ -28,12 +27,12 @@ export class RoleService extends BaseService {
     });
 
     this.logDebug('Roles found', 'Role', { count: roles.length });
-    return this.createSuccessResponse(roles, 'Roles retrieved successfully', 'Role');
+    return roles;
   }
 
-  async findById(id: string): Promise<SuccessResponse<Role>> {
+  async findById(id: string): Promise<Role> {
     this.logDebug('Finding role by ID', 'Role', { roleId: id });
-    
+
     const role = await this.prisma.role.findUnique({
       where: { id },
       include: {
@@ -46,23 +45,23 @@ export class RoleService extends BaseService {
     });
 
     const foundRole = this.handleEntityNotFound(role, 'Role', id, 'Role');
-    return this.createSuccessResponse(foundRole, 'Role retrieved successfully', 'Role');
+    return foundRole;
   }
 
-  async findByName(name: string): Promise<SuccessResponse<Role>> {
+  async findByName(name: string): Promise<Role> {
     this.logDebug('Finding role by name', 'Role', { roleName: name });
-    
+
     const role = await this.prisma.role.findUnique({
       where: { name },
     });
 
     const foundRole = this.handleEntityNotFound(role, 'Role', name, 'Role');
-    return this.createSuccessResponse(foundRole, 'Role retrieved successfully', 'Role');
+    return foundRole;
   }
 
-  async create(name: string, description?: string): Promise<SuccessResponse<Role>> {
+  async create(name: string, description?: string): Promise<Role> {
     this.logOperation('Creating new role', 'Role', { name, description });
-    
+
     const role = await this.prisma.role.create({
       data: {
         name,
@@ -70,13 +69,16 @@ export class RoleService extends BaseService {
       },
     });
 
-    this.logOperation('Role created successfully', 'Role', { roleId: role.id, name });
-    return this.createSuccessResponse(role, 'Role created successfully', 'Role');
+    this.logOperation('Role created successfully', 'Role', {
+      roleId: role.id,
+      name,
+    });
+    return role;
   }
 
-  async assignRoleToUser(userId: string, roleId: string): Promise<SuccessResponse<any>> {
+  async assignRoleToUser(userId: string, roleId: string): Promise<any> {
     this.logOperation('Assigning role to user', 'Role', { userId, roleId });
-    
+
     const userRole = await this.prisma.userRole.create({
       data: {
         userId,
@@ -88,13 +90,19 @@ export class RoleService extends BaseService {
       },
     });
 
-    this.logOperation('Role assigned to user successfully', 'Role', { userId, roleId });
-    return this.createSuccessResponse(userRole, 'Role assigned successfully', 'Role');
+    this.logOperation('Role assigned to user successfully', 'Role', {
+      userId,
+      roleId,
+    });
+    return userRole;
   }
 
-  async removeRoleFromUser(userId: string, roleId: string): Promise<SuccessResponse<{ deletedCount: number }>> {
+  async removeRoleFromUser(
+    userId: string,
+    roleId: string,
+  ): Promise<{ deletedCount: number }> {
     this.logOperation('Removing role from user', 'Role', { userId, roleId });
-    
+
     const result = await this.prisma.userRole.deleteMany({
       where: {
         userId,
@@ -102,22 +110,18 @@ export class RoleService extends BaseService {
       },
     });
 
-    this.logOperation('Role removed from user successfully', 'Role', { 
-      userId, 
-      roleId, 
-      deletedCount: result.count 
+    this.logOperation('Role removed from user successfully', 'Role', {
+      userId,
+      roleId,
+      deletedCount: result.count,
     });
-    
-    return this.createSuccessResponse(
-      { deletedCount: result.count }, 
-      'Role removed successfully', 
-      'Role'
-    );
+
+    return { deletedCount: result.count };
   }
 
-  async seedRoles(): Promise<SuccessResponse<{ seededCount: number }>> {
+  async seedRoles(): Promise<{ seededCount: number }> {
     this.logOperation('Seeding default roles', 'Role');
-    
+
     const defaultRoles = [
       { name: 'admin', description: 'Administrator with full access' },
       { name: 'user', description: 'Regular user' },
@@ -125,7 +129,7 @@ export class RoleService extends BaseService {
     ];
 
     let seededCount = 0;
-    
+
     // Use Promise.all for better performance
     const results = await Promise.all(
       defaultRoles.map(async (roleData) => {
@@ -138,23 +142,24 @@ export class RoleService extends BaseService {
           seededCount++;
           return result;
         } catch (error) {
-          this.logError('Failed to seed role', error as Error, 'Role', { roleName: roleData.name });
+          this.logError('Failed to seed role', error as Error, 'Role', {
+            roleName: roleData.name,
+          });
           throw error;
         }
-      })
+      }),
     );
 
-    this.logOperation('Roles seeded successfully', 'Role', { seededCount, totalRoles: defaultRoles.length });
-    return this.createSuccessResponse(
-      { seededCount }, 
-      'Roles seeded successfully', 
-      'Role'
-    );
+    this.logOperation('Roles seeded successfully', 'Role', {
+      seededCount,
+      totalRoles: defaultRoles.length,
+    });
+    return { seededCount };
   }
 
-  async getRolesWithUserCount(): Promise<SuccessResponse<Array<Role & { userCount: number }>>> {
+  async getRolesWithUserCount(): Promise<Array<Role & { userCount: number }>> {
     this.logDebug('Getting roles with user count', 'Role');
-    
+
     const roles = await this.prisma.role.findMany({
       include: {
         _count: {
@@ -165,13 +170,15 @@ export class RoleService extends BaseService {
       },
     });
 
-    const rolesWithCount = roles.map(role => ({
+    const rolesWithCount = roles.map((role) => ({
       ...role,
       userCount: role._count.users,
       _count: undefined, // Remove the _count property
     }));
 
-    this.logDebug('Roles with user count retrieved', 'Role', { count: rolesWithCount.length });
-    return this.createSuccessResponse(rolesWithCount, 'Roles with user count retrieved successfully', 'Role');
+    this.logDebug('Roles with user count retrieved', 'Role', {
+      count: rolesWithCount.length,
+    });
+    return rolesWithCount;
   }
 }

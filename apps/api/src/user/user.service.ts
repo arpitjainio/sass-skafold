@@ -1,9 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ResponseUtil } from '../common/utils/response.util';
 import { LoggerService } from '../common/logger/logger.service';
-import { SuccessResponse } from '../common/interfaces/api-response.interface';
 
 @Injectable()
 export class UserService {
@@ -12,9 +10,9 @@ export class UserService {
     private logger: LoggerService,
   ) {}
 
-  async findById(id: string): Promise<SuccessResponse<any>> {
+  async findById(id: string): Promise<any> {
     this.logger.debug('Finding user by ID', 'User', { userId: id });
-    
+
     const user = await this.userRepository.findWithSubscriptions(id);
 
     if (!user) {
@@ -23,12 +21,12 @@ export class UserService {
     }
 
     this.logger.debug('User found by ID', 'User', { userId: id });
-    return ResponseUtil.success(user, 'User retrieved successfully');
+    return user;
   }
 
-  async findByEmail(email: string): Promise<SuccessResponse<any>> {
+  async findByEmail(email: string): Promise<any> {
     this.logger.debug('Finding user by email', 'User', { email });
-    
+
     const user = await this.userRepository.findWithRoles(email);
 
     if (!user) {
@@ -37,37 +35,41 @@ export class UserService {
     }
 
     this.logger.debug('User found by email', 'User', { email });
-    return ResponseUtil.success(user, 'User retrieved successfully');
+    return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<SuccessResponse<any>> {
-    this.logger.log('Updating user', 'User', { userId: id, updates: updateUserDto });
-    
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<any> {
+    this.logger.log('Updating user', 'User', {
+      userId: id,
+      updates: updateUserDto,
+    });
+
     const user = await this.userRepository.update(id, updateUserDto);
 
     this.logger.log('User updated successfully', 'User', { userId: id });
-    return ResponseUtil.success(user, 'User updated successfully');
+    return user;
   }
 
-  async getUserRoles(id: string): Promise<SuccessResponse<any>> {
+  async getUserRoles(id: string): Promise<any> {
     this.logger.debug('Getting user roles', 'User', { userId: id });
-    
+
     const user = await this.userRepository.findWithRoles(id);
 
     if (!user) {
-      this.logger.warn('User not found when getting roles', 'User', { userId: id });
+      this.logger.warn('User not found when getting roles', 'User', {
+        userId: id,
+      });
       throw new NotFoundException('User not found');
     }
 
     const roles = user.roles.map((ur) => ur.role);
-    
-    this.logger.debug('User roles retrieved', 'User', { 
-      userId: id, 
+
+    this.logger.debug('User roles retrieved', 'User', {
+      userId: id,
       roleCount: roles.length,
-      roles: roles.map(r => r.name),
+      roles: roles.map((r) => r.name),
     });
-    
-    return ResponseUtil.success(roles, 'User roles retrieved successfully');
+
+    return roles;
   }
 }
- 
