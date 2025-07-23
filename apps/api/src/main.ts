@@ -3,7 +3,10 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { AppConfigService } from './config/config.service';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { RequestLoggingInterceptor } from './common/interceptors/request-logging.interceptor';
+import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
+import { PerformanceInterceptor } from './common/interceptors/performance.interceptor';
+import { CachingInterceptor } from './common/interceptors/caching.interceptor';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { LoggerService } from './common/logger/logger.service';
 
@@ -25,8 +28,15 @@ async function bootstrap() {
     }),
   );
 
-  // Global interceptors and filters
-  app.useGlobalInterceptors(new LoggingInterceptor(loggerService));
+  // Global interceptors - order matters!
+  app.useGlobalInterceptors(
+    new RequestLoggingInterceptor(loggerService), // 1. Log incoming requests
+    new PerformanceInterceptor(loggerService), // 2. Monitor performance
+    new CachingInterceptor(loggerService), // 3. Handle caching
+    new ResponseTransformInterceptor(), // 4. Transform responses
+  );
+
+  // Global exception filter
   app.useGlobalFilters(new GlobalExceptionFilter(loggerService));
 
   // CORS configuration
@@ -68,13 +78,13 @@ async function bootstrap() {
 
   const port = configService.server.port;
   await app.listen(port);
-  
+
   loggerService.log(`Application started successfully`, 'Bootstrap', {
     port,
     environment: configService.server.nodeEnv,
     swaggerUrl: `http://localhost:${port}/api/docs`,
   });
-  
+
   return port;
 }
 
