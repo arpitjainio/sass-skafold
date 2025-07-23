@@ -15,7 +15,7 @@ import { LoggerModule } from '../common/logger/logger.module';
     PassportModule,
     LoggerModule,
     JwtModule.registerAsync({
-      useFactory: async (configService: AppConfigService) => ({
+      useFactory: (configService: AppConfigService) => ({
         secret: configService.jwt.secret,
         signOptions: { expiresIn: configService.jwt.expiresIn },
       }),
