@@ -1,0 +1,41 @@
+{
+  "name": "@repo/design-system",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./styles": "./dist/styles.css",
+    "./tokens": "./src/tokens.css",
+    "./atoms": "./src/atoms/index.ts"
+  },
+  "scripts": {
+    "build": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
+    "lint": "eslint src/",
+    "dev": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@repo/config-eslint": "workspace:*",
+    "@repo/config-typescript": "workspace:*",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@repo/utils": "workspace:*",
+    "class-variance-authority": "^0.7.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  }
+} 
