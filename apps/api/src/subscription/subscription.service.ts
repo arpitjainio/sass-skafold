@@ -175,15 +175,15 @@ export class SubscriptionService {
       });
 
       return subscription;
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error(
         'Failed to create subscription',
-        error.stack,
+        error instanceof Error ? error.stack : 'Unknown error',
         'Subscription',
         {
           userId,
           priceId,
-          error: error.message,
+          error: error instanceof Error ? error.message : 'Unknown error',
         },
       );
       throw new BadRequestException('Failed to create subscription');
@@ -247,15 +247,15 @@ export class SubscriptionService {
       });
 
       return updatedSubscription;
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error(
         'Failed to cancel subscription',
-        error.stack,
+        error instanceof Error ? error.stack : 'Unknown error',
         'Subscription',
         {
           userId,
           subscriptionId,
-          error: error.message,
+          error: error instanceof Error ? error.message : 'Unknown error',
         },
       );
       throw new BadRequestException('Failed to cancel subscription');
@@ -314,16 +314,16 @@ export class SubscriptionService {
       });
 
       return updatedSubscription;
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error(
         'Failed to update subscription',
-        error.stack,
+        error instanceof Error ? error.stack : 'Unknown error',
         'Subscription',
         {
           userId,
           subscriptionId,
           priceId,
-          error: error.message,
+          error: error instanceof Error ? error.message : 'Unknown error',
         },
       );
       throw new BadRequestException('Failed to update subscription');
@@ -351,14 +351,14 @@ export class SubscriptionService {
             type: event.type,
           });
       }
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error(
         'Webhook processing failed',
-        error.stack,
+        error instanceof Error ? error.stack : 'Unknown error',
         'Subscription',
         {
           eventType: event.type,
-          error: error.message,
+          error: error instanceof Error ? error.message : 'Unknown error',
         },
       );
       throw error;
@@ -453,14 +453,14 @@ export class SubscriptionService {
         userId,
       });
       return { url: session.url };
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error(
         'Failed to create billing portal session',
-        error.stack,
+        error instanceof Error ? error.stack : 'Unknown error',
         'Subscription',
         {
           userId,
-          error: error.message,
+          error: error instanceof Error ? error.message : 'Unknown error',
         },
       );
       throw new BadRequestException('Failed to create billing portal session');

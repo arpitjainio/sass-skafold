@@ -6,7 +6,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { RequestLoggingInterceptor } from './common/interceptors/request-logging.interceptor';
 import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
 import { PerformanceInterceptor } from './common/interceptors/performance.interceptor';
-import { CachingInterceptor } from './common/interceptors/caching.interceptor';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { LoggerService } from './common/logger/logger.service';
 
@@ -32,8 +31,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(
     new RequestLoggingInterceptor(loggerService), // 1. Log incoming requests
     new PerformanceInterceptor(loggerService), // 2. Monitor performance
-    new CachingInterceptor(loggerService), // 3. Handle caching
-    new ResponseTransformInterceptor(), // 4. Transform responses
+    new ResponseTransformInterceptor(), // 3. Transform responses
   );
 
   // Global exception filter

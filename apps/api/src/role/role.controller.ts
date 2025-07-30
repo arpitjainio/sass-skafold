@@ -17,11 +17,6 @@ import {
 } from '@nestjs/swagger';
 import { RoleService } from './role.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
-import {
-  ReadOnly,
-  WriteOperation,
-  SensitiveOperation,
-} from '../common/decorators/interceptors.decorator';
 
 @Controller('roles')
 @UseGuards(JwtAuthGuard)
@@ -31,7 +26,6 @@ export class RoleController {
   constructor(private roleService: RoleService) {}
 
   @Get()
-  @ReadOnly()
   @ApiOperation({ summary: 'Get all roles' })
   @ApiResponse({ status: 200, description: 'List of all roles' })
   async findAll() {
@@ -39,7 +33,6 @@ export class RoleController {
   }
 
   @Get(':id')
-  @ReadOnly()
   @ApiOperation({ summary: 'Get role by ID' })
   @ApiResponse({ status: 200, description: 'Role details' })
   @ApiResponse({ status: 404, description: 'Role not found' })
@@ -48,7 +41,6 @@ export class RoleController {
   }
 
   @Get('name/:name')
-  @ReadOnly()
   @ApiOperation({ summary: 'Get role by name' })
   @ApiResponse({ status: 200, description: 'Role details' })
   @ApiResponse({ status: 404, description: 'Role not found' })
@@ -57,7 +49,6 @@ export class RoleController {
   }
 
   @Post()
-  @SensitiveOperation()
   @ApiOperation({ summary: 'Create new role' })
   @ApiBody({
     schema: {
@@ -75,7 +66,6 @@ export class RoleController {
   }
 
   @Post('assign')
-  @WriteOperation()
   @ApiOperation({ summary: 'Assign role to user' })
   @ApiBody({
     schema: {
@@ -93,7 +83,6 @@ export class RoleController {
   }
 
   @Delete('assign')
-  @WriteOperation()
   @ApiOperation({ summary: 'Remove role from user' })
   @ApiBody({
     schema: {
@@ -111,7 +100,6 @@ export class RoleController {
   }
 
   @Post('seed')
-  @SensitiveOperation()
   @ApiOperation({ summary: 'Seed default roles' })
   @ApiResponse({
     status: 200,
@@ -122,7 +110,6 @@ export class RoleController {
   }
 
   @Get('stats/user-count')
-  @ReadOnly()
   @ApiOperation({ summary: 'Get roles with user count' })
   @ApiResponse({ status: 200, description: 'Roles with user count statistics' })
   async getRolesWithUserCount() {

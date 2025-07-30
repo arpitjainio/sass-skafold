@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 // Base types
 export interface UserWithoutPassword {
   id: string;
@@ -56,7 +58,7 @@ export interface JwtPayload {
 }
 
 // Request types
-export interface AuthenticatedRequest {
+export interface AuthenticatedRequest extends Request {
   user: {
     userId: string;
     email: string;

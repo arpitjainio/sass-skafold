@@ -20,6 +20,8 @@ import {
   ApiResponse,
   ApiBody,
 } from '@nestjs/swagger';
+import Stripe from 'stripe';
+
 import { SubscriptionService } from './subscription.service';
 import {
   CreateSubscriptionDto,
@@ -28,11 +30,7 @@ import {
 } from './dto/create-subscription.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { LoggerService } from '../common/logger/logger.service';
-import {
-  ReadOnly,
-  WriteOperation,
-  SensitiveOperation,
-} from '../common/decorators/interceptors.decorator';
+import { AuthenticatedRequest } from 'src/common/types';
 
 @Controller('subscriptions')
 @UseGuards(JwtAuthGuard)
@@ -45,21 +43,19 @@ export class SubscriptionController {
   ) {}
 
   @Get()
-  @ReadOnly()
   @ApiOperation({ summary: 'Get user subscriptions' })
   @ApiResponse({ status: 200, description: 'User subscriptions' })
-  async getUserSubscriptions(@Request() req) {
+  async getUserSubscriptions(@Request() req: AuthenticatedRequest) {
     this.logger.logSubscription('Getting user subscriptions', req.user.userId);
     return this.subscriptionService.findByUserId(req.user.userId);
   }
 
   @Post()
-  @SensitiveOperation()
   @ApiOperation({ summary: 'Create new subscription' })
   @ApiBody({ type: CreateSubscriptionDto })
   @ApiResponse({ status: 201, description: 'Subscription created' })
   async createSubscription(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Body() createSubscriptionDto: CreateSubscriptionDto,
   ) {
     this.logger.logSubscription('Creating subscription', req.user.userId);
@@ -72,12 +68,11 @@ export class SubscriptionController {
   }
 
   @Put(':id')
-  @WriteOperation()
   @ApiOperation({ summary: 'Update subscription' })
   @ApiBody({ type: UpdateSubscriptionDto })
   @ApiResponse({ status: 200, description: 'Subscription updated' })
   async updateSubscription(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('id') subscriptionId: string,
     @Body() updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
@@ -94,12 +89,11 @@ export class SubscriptionController {
   }
 
   @Delete(':id')
-  @WriteOperation()
   @ApiOperation({ summary: 'Cancel subscription' })
   @ApiBody({ type: CancelSubscriptionDto })
   @ApiResponse({ status: 200, description: 'Subscription canceled' })
   async cancelSubscription(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Param('id') subscriptionId: string,
     @Body() cancelSubscriptionDto: CancelSubscriptionDto,
   ) {
@@ -116,11 +110,10 @@ export class SubscriptionController {
   }
 
   @Post('billing-portal')
-  @SensitiveOperation()
   @ApiOperation({ summary: 'Create billing portal session' })
   @ApiResponse({ status: 200, description: 'Billing portal session created' })
   async createBillingPortalSession(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Body() body: { returnUrl: string },
   ) {
     this.logger.logSubscription(
@@ -134,7 +127,6 @@ export class SubscriptionController {
   }
 
   @Post('webhook')
-  @SensitiveOperation()
   @ApiOperation({ summary: 'Stripe webhook endpoint' })
   @ApiResponse({ status: 200, description: 'Webhook processed' })
   async handleWebhook(
@@ -150,10 +142,17 @@ export class SubscriptionController {
         throw new BadRequestException('No webhook body received');
       }
 
-      const event = JSON.parse(request.rawBody.toString());
-      return this.subscriptionService.handleWebhook(event);
-    } catch (error) {
-      this.logger.error('Webhook processing failed', error.stack, 'Stripe');
+      const event: unknown = JSON.parse(request.rawBody.toString('utf-8'));
+      return this.subscriptionService.handleWebhook(event as Stripe.Event);
+    } catch (error: unknown) {
+      this.logger.error(
+        'Webhook processing failed',
+        error instanceof Error ? error.stack : 'Unknown error',
+        'Stripe',
+        {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
+      );
       throw error;
     }
   }

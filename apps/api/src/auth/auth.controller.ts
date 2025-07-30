@@ -19,10 +19,6 @@ import { RegisterDto } from './dto/register.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AuthResponseDto } from '../common/dto/api-response.dto';
-import {
-  SensitiveOperation,
-  WriteOperation,
-} from '../common/decorators/interceptors.decorator';
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -38,7 +34,6 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
-  @SensitiveOperation()
   @ApiOperation({ summary: 'User login' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({
@@ -58,7 +53,6 @@ export class AuthController {
   }
 
   @Post('register')
-  @WriteOperation()
   @ApiOperation({ summary: 'User registration' })
   @ApiBody({ type: RegisterDto })
   @ApiResponse({
@@ -77,7 +71,6 @@ export class AuthController {
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @SensitiveOperation()
   @ApiOperation({ summary: 'User logout' })
   @ApiResponse({
     status: 200,
