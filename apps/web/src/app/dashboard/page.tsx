@@ -80,7 +80,7 @@ export default function DashboardPage() {
       {/* Stats cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <Card key={stat.title} className="hover:shadow-lg transition-shadow">
+          <Card key={stat.title} className="hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -92,17 +92,17 @@ export default function DashboardPage() {
                   </p>
                 </div>
                 <div className={`p-3 rounded-lg ${stat.color}`}>
-                  <stat.icon className="w-6 h-6 text-white" />
+                  <stat.icon className="w-6 h-6 text-white" aria-hidden="true" />
                 </div>
               </div>
               <div className="flex items-center mt-4">
                 {stat.changeType === 'positive' ? (
-                  <ArrowUpRight className="w-4 h-4 text-green-500" />
+                  <ArrowUpRight className="w-4 h-4 text-green-500" aria-hidden="true" />
                 ) : (
-                  <ArrowDownRight className="w-4 h-4 text-red-500" />
+                  <ArrowDownRight className="w-4 h-4 text-red-500" aria-hidden="true" />
                 )}
                 <span className={`ml-1 text-sm font-medium ${
-                  stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                  stat.changeType === 'positive' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                 }`}>
                   {stat.change}
                 </span>
@@ -118,10 +118,10 @@ export default function DashboardPage() {
       {/* Charts and tables section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Users */}
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              Recent Users
+            <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
+              <span>Recent Users</span>
               <button className="text-sm text-primary-600 hover:text-primary-500 font-medium">
                 View all
               </button>
@@ -130,10 +130,10 @@ export default function DashboardPage() {
           <CardContent>
             <div className="space-y-4">
               {recentUsers.map((user) => (
-                <div key={user.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div key={user.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                      <Users className="w-5 h-5 text-gray-600" />
+                    <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                      <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">
@@ -163,10 +163,10 @@ export default function DashboardPage() {
         </Card>
 
         {/* Recent Transactions */}
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              Recent Transactions
+            <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
+              <span>Recent Transactions</span>
               <button className="text-sm text-primary-600 hover:text-primary-500 font-medium">
                 View all
               </button>
@@ -175,10 +175,10 @@ export default function DashboardPage() {
           <CardContent>
             <div className="space-y-4">
               {recentTransactions.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div key={transaction.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                      <CreditCard className="w-5 h-5 text-gray-600" />
+                    <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                      <CreditCard className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">
@@ -211,26 +211,26 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick actions */}
-      <Card>
+      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-white">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-              <Users className="w-5 h-5 text-gray-600 mr-2" />
+            <button className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <Users className="w-5 h-5 text-gray-600 dark:text-gray-400 mr-2" aria-hidden="true" />
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Add New User
               </span>
             </button>
-            <button className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-              <CreditCard className="w-5 h-5 text-gray-600 mr-2" />
+            <button className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <CreditCard className="w-5 h-5 text-gray-600 dark:text-gray-400 mr-2" aria-hidden="true" />
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Create Subscription
               </span>
             </button>
-            <button className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-              <Download className="w-5 h-5 text-gray-600 mr-2" />
+            <button className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <Download className="w-5 h-5 text-gray-600 dark:text-gray-400 mr-2" aria-hidden="true" />
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Export Data
               </span>

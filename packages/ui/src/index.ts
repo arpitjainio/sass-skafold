@@ -26,6 +26,10 @@ export { Checkbox, checkboxVariants } from "./components/forms/checkbox";
 // Layout Components
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, cardVariants } from "./components/card";
 
+// Data Components
+export { DataTable } from './components/data-table';
+export { StatsCard } from './components/stats-card';
+
 // Legacy exports for backward compatibility
 export { buttonVariants as buttonAtomVariants } from "./components/forms/button";
 
