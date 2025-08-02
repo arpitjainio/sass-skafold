@@ -105,12 +105,12 @@ export default function UsersPage() {
       </div>
 
       {/* Filters and search */}
-      <Card>
+      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" aria-hidden="true" />
               <Input
                 placeholder="Search users..."
                 value={searchTerm}
@@ -155,13 +155,13 @@ export default function UsersPage() {
       </Card>
 
       {/* Users table */}
-      <Card>
+      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
             <span>Users ({filteredUsers.length})</span>
             {selectedUsers.length > 0 && (
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   {selectedUsers.length} selected
                 </span>
                 <Button variant="outline" size="sm">
@@ -199,7 +199,7 @@ export default function UsersPage() {
               </thead>
               <tbody>
                 {filteredUsers.map((user) => (
-                  <tr key={user.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr key={user.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="py-3 px-4">
                       <input
                         type="checkbox"
@@ -210,8 +210,8 @@ export default function UsersPage() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                          <Users className="w-5 h-5 text-gray-600" />
+                        <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                          <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
@@ -241,14 +241,14 @@ export default function UsersPage() {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                          <Eye className="w-4 h-4" />
+                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="View user">
+                          <Eye className="w-4 h-4" aria-hidden="true" />
                         </button>
-                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                          <Edit className="w-4 h-4" />
+                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="Edit user">
+                          <Edit className="w-4 h-4" aria-hidden="true" />
                         </button>
-                        <button className="p-1 text-gray-400 hover:text-red-600">
-                          <MoreHorizontal className="w-4 h-4" />
+                        <button className="p-1 text-gray-400 hover:text-red-600" aria-label="More options">
+                          <MoreHorizontal className="w-4 h-4" aria-hidden="true" />
                         </button>
                       </div>
                     </td>

@@ -116,19 +116,19 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Overview */}
         <div className="lg:col-span-1">
-          <Card>
+          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardHeader>
-              <CardTitle>Profile Overview</CardTitle>
+              <CardTitle className="text-gray-900 dark:text-white">Profile Overview</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Avatar */}
               <div className="text-center">
                 <div className="relative inline-block">
-                  <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto">
-                    <User className="w-12 h-12 text-gray-600" />
+                  <div className="w-24 h-24 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto">
+                    <User className="w-12 h-12 text-gray-600 dark:text-gray-400" aria-hidden="true" />
                   </div>
                   <button className="absolute bottom-0 right-0 p-1 bg-primary-600 text-white rounded-full hover:bg-primary-700">
-                    <Camera className="w-4 h-4" />
+                    <Camera className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
                 <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
@@ -142,19 +142,19 @@ export default function ProfilePage() {
               {/* Account Info */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <Mail className="w-4 h-4 text-gray-400" />
+                  <Mail className="w-4 h-4 text-gray-400" aria-hidden="true" />
                   <span className="text-sm text-gray-600 dark:text-gray-400">
                     {userProfile.email}
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Calendar className="w-4 h-4 text-gray-400" />
+                  <Calendar className="w-4 h-4 text-gray-400" aria-hidden="true" />
                   <span className="text-sm text-gray-600 dark:text-gray-400">
                     Joined {userProfile.joinedDate}
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Shield className="w-4 h-4 text-gray-400" />
+                  <Shield className="w-4 h-4 text-gray-400" aria-hidden="true" />
                   <span className="text-sm text-gray-600 dark:text-gray-400">
                     Last login: {userProfile.lastLogin}
                   </span>
@@ -167,9 +167,9 @@ export default function ProfilePage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Personal Information */}
-          <Card>
+          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
+              <CardTitle className="text-gray-900 dark:text-white">Personal Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -227,9 +227,9 @@ export default function ProfilePage() {
           </Card>
 
           {/* Security Settings */}
-          <Card>
+          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardHeader>
-              <CardTitle>Security Settings</CardTitle>
+              <CardTitle className="text-gray-900 dark:text-white">Security Settings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -250,8 +250,9 @@ export default function ProfilePage() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                     >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showPassword ? <EyeOff className="w-4 h-4" aria-hidden="true" /> : <Eye className="w-4 h-4" aria-hidden="true" />}
                     </button>
                   </div>
                 </div>
@@ -286,9 +287,9 @@ export default function ProfilePage() {
           </Card>
 
           {/* Notification Preferences */}
-          <Card>
+          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardHeader>
-              <CardTitle>Notification Preferences</CardTitle>
+              <CardTitle className="text-gray-900 dark:text-white">Notification Preferences</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">

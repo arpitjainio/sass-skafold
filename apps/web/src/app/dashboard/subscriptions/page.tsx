@@ -154,15 +154,15 @@ export default function SubscriptionsPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'Active':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
+        return <CheckCircle className="w-4 h-4 text-green-500" aria-hidden="true" />;
       case 'Cancelled':
-        return <XCircle className="w-4 h-4 text-gray-500" />;
+        return <XCircle className="w-4 h-4 text-gray-500" aria-hidden="true" />;
       case 'Past Due':
-        return <Clock className="w-4 h-4 text-red-500" />;
+        return <Clock className="w-4 h-4 text-red-500" aria-hidden="true" />;
       case 'Suspended':
-        return <Clock className="w-4 h-4 text-yellow-500" />;
+        return <Clock className="w-4 h-4 text-yellow-500" aria-hidden="true" />;
       default:
-        return <Clock className="w-4 h-4 text-gray-500" />;
+        return <Clock className="w-4 h-4 text-gray-500" aria-hidden="true" />;
     }
   };
 
@@ -194,7 +194,7 @@ export default function SubscriptionsPage() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -205,14 +205,14 @@ export default function SubscriptionsPage() {
                   ${totalRevenue.toFixed(2)}
                 </p>
               </div>
-              <div className="p-3 bg-green-100 rounded-lg">
-                <DollarSign className="w-6 h-6 text-green-600" />
+              <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" aria-hidden="true" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -223,14 +223,14 @@ export default function SubscriptionsPage() {
                   {activeSubscriptions}
                 </p>
               </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-blue-600" />
+              <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                <CheckCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" aria-hidden="true" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -241,8 +241,8 @@ export default function SubscriptionsPage() {
                   {cancelledSubscriptions}
                 </p>
               </div>
-              <div className="p-3 bg-red-100 rounded-lg">
-                <XCircle className="w-6 h-6 text-red-600" />
+              <div className="p-3 bg-red-100 dark:bg-red-900 rounded-lg">
+                <XCircle className="w-6 h-6 text-red-600 dark:text-red-400" aria-hidden="true" />
               </div>
             </div>
           </CardContent>
@@ -250,12 +250,12 @@ export default function SubscriptionsPage() {
       </div>
 
       {/* Filters and search */}
-      <Card>
+      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" aria-hidden="true" />
               <Input
                 placeholder="Search subscriptions..."
                 value={searchTerm}
@@ -300,13 +300,13 @@ export default function SubscriptionsPage() {
       </Card>
 
       {/* Subscriptions table */}
-      <Card>
+      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
             <span>Subscriptions ({filteredSubscriptions.length})</span>
             {selectedSubscriptions.length > 0 && (
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   {selectedSubscriptions.length} selected
                 </span>
                 <Button variant="outline" size="sm">
@@ -345,7 +345,7 @@ export default function SubscriptionsPage() {
               </thead>
               <tbody>
                 {filteredSubscriptions.map((subscription) => (
-                  <tr key={subscription.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr key={subscription.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="py-3 px-4">
                       <input
                         type="checkbox"
@@ -356,8 +356,8 @@ export default function SubscriptionsPage() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                          <CreditCard className="w-5 h-5 text-gray-600" />
+                        <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                          <CreditCard className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
@@ -395,14 +395,14 @@ export default function SubscriptionsPage() {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                          <Eye className="w-4 h-4" />
+                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="View subscription">
+                          <Eye className="w-4 h-4" aria-hidden="true" />
                         </button>
-                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                          <Edit className="w-4 h-4" />
+                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="Edit subscription">
+                          <Edit className="w-4 h-4" aria-hidden="true" />
                         </button>
-                        <button className="p-1 text-gray-400 hover:text-red-600">
-                          <MoreHorizontal className="w-4 h-4" />
+                        <button className="p-1 text-gray-400 hover:text-red-600" aria-label="More options">
+                          <MoreHorizontal className="w-4 h-4" aria-hidden="true" />
                         </button>
                       </div>
                     </td>

@@ -75,7 +75,7 @@ export default function AnalyticsPage() {
       {/* Metrics cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric) => (
-          <Card key={metric.title} className="hover:shadow-lg transition-shadow">
+          <Card key={metric.title} className="hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -87,17 +87,17 @@ export default function AnalyticsPage() {
                   </p>
                 </div>
                 <div className={`p-3 rounded-lg ${metric.color}`}>
-                  <metric.icon className="w-6 h-6 text-white" />
+                  <metric.icon className="w-6 h-6 text-white" aria-hidden="true" />
                 </div>
               </div>
               <div className="flex items-center mt-4">
                 {metric.changeType === 'positive' ? (
-                  <TrendingUp className="w-4 h-4 text-green-500" />
+                  <TrendingUp className="w-4 h-4 text-green-500" aria-hidden="true" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 text-red-500" />
+                  <TrendingDown className="w-4 h-4 text-red-500" aria-hidden="true" />
                 )}
                 <span className={`ml-1 text-sm font-medium ${
-                  metric.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                  metric.changeType === 'positive' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                 }`}>
                   {metric.change}
                 </span>
@@ -113,9 +113,9 @@ export default function AnalyticsPage() {
       {/* Charts section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue Chart */}
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardHeader>
-            <CardTitle>Revenue Overview</CardTitle>
+            <CardTitle className="text-gray-900 dark:text-white">Revenue Overview</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-64 flex items-end justify-between space-x-2">
@@ -140,9 +140,9 @@ export default function AnalyticsPage() {
         </Card>
 
         {/* Users Chart */}
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardHeader>
-            <CardTitle>User Growth</CardTitle>
+            <CardTitle className="text-gray-900 dark:text-white">User Growth</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-64 flex items-end justify-between space-x-2">
@@ -168,9 +168,9 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Recent Activity */}
-      <Card>
+      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
         <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-white">Recent Activity</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -181,17 +181,17 @@ export default function AnalyticsPage() {
               { action: 'Subscription cancelled', user: 'Alice Brown', time: '1 day ago', type: 'cancellation' },
               { action: 'New subscription', user: 'Charlie Wilson', time: '2 days ago', type: 'subscription' },
             ].map((activity, index) => (
-              <div key={index} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+              <div key={index} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  activity.type === 'subscription' ? 'bg-green-100 text-green-600' :
-                  activity.type === 'user' ? 'bg-blue-100 text-blue-600' :
-                  activity.type === 'payment' ? 'bg-purple-100 text-purple-600' :
-                  'bg-red-100 text-red-600'
+                  activity.type === 'subscription' ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400' :
+                  activity.type === 'user' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400' :
+                  activity.type === 'payment' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-400' :
+                  'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400'
                 }`}>
-                  {activity.type === 'subscription' && <CreditCard className="w-4 h-4" />}
-                  {activity.type === 'user' && <Users className="w-4 h-4" />}
-                  {activity.type === 'payment' && <DollarSign className="w-4 h-4" />}
-                  {activity.type === 'cancellation' && <Activity className="w-4 h-4" />}
+                  {activity.type === 'subscription' && <CreditCard className="w-4 h-4" aria-hidden="true" />}
+                  {activity.type === 'user' && <Users className="w-4 h-4" aria-hidden="true" />}
+                  {activity.type === 'payment' && <DollarSign className="w-4 h-4" aria-hidden="true" />}
+                  {activity.type === 'cancellation' && <Activity className="w-4 h-4" aria-hidden="true" />}
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-900 dark:text-white">
