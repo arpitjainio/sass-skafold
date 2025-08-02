@@ -137,7 +137,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "bg-blue-600 hover:bg-blue-700",
-        secondary: "bg-gray-600 hover:bg-gray-700",
+        accent: "bg-gray-600 hover:bg-gray-700",
       },
     },
   }

@@ -12,7 +12,7 @@ const switchVariants = cva(
         default: "data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
         success: "data-[state=checked]:bg-success data-[state=unchecked]:bg-input",
         warning: "data-[state=checked]:bg-warning data-[state=unchecked]:bg-input",
-        destructive: "data-[state=checked]:bg-destructive data-[state=unchecked]:bg-input",
+        danger: "data-[state=checked]:bg-danger data-[state=unchecked]:bg-input",
       },
       size: {
         sm: "h-5 w-9",

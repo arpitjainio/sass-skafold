@@ -9,7 +9,7 @@ const selectVariants = cva(
     variants: {
       variant: {
         default: "border-input focus-visible:border-ring",
-        error: "border-destructive focus-visible:ring-destructive",
+        error: "border-danger focus-visible:ring-danger",
         success: "border-success focus-visible:ring-success",
       },
       size: {
@@ -48,7 +48,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           {children}
         </select>
         {error && (
-          <p className="mt-1 text-xs text-destructive">{error}</p>
+          <p className="mt-1 text-xs text-danger">{error}</p>
         )}
       </div>
     );

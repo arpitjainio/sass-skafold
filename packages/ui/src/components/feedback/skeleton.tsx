@@ -10,8 +10,8 @@ const skeletonVariants = cva(
       variant: {
         default: "bg-muted",
         primary: "bg-primary/20",
-        secondary: "bg-secondary/20",
-        destructive: "bg-destructive/20",
+        accent: "bg-accent/20",
+        danger: "bg-danger/20",
         success: "bg-success/20",
         warning: "bg-warning/20",
         info: "bg-info/20",

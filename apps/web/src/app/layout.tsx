@@ -32,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${montserrat.variable} ${notoSans.variable} ${jetbrainsMono.variable}`}>
+      <body className={`${montserrat.variable} ${notoSans.variable} ${jetbrainsMono.variable} bg-foreground text-background`}>
         {children}
       </body>
     </html>

@@ -4,7 +4,7 @@
   --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
 
   --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
+  --button-accent-hover: #f2f2f2;
 
   display: grid;
   grid-template-rows: 20px 1fr 20px;
@@ -23,7 +23,7 @@
     --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
 
     --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
+    --button-accent-hover: #1a1a1a;
   }
 }
 
@@ -87,7 +87,7 @@ a.primary {
   gap: 8px;
 }
 
-a.secondary {
+a.accent {
   border-color: var(--gray-alpha-200);
   min-width: 158px;
 }
@@ -115,8 +115,8 @@ a.secondary {
     border-color: transparent;
   }
 
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
+  a.accent:hover {
+    background: var(--button-accent-hover);
     border-color: transparent;
   }
 
@@ -150,7 +150,7 @@ a.secondary {
     padding: 0 16px;
   }
 
-  a.secondary {
+  a.accent {
     min-width: auto;
   }
 

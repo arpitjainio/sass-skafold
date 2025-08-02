@@ -58,12 +58,12 @@ export default function Home() {
             href="https://turborepo.com/docs?utm_source"
             target="_blank"
             rel="noopener noreferrer"
-            className={styles.secondary}
+            className={styles.accent}
           >
             Read our docs
           </a>
         </div>
-        <Button appName="docs" className={styles.secondary}>
+        <Button appName="docs" className={styles.accent}>
           Open alert
         </Button>
       </main>

@@ -10,8 +10,8 @@ const avatarVariants = cva(
       variant: {
         default: "bg-muted",
         primary: "bg-primary",
-        secondary: "bg-secondary",
-        destructive: "bg-destructive",
+        accent: "bg-accent",
+        danger: "bg-danger",
         success: "bg-success",
         warning: "bg-warning",
         info: "bg-info",

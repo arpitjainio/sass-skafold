@@ -6,11 +6,8 @@ export interface BaseComponentProps {
 }
 
 export interface ButtonProps extends BaseComponentProps {
-  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
-  size?: "default" | "sm" | "lg" | "icon";
   disabled?: boolean;
   loading?: boolean;
-  onClick?: () => void;
 }
 
 export interface CardProps extends BaseComponentProps {

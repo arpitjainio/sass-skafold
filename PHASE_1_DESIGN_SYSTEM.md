@@ -54,7 +54,7 @@ primary: {
 }
 
 // Secondary Colors (Purple)
-secondary: {
+accent: {
   50: "#faf5ff",
   500: "#a855f7",
   900: "#3b0764",
@@ -68,10 +68,10 @@ info: "#3b82f6"     // Blue
 ```
 
 #### **Semantic Color Mapping**
-- **Text Colors**: Primary, secondary, tertiary, inverse, disabled
-- **Background Colors**: Primary, secondary, tertiary, inverse, overlay
-- **Border Colors**: Primary, secondary, focus, error, success
-- **Interactive Colors**: Primary/secondary with default, hover, active, disabled states
+- **Text Colors**: Primary, accent, tertiary, inverse, disabled
+- **Background Colors**: Primary, accent, tertiary, inverse, overlay
+- **Border Colors**: Primary, accent, focus, error, success
+- **Interactive Colors**: Primary/accent with default, hover, active, disabled states
 
 #### **Theme Support**
 - **Light Theme**: Default theme with light backgrounds

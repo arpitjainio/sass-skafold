@@ -14,7 +14,6 @@ export { Alert, alertVariants } from "./components/feedback/alert";
 export { Icon, iconVariants } from "./components/feedback/icon";
 export { Skeleton, skeletonVariants } from "./components/feedback/skeleton";
 export { Avatar, AvatarImage, AvatarFallback } from "./components/feedback/avatar";
-export { Divider, dividerVariants } from "./components/layout/divider";
 
 // Form Components
 export { Button, buttonVariants } from "./components/forms/button";
@@ -25,7 +24,7 @@ export { Switch, switchVariants } from "./components/forms/switch";
 export { Checkbox, checkboxVariants } from "./components/forms/checkbox";
 
 // Layout Components
-export { Card, cardVariants } from "./components/layout/card";
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, cardVariants } from "./components/card";
 
 // Legacy exports for backward compatibility
 export { buttonVariants as buttonAtomVariants } from "./components/forms/button";

@@ -72,7 +72,7 @@ export interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof cardVariants>,
     BaseCardProps {}
-
+  
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant, padding, ...props }, ref) => (
     <div
@@ -147,4 +147,4 @@ const CardFooter = React.forwardRef<
 ));
 CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }; 
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, cardVariants }; 

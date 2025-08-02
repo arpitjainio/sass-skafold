@@ -13,7 +13,7 @@ const checkboxVariants = cva(
         default: "data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
         success: "data-[state=checked]:bg-success data-[state=checked]:text-success-foreground",
         warning: "data-[state=checked]:bg-warning data-[state=checked]:text-warning-foreground",
-        destructive: "data-[state=checked]:bg-destructive data-[state=checked]:text-destructive-foreground",
+        danger: "data-[state=checked]:bg-danger data-[state=checked]:text-danger-foreground",
       },
       size: {
         sm: "h-3 w-3",
