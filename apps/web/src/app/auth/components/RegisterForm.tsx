@@ -1,60 +1,42 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { Button, Input } from '@repo/ui';
+import { Button, Input, Checkbox } from '@repo/ui';
 import { PasswordStrengthIndicator } from './PasswordStrengthIndicator';
 import { SocialLoginButtons } from './SocialLoginButtons';
 
 interface RegisterFormProps {
-  onSubmit?: (data: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
+  onSubmit?: (data: { 
+    name: string; 
+    email: string; 
+    password: string; 
     confirmPassword: string;
-    acceptTerms: boolean;
-  }) => Promise<void>;
-  isLoading?: boolean;
+    agreeToTerms: boolean;
+  }) => void;
 }
 
-export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps) {
+export default function RegisterForm({ onSubmit }: RegisterFormProps) {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    acceptTerms: false,
+    agreeToTerms: false
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
-    setFormData(prev => ({ ...prev, [name]: newValue }));
-    
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+    const newErrors: { [key: string]: string } = {};
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
     }
 
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = 'Please enter a valid email address';
     }
 
     if (!formData.password) {
@@ -69,8 +51,8 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
-    if (!formData.acceptTerms) {
-      newErrors.acceptTerms = 'You must accept the terms and conditions';
+    if (!formData.agreeToTerms) {
+      newErrors.agreeToTerms = 'You must agree to the terms and conditions';
     }
 
     setErrors(newErrors);
@@ -82,178 +64,200 @@ export function RegisterForm({ onSubmit, isLoading = false }: RegisterFormProps)
     
     if (!validateForm()) return;
 
-    if (onSubmit) {
-      await onSubmit(formData);
+    setIsLoading(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      onSubmit?.(formData);
+    } catch (error) {
+      console.error('Registration error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleGoogleSignup = () => {
-    console.log('Google signup');
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
-  const handleGitHubSignup = () => {
-    console.log('GitHub signup');
+  const handleCheckboxChange = (checked: boolean) => {
+    setFormData(prev => ({ ...prev, agreeToTerms: checked }));
+    
+    // Clear error when user checks the box
+    if (errors.agreeToTerms) {
+      setErrors(prev => ({ ...prev, agreeToTerms: '' }));
+    }
+  };
+
+  const getPasswordStrength = (password: string) => {
+    if (!password) return 0;
+    if (password.length < 6) return 1;
+    if (password.length < 8) return 2;
+    if (password.length < 10) return 3;
+    return 4;
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Name fields */}
-      <div className="grid grid-cols-2 gap-4">
+    <div className="w-full max-w-md mx-auto">
+      <form onSubmit={handleSubmit} noValidate className="space-y-6">
         <div>
-          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            First name
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Full Name
           </label>
           <Input
-            id="firstName"
-            name="firstName"
+            id="name"
+            name="name"
             type="text"
-            placeholder="Enter your first name"
-            value={formData.firstName}
+            value={formData.name}
             onChange={handleInputChange}
-            {...(errors.firstName && { error: errors.firstName })}
-            size="lg"
-            autoComplete="given-name"
-            required
+            placeholder="Enter your full name"
+            {...(errors.name && { error: errors.name })}
+            aria-describedby={errors.name ? "name-error" : undefined}
           />
+          {errors.name && (
+            <p id="name-error" className="mt-1 text-sm text-danger" role="alert">
+              {errors.name}
+            </p>
+          )}
         </div>
+
         <div>
-          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Last name
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Email Address
           </label>
           <Input
-            id="lastName"
-            name="lastName"
-            type="text"
-            placeholder="Enter your last name"
-            value={formData.lastName}
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
             onChange={handleInputChange}
-            {...(errors.lastName && { error: errors.lastName })}
-            size="lg"
-            autoComplete="family-name"
-            required
+            placeholder="Enter your email"
+            {...(errors.email && { error: errors.email })}
+            aria-describedby={errors.email ? "email-error" : undefined}
           />
+          {errors.email && (
+            <p id="email-error" className="mt-1 text-sm text-danger" role="alert">
+              {errors.email}
+            </p>
+          )}
         </div>
-      </div>
 
-      {/* Email field */}
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Email address
-        </label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="Enter your email"
-          value={formData.email}
-          onChange={handleInputChange}
-          {...(errors.email && { error: errors.email })}
-          size="lg"
-          autoComplete="email"
-          required
-        />
-      </div>
-
-      {/* Password field */}
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Password
-        </label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          placeholder="Create a strong password"
-          value={formData.password}
-          onChange={handleInputChange}
-          {...(errors.password && { error: errors.password })}
-          size="lg"
-          autoComplete="new-password"
-          required
-        />
-        <PasswordStrengthIndicator password={formData.password} />
-      </div>
-
-      {/* Confirm Password field */}
-      <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Confirm password
-        </label>
-        <Input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          placeholder="Confirm your password"
-          value={formData.confirmPassword}
-          onChange={handleInputChange}
-          {...(errors.confirmPassword && { error: errors.confirmPassword })}
-          size="lg"
-          autoComplete="new-password"
-          required
-        />
-      </div>
-
-      {/* Terms and conditions */}
-      <div>
-        <label className="flex items-start space-x-3">
-          <input
-            type="checkbox"
-            name="acceptTerms"
-            checked={formData.acceptTerms}
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Password
+          </label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            value={formData.password}
             onChange={handleInputChange}
-            className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded mt-0.5"
+            placeholder="Create a password"
+            {...(errors.password && { error: errors.password })}
+            aria-describedby={errors.password ? "password-error" : undefined}
           />
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            I agree to the{' '}
-            <Link href="/terms" className="text-primary-600 hover:text-primary-500 font-medium">
-              Terms of Service
-            </Link>{' '}
-            and{' '}
-            <Link href="/privacy" className="text-primary-600 hover:text-primary-500 font-medium">
-              Privacy Policy
-            </Link>
+          {formData.password && (
+            <PasswordStrengthIndicator strength={getPasswordStrength(formData.password)} />
+          )}
+          {errors.password && (
+            <p id="password-error" className="mt-1 text-sm text-danger" role="alert">
+              {errors.password}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Confirm Password
+          </label>
+          <Input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            value={formData.confirmPassword}
+            onChange={handleInputChange}
+            placeholder="Confirm your password"
+            {...(errors.confirmPassword && { error: errors.confirmPassword })}
+            aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
+          />
+          {errors.confirmPassword && (
+            <p id="confirm-password-error" className="mt-1 text-sm text-danger" role="alert">
+              {errors.confirmPassword}
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="agree-terms"
+            checked={formData.agreeToTerms}
+            onCheckedChange={handleCheckboxChange}
+          />
+          <div className="flex-1">
+            <label htmlFor="agree-terms" className="text-sm text-gray-600 dark:text-gray-400">
+              I agree to the{' '}
+              <a 
+                href="/terms" 
+                className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+              >
+                Terms of Service
+              </a>
+              {' '}and{' '}
+              <a 
+                href="/privacy" 
+                className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+              >
+                Privacy Policy
+              </a>
+            </label>
+            {errors.agreeToTerms && (
+              <p className="mt-1 text-sm text-danger" role="alert">
+                {errors.agreeToTerms}
+              </p>
+            )}
           </div>
-        </label>
-        {errors.acceptTerms && (
-          <p className="mt-1 text-xs text-danger">{errors.acceptTerms}</p>
-        )}
-      </div>
+        </div>
 
-      {/* Submit button */}
-      <Button
-        type="submit"
-        size="lg"
-        className="w-full"
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            <span>Creating account...</span>
+        <Button 
+          type="submit" 
+          className="w-full" 
+          loading={isLoading}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Creating account...' : 'Create Account'}
+        </Button>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300 dark:border-gray-600" />
           </div>
-        ) : (
-          'Create account'
-        )}
-      </Button>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+              Or continue with
+            </span>
+          </div>
+        </div>
 
-      {/* Social login buttons */}
-      <SocialLoginButtons 
-        onGoogleClick={handleGoogleSignup}
-        onGitHubClick={handleGitHubSignup}
-      />
+        <SocialLoginButtons />
 
-      {/* Sign in link */}
-      <div className="text-center">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
           Already have an account?{' '}
-          <Link
-            href="/auth/login"
-            className="font-medium text-primary-600 hover:text-primary-500"
+          <a 
+            href="/auth/login" 
+            className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
           >
             Sign in
-          </Link>
+          </a>
         </p>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 } 

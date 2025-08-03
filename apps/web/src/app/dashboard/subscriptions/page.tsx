@@ -17,7 +17,7 @@ import {
   DollarSign,
   Calendar
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Input } from '@repo/ui';
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Select, Checkbox } from '@repo/ui';
 
 // Mock subscription data
 const subscriptions = [
@@ -265,30 +265,28 @@ export default function SubscriptionsPage() {
             </div>
 
             {/* Plan filter */}
-            <select
+            <Select
               value={selectedPlan}
               onChange={(e) => setSelectedPlan(e.target.value)}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               {plans.map(plan => (
                 <option key={plan} value={plan}>
                   {plan === 'All' ? 'All Plans' : plan}
                 </option>
               ))}
-            </select>
+            </Select>
 
             {/* Status filter */}
-            <select
+            <Select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               {statuses.map(status => (
                 <option key={status} value={status}>
                   {status === 'All' ? 'All Statuses' : status}
                 </option>
               ))}
-            </select>
+            </Select>
 
             {/* Export button */}
             <Button variant="outline" className="flex items-center space-x-2">
@@ -327,11 +325,9 @@ export default function SubscriptionsPage() {
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th className="text-left py-3 px-4">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={selectedSubscriptions.length === filteredSubscriptions.length && filteredSubscriptions.length > 0}
-                      onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      onCheckedChange={handleSelectAll}
                     />
                   </th>
                   <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Customer</th>
@@ -347,11 +343,9 @@ export default function SubscriptionsPage() {
                 {filteredSubscriptions.map((subscription) => (
                   <tr key={subscription.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="py-3 px-4">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={selectedSubscriptions.includes(subscription.id)}
-                        onChange={() => handleSelectSubscription(subscription.id)}
-                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        onCheckedChange={() => handleSelectSubscription(subscription.id)}
                       />
                     </td>
                     <td className="py-3 px-4">
