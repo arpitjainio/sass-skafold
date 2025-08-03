@@ -21,7 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SaaS Admin Dashboard",
+  title: "SaaS Skaffold Admin Dashboard",
   description: "Modern admin dashboard for SaaS applications",
 };
 

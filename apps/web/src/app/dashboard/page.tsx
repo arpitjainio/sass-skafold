@@ -8,7 +8,6 @@ import {
   Activity,
   ArrowUpRight,
   ArrowDownRight,
-  Eye,
   Download
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui';
@@ -78,7 +77,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
           <Card key={stat.title} className="hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardContent className="p-6">
@@ -116,7 +115,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts and tables section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Users */}
         <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardHeader>
@@ -216,7 +215,7 @@ export default function DashboardPage() {
           <CardTitle className="text-gray-900 dark:text-white">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid   md:grid-cols-3 gap-4">
             <button className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
               <Users className="w-5 h-5 text-gray-600 dark:text-gray-400 mr-2" aria-hidden="true" />
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">

@@ -113,7 +113,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-3 gap-6">
         {/* Profile Overview */}
         <div className="lg:col-span-1">
           <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
