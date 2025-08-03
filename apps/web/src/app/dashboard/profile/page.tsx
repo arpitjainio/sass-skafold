@@ -16,7 +16,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Input } from '@repo/ui';
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Switch } from '@repo/ui';
 
 // Mock user data
 const userProfile = {
@@ -302,15 +302,10 @@ export default function ProfilePage() {
                       Receive notifications via email
                     </p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notifications.email}
-                      onChange={() => handleNotificationChange('email')}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-                  </label>
+                  <Switch
+                    checked={notifications.email}
+                    onCheckedChange={() => handleNotificationChange('email')}
+                  />
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -322,15 +317,10 @@ export default function ProfilePage() {
                       Receive push notifications in browser
                     </p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notifications.push}
-                      onChange={() => handleNotificationChange('push')}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-                  </label>
+                  <Switch
+                    checked={notifications.push}
+                    onCheckedChange={() => handleNotificationChange('push')}
+                  />
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -342,15 +332,10 @@ export default function ProfilePage() {
                       Receive notifications via SMS
                     </p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notifications.sms}
-                      onChange={() => handleNotificationChange('sms')}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-                  </label>
+                  <Switch
+                    checked={notifications.sms}
+                    onCheckedChange={() => handleNotificationChange('sms')}
+                  />
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -362,15 +347,10 @@ export default function ProfilePage() {
                       Receive marketing and promotional emails
                     </p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notifications.marketing}
-                      onChange={() => handleNotificationChange('marketing')}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-                  </label>
+                  <Switch
+                    checked={notifications.marketing}
+                    onCheckedChange={() => handleNotificationChange('marketing')}
+                  />
                 </div>
               </div>
             </CardContent>

@@ -12,7 +12,7 @@ import {
   Plus,
   Download
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Input } from '@repo/ui';
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Checkbox, Select } from '@repo/ui';
 
 // Mock user data
 const users = [
@@ -120,30 +120,28 @@ export default function UsersPage() {
             </div>
 
             {/* Role filter */}
-            <select
+            <Select
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value)}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               {roles.map(role => (
                 <option key={role} value={role}>
                   {role === 'All' ? 'All Roles' : role}
                 </option>
               ))}
-            </select>
+            </Select>
 
             {/* Status filter */}
-            <select
+            <Select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               {statuses.map(status => (
                 <option key={status} value={status}>
                   {status === 'All' ? 'All Statuses' : status}
                 </option>
               ))}
-            </select>
+            </Select>
 
             {/* Export button */}
             <Button variant="outline" className="flex items-center space-x-2">
@@ -182,11 +180,9 @@ export default function UsersPage() {
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th className="text-left py-3 px-4">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
-                      onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      onCheckedChange={handleSelectAll}
                     />
                   </th>
                   <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">User</th>
@@ -201,11 +197,9 @@ export default function UsersPage() {
                 {filteredUsers.map((user) => (
                   <tr key={user.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="py-3 px-4">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={selectedUsers.includes(user.id)}
-                        onChange={() => handleSelectUser(user.id)}
-                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        onCheckedChange={() => handleSelectUser(user.id)}
                       />
                     </td>
                     <td className="py-3 px-4">
