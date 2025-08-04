@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Montserrat, Noto_Sans, JetBrains_Mono } from "next/font/google";
+import { Poppins, Noto_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const montserrat = Montserrat({
+const poppins = Poppins({
   variable: "--font-heading",
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 const notoSans = Noto_Sans({
@@ -31,8 +32,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${montserrat.variable} ${notoSans.variable} ${jetbrainsMono.variable} bg-foreground text-background`}>
+    <html lang="en">
+      <body className={`${poppins.variable} ${notoSans.variable} ${jetbrainsMono.variable} bg-primary-50 dark:bg-primary-900 text-primary-900 dark:text-primary-50`}>
         {children}
       </body>
     </html>

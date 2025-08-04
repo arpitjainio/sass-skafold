@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { 
   Users, 
   Search, 
-  Filter, 
   MoreHorizontal,
   Edit,
   Trash2,
@@ -12,7 +11,7 @@ import {
   Plus,
   Download
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Checkbox, Select } from '@repo/ui';
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Checkbox, Select, Heading } from '@repo/ui';
 
 // Mock user data
 const users = [
@@ -91,10 +90,10 @@ export default function UsersPage() {
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <Heading level="h3">
             Users
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          </Heading>
+          <p className="text-neutral-600 dark:text-neutral-200">
             Manage your users and their permissions.
           </p>
         </div>
@@ -105,12 +104,12 @@ export default function UsersPage() {
       </div>
 
       {/* Filters and search */}
-      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+      <Card>
         <CardContent className="p-6">
           <div className="grid md:grid-cols-4 gap-4">
             {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" aria-hidden="true" />
+            <div className="relative text-primary-950 dark:text-neutral-200">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" aria-hidden="true" />
               <Input
                 placeholder="Search users..."
                 value={searchTerm}
@@ -153,9 +152,9 @@ export default function UsersPage() {
       </Card>
 
       {/* Users table */}
-      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+      <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
+          <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white leading-[32px]">
             <span>Users ({filteredUsers.length})</span>
             {selectedUsers.length > 0 && (
               <div className="flex items-center space-x-2">

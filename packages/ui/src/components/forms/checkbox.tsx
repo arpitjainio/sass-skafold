@@ -10,10 +10,10 @@ const checkboxVariants = cva(
   {
     variants: {
       variant: {
-        default: "data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
-        success: "data-[state=checked]:bg-success data-[state=checked]:text-success-foreground",
-        warning: "data-[state=checked]:bg-warning data-[state=checked]:text-warning-foreground",
-        danger: "data-[state=checked]:bg-danger data-[state=checked]:text-danger-foreground",
+        default: "data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary-900 dark:data-[state=checked]:text-primary-50",
+        success: "data-[state=checked]:bg-success data-[state=checked]:text-success-foreground dark:data-[state=checked]:bg-success-900 dark:data-[state=checked]:text-success-50",
+        warning: "data-[state=checked]:bg-warning data-[state=checked]:text-warning-foreground dark:data-[state=checked]:bg-warning-900 dark:data-[state=checked]:text-warning-50",
+        danger: "data-[state=checked]:bg-danger data-[state=checked]:text-danger-foreground dark:data-[state=checked]:bg-danger-900 dark:data-[state=checked]:text-danger-50",
       },
       size: {
         sm: "h-3 w-3",
@@ -63,17 +63,6 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           data-state={isChecked ? "checked" : "unchecked"}
           {...props}
         />
-        {isChecked && (
-          <svg
-            className="absolute left-0 top-0 h-full w-full text-current"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <polyline points="20,6 9,17 4,12" />
-          </svg>
-        )}
       </div>
     );
   }

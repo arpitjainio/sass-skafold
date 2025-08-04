@@ -5,14 +5,14 @@ import { cn } from "@repo/utils/cn";
 import { BaseComponentProps } from "../../types";
 
 const switchVariants = cva(
-  "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
+  "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-primary-900 dark:data-[state=unchecked]:bg-input",
   {
     variants: {
       variant: {
-        default: "data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
-        success: "data-[state=checked]:bg-success data-[state=unchecked]:bg-input",
-        warning: "data-[state=checked]:bg-warning data-[state=unchecked]:bg-input",
-        danger: "data-[state=checked]:bg-danger data-[state=unchecked]:bg-input",
+        default: "data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-primary-900 dark:data-[state=unchecked]:bg-input",
+        success: "data-[state=checked]:bg-success data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-success-900 dark:data-[state=unchecked]:bg-input",
+        warning: "data-[state=checked]:bg-warning data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-warning-900 dark:data-[state=unchecked]:bg-input",
+        danger: "data-[state=checked]:bg-danger data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-danger-900 dark:data-[state=unchecked]:bg-input",
       },
       size: {
         sm: "h-5 w-9",
@@ -28,7 +28,7 @@ const switchVariants = cva(
 );
 
 const switchThumbVariants = cva(
-  "pointer-events-none block rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0",
+  "pointer-events-none block rounded-full bg-background dark:bg-foreground shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0",
   {
     variants: {
       size: {

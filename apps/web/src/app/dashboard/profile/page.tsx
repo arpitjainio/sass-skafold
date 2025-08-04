@@ -4,19 +4,15 @@ import React, { useState } from 'react';
 import { 
   User, 
   Mail, 
-  Phone, 
-  MapPin, 
   Calendar,
   Shield,
-  Bell,
-  Key,
   Camera,
   Save,
   Edit,
   Eye,
-  EyeOff
+  EyeOff,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Switch } from '@repo/ui';
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Switch, Heading } from '@repo/ui';
 
 // Mock user data
 const userProfile = {
@@ -86,10 +82,10 @@ export default function ProfilePage() {
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <Heading level="h3">
             Profile Settings
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          </Heading>
+          <p className="text-neutral-600 dark:text-neutral-200">
             Manage your account settings and preferences.
           </p>
         </div>
@@ -116,7 +112,7 @@ export default function ProfilePage() {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Profile Overview */}
         <div className="lg:col-span-1">
-          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <Card>
             <CardHeader>
               <CardTitle className="text-gray-900 dark:text-white">Profile Overview</CardTitle>
             </CardHeader>
@@ -167,7 +163,7 @@ export default function ProfilePage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Personal Information */}
-          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <Card>
             <CardHeader>
               <CardTitle className="text-gray-900 dark:text-white">Personal Information</CardTitle>
             </CardHeader>
@@ -227,7 +223,7 @@ export default function ProfilePage() {
           </Card>
 
           {/* Security Settings */}
-          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <Card>
             <CardHeader>
               <CardTitle className="text-gray-900 dark:text-white">Security Settings</CardTitle>
             </CardHeader>
@@ -287,7 +283,7 @@ export default function ProfilePage() {
           </Card>
 
           {/* Notification Preferences */}
-          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <Card>
             <CardHeader>
               <CardTitle className="text-gray-900 dark:text-white">Notification Preferences</CardTitle>
             </CardHeader>

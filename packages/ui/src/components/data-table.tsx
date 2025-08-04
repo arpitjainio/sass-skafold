@@ -1,6 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, MoreHorizontal, Edit, Trash2, Eye } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Input } from './index';
+import { Search, MoreHorizontal, Edit, Trash2, Eye } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from './card';
+import { Button } from './forms/button';
+import { Input } from './forms/input';
+import { Select } from './forms/select';
 
 export interface DataTableColumn<T> {
   key: keyof T;
@@ -105,7 +108,7 @@ export function DataTable<T extends { id: string | number }>({
   };
 
   return (
-    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
           <span>{title} ({filteredData.length})</span>
@@ -147,18 +150,17 @@ export function DataTable<T extends { id: string | number }>({
 
             {/* Filters */}
             {filters.map((filter) => (
-              <select
+              <Select
                 key={filter.key}
                 value={selectedFilters[filter.key] || 'All'}
-                onChange={(e) => handleFilter(filter.key, e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                onChange={(value) => handleFilter(filter.key, value as unknown as string)}
               >
                 {filter.options.map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
                 ))}
-              </select>
+              </Select>
             ))}
           </div>
         </div>

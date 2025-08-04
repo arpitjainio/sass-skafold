@@ -6,11 +6,9 @@ import {
   CreditCard, 
   TrendingUp, 
   Activity,
-  ArrowUpRight,
-  ArrowDownRight,
   Download
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui';
+import { Card, CardContent, CardHeader, CardTitle, Heading, StatsCard } from '@repo/ui';
 
 // Mock data for demonstration
 const stats = [
@@ -68,10 +66,10 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <Heading level="h3">
           Dashboard
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        </Heading>
+        <p className="text-neutral-600 dark:text-neutral-200">
           Welcome back! Here's what's happening with your business today.
         </p>
       </div>
@@ -79,45 +77,14 @@ export default function DashboardPage() {
       {/* Stats cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <Card key={stat.title} className="hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    {stat.title}
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {stat.value}
-                  </p>
-                </div>
-                <div className={`p-3 rounded-lg ${stat.color}`}>
-                  <stat.icon className="w-6 h-6 text-white" aria-hidden="true" />
-                </div>
-              </div>
-              <div className="flex items-center mt-4">
-                {stat.changeType === 'positive' ? (
-                  <ArrowUpRight className="w-4 h-4 text-green-500" aria-hidden="true" />
-                ) : (
-                  <ArrowDownRight className="w-4 h-4 text-red-500" aria-hidden="true" />
-                )}
-                <span className={`ml-1 text-sm font-medium ${
-                  stat.changeType === 'positive' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                }`}>
-                  {stat.change}
-                </span>
-                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                  from last month
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+          <StatsCard key={stat.title} {...stat} changeType={stat.changeType as 'positive' | 'negative' | 'neutral'} />
         ))}
       </div>
 
       {/* Charts and tables section */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Users */}
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
               <span>Recent Users</span>
@@ -162,7 +129,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Recent Transactions */}
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
               <span>Recent Transactions</span>

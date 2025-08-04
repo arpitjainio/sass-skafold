@@ -6,16 +6,16 @@ import { SocialLoginButtons } from './SocialLoginButtons';
 
 interface LoginFormProps {
   onSubmit?: (data: { email: string; password: string; rememberMe: boolean }) => void;
+  isLoading?: boolean;
 }
 
-export default function LoginForm({ onSubmit }: LoginFormProps) {
+export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -41,18 +41,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
     
     if (!validateForm()) return;
 
-    setIsLoading(true);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      onSubmit?.(formData);
-    } catch (error) {
-      console.error('Login error:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    onSubmit?.(formData);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,8 +125,8 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
         <Button 
           type="submit" 
           className="w-full" 
-          loading={isLoading}
-          disabled={isLoading}
+          loading={isLoading ?? false}
+          disabled={isLoading ?? false}
         >
           {isLoading ? 'Signing in...' : 'Sign In'}
         </Button>

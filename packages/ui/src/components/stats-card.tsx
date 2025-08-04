@@ -1,6 +1,6 @@
 import React from 'react';
 import { LucideIcon, TrendingUp, TrendingDown } from 'lucide-react';
-import { Card, CardContent } from './index';
+import { Card, CardContent } from './card';
 
 export interface StatsCardProps {
   title: string;
@@ -42,18 +42,18 @@ export function StatsCard({
   };
 
   return (
-    <Card className={`hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 ${className}`}>
+    <Card>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+            <p className="text-sm font-medium text-primary-950 dark:text-primary-50">
               {title}
             </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl font-bold text-primary-950 dark:text-primary-50">
               {value}
             </p>
             {description && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-sm text-primary-950 dark:text-primary-50 mt-1">
                 {description}
               </p>
             )}
@@ -70,7 +70,7 @@ export function StatsCard({
               {change}
             </span>
             {changeType !== 'neutral' && (
-              <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+              <span className="ml-2 text-sm text-primary-950 dark:text-primary-50">
                 from last month
               </span>
             )}

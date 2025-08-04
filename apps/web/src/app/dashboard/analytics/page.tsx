@@ -7,11 +7,9 @@ import {
   Users,
   CreditCard,
   Activity,
-  BarChart3,
-  Calendar,
-  DollarSign
+  DollarSign,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui';
+import { Card, CardContent, CardHeader, CardTitle, Heading } from '@repo/ui';
 
 // Mock analytics data
 const metrics = [
@@ -64,10 +62,10 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <Heading level="h3">
           Analytics
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        </Heading>
+        <p className="text-neutral-600 dark:text-neutral-200">
           Track your business performance and growth metrics.
         </p>
       </div>
@@ -75,7 +73,7 @@ export default function AnalyticsPage() {
       {/* Metrics cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric) => (
-          <Card key={metric.title} className="hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <Card key={metric.title}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -113,7 +111,7 @@ export default function AnalyticsPage() {
       {/* Charts section */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Revenue Chart */}
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <Card>
           <CardHeader>
             <CardTitle className="text-gray-900 dark:text-white">Revenue Overview</CardTitle>
           </CardHeader>
@@ -140,7 +138,7 @@ export default function AnalyticsPage() {
         </Card>
 
         {/* Users Chart */}
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <Card>
           <CardHeader>
             <CardTitle className="text-gray-900 dark:text-white">User Growth</CardTitle>
           </CardHeader>
@@ -168,7 +166,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Recent Activity */}
-      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+      <Card>
         <CardHeader>
           <CardTitle className="text-gray-900 dark:text-white">Recent Activity</CardTitle>
         </CardHeader>

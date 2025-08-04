@@ -17,7 +17,7 @@ import {
   DollarSign,
   Calendar
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Select, Checkbox } from '@repo/ui';
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Select, Checkbox, Heading } from '@repo/ui';
 
 // Mock subscription data
 const subscriptions = [
@@ -179,10 +179,10 @@ export default function SubscriptionsPage() {
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <Heading level="h3">
             Subscriptions
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          </Heading>
+          <p className="text-neutral-600 dark:text-neutral-200">
             Manage your subscription plans and billing.
           </p>
         </div>
@@ -194,7 +194,7 @@ export default function SubscriptionsPage() {
 
       {/* Summary cards */}
       <div className="grid md:grid-cols-3 gap-6">
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -212,7 +212,7 @@ export default function SubscriptionsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -230,7 +230,7 @@ export default function SubscriptionsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -250,12 +250,12 @@ export default function SubscriptionsPage() {
       </div>
 
       {/* Filters and search */}
-      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+      <Card>
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" aria-hidden="true" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" aria-hidden="true" />
               <Input
                 placeholder="Search subscriptions..."
                 value={searchTerm}
@@ -298,9 +298,9 @@ export default function SubscriptionsPage() {
       </Card>
 
       {/* Subscriptions table */}
-      <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
+          <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white leading-[32px]">
             <span>Subscriptions ({filteredSubscriptions.length})</span>
             {selectedSubscriptions.length > 0 && (
               <div className="flex items-center space-x-2">

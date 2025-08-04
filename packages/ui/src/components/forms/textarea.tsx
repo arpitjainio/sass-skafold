@@ -4,13 +4,13 @@ import { cn } from "@repo/utils/cn";
 import { BaseComponentProps } from "../../types";
 
 const textareaVariants = cva(
-  "flex w-full rounded-md border bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors resize-none",
+  "flex w-full rounded-md border bg-background dark:bg-foreground text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors resize-none",
   {
     variants: {
       variant: {
-        default: "border-input focus-visible:border-ring",
-        error: "border-danger focus-visible:ring-danger",
-        success: "border-success focus-visible:ring-success",
+        default: "border-input focus-visible:border-ring dark:border-border dark:focus-visible:border-ring",
+        error: "border-danger focus-visible:ring-danger dark:border-danger dark:focus-visible:ring-danger",
+        success: "border-success focus-visible:ring-success dark:border-success dark:focus-visible:ring-success",
       },
       size: {
         sm: "px-3 py-2 text-xs min-h-[60px]",

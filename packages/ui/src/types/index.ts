@@ -11,8 +11,6 @@ export interface ButtonProps extends BaseComponentProps {
 }
 
 export interface CardProps extends BaseComponentProps {
-  variant?: "default" | "outlined" | "elevated";
-  padding?: "none" | "sm" | "md" | "lg";
 }
 
 export interface InputProps extends BaseComponentProps {

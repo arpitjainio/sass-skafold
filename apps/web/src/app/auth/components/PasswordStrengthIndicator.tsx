@@ -39,7 +39,7 @@ export function PasswordStrengthIndicator({ password, className = '' }: Password
               key={index}
               className={`h-1 w-8 rounded-full ${
                 index <= strength.score
-                  ? strength.color.replace('text-', 'bg-')
+                  ? strength.color?.replace('text-', 'bg-') ?? ''
                   : 'bg-gray-200 dark:bg-gray-700'
               }`}
             />

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { LoginForm } from '../components/LoginForm';
+import {LoginForm} from '../components/LoginForm';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,5 +24,5 @@ export default function LoginPage() {
     }
   };
 
-  return <LoginForm onSubmit={handleSubmit} isLoading={isLoading} />;
+  return <LoginForm onSubmit={handleSubmit} />;
 } 

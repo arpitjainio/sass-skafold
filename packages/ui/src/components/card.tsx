@@ -4,13 +4,13 @@ import { cn } from "@repo/utils/cn";
 import { CardProps as BaseCardProps } from "../types";
 
 const cardVariants = cva(
-  "rounded-lg border bg-card text-card-foreground shadow-sm",
+  "rounded-lg border bg-white text-card-foreground shadow-sm dark:bg-primary-950 dark:text-primary-50",
   {
     variants: {
       variant: {
-        default: "border-border",
-        outlined: "border-2 border-border",
-        elevated: "border-border shadow-lg",
+        default: "border-0 dark:border-border",
+        outlined: "border-2 border-border dark:border-border",
+        elevated: "border-border shadow-lg dark:border-border",
       },
       padding: {
         none: "",

@@ -8,14 +8,14 @@ const iconVariants = cva(
   {
     variants: {
       variant: {
-        default: "text-foreground",
-        primary: "text-primary",
-        accent: "text-accent-foreground",
-        danger: "text-danger",
-        success: "text-success",
-        warning: "text-warning",
-        info: "text-info",
-        muted: "text-muted-foreground",
+        default: "text-foreground dark:text-background",
+        primary: "text-primary dark:text-primary-50",
+        accent: "text-accent-foreground dark:text-accent-50",
+        danger: "text-danger dark:text-danger-50",
+        success: "text-success dark:text-success-50",
+        warning: "text-warning dark:text-warning-50",
+        info: "text-info dark:text-info-50",
+        muted: "text-muted-foreground dark:text-muted",
       },
       size: {
         xs: "w-3 h-3",

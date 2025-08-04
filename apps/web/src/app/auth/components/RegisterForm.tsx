@@ -13,9 +13,10 @@ interface RegisterFormProps {
     confirmPassword: string;
     agreeToTerms: boolean;
   }) => void;
+  isLoading?: boolean;
 }
 
-export default function RegisterForm({ onSubmit }: RegisterFormProps) {
+export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,7 +25,6 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
     agreeToTerms: false
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -63,19 +63,8 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
     e.preventDefault();
     
     if (!validateForm()) return;
-
-    setIsLoading(true);
     
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      onSubmit?.(formData);
-    } catch (error) {
-      console.error('Registration error:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    onSubmit?.(formData);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,14 +84,6 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
     if (errors.agreeToTerms) {
       setErrors(prev => ({ ...prev, agreeToTerms: '' }));
     }
-  };
-
-  const getPasswordStrength = (password: string) => {
-    if (!password) return 0;
-    if (password.length < 6) return 1;
-    if (password.length < 8) return 2;
-    if (password.length < 10) return 3;
-    return 4;
   };
 
   return (
@@ -165,7 +146,7 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
             aria-describedby={errors.password ? "password-error" : undefined}
           />
           {formData.password && (
-            <PasswordStrengthIndicator strength={getPasswordStrength(formData.password)} />
+            <PasswordStrengthIndicator password={formData.password} />
           )}
           {errors.password && (
             <p id="password-error" className="mt-1 text-sm text-danger" role="alert">
@@ -229,8 +210,8 @@ export default function RegisterForm({ onSubmit }: RegisterFormProps) {
         <Button 
           type="submit" 
           className="w-full" 
-          loading={isLoading}
-          disabled={isLoading}
+          loading={isLoading ?? false}
+          disabled={isLoading ?? false}
         >
           {isLoading ? 'Creating account...' : 'Create Account'}
         </Button>
