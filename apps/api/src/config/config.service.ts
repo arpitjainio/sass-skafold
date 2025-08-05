@@ -95,4 +95,12 @@ export class AppConfigService {
       );
     }
   }
+
+  get apiPrefix(): string {
+    return this.configService.get<string>('API_PREFIX', 'api');
+  }
+
+  get apiVersion(): string {
+    return this.configService.get<string>('API_VERSION', 'v1');
+  }
 }

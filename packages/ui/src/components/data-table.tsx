@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Button } from './forms/button';
 import { Input } from './forms/input';
 import { Select } from './forms/select';
+import { Checkbox } from './forms/checkbox';
 
 export interface DataTableColumn<T> {
   key: keyof T;
@@ -172,11 +173,9 @@ export function DataTable<T extends { id: string | number }>({
               <tr className="border-b border-gray-200 dark:border-gray-700">
                 {selectable && (
                   <th className="text-left py-3 px-4">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={selectedRows.length === filteredData.length && filteredData.length > 0}
-                      onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      onCheckedChange={handleSelectAll}
                     />
                   </th>
                 )}
@@ -210,11 +209,9 @@ export function DataTable<T extends { id: string | number }>({
                   <tr key={row.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                     {selectable && (
                       <td className="py-3 px-4">
-                        <input
-                          type="checkbox"
+                        <Checkbox
                           checked={selectedRows.includes(row.id)}
-                          onChange={() => handleSelectRow(row.id)}
-                          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                          onCheckedChange={() => handleSelectRow(row.id)}
                         />
                       </td>
                     )}

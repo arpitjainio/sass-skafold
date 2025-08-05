@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, Noto_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from '@/contexts/AuthContext';
 
 const poppins = Poppins({
   variable: "--font-heading",
@@ -23,18 +24,20 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "SaaS Skaffold Admin Dashboard",
-  description: "Modern admin dashboard for SaaS applications",
+  description: "A comprehensive admin dashboard for managing users, subscriptions, and analytics.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body className={`${poppins.variable} ${notoSans.variable} ${jetbrainsMono.variable} bg-primary-50 dark:bg-primary-900 text-primary-900 dark:text-primary-50`}>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

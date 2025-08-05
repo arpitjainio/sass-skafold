@@ -1,8 +1,9 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { AppConfigService } from './config/config.service';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+import { AppConfigService } from './config/config.service';
+import { AppModule } from './app.module';
 import { RequestLoggingInterceptor } from './common/interceptors/request-logging.interceptor';
 import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
 import { PerformanceInterceptor } from './common/interceptors/performance.interceptor';
@@ -36,6 +37,7 @@ async function bootstrap() {
 
   // Global exception filter
   app.useGlobalFilters(new GlobalExceptionFilter(loggerService));
+  app.setGlobalPrefix(`${configService.apiPrefix}/${configService.apiVersion}`);
 
   // CORS configuration
   app.enableCors({
@@ -68,11 +70,16 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
+  SwaggerModule.setup(
+    `${configService.apiPrefix}/${configService.apiVersion}/docs`,
+    app,
+    document,
+    {
+      swaggerOptions: {
+        persistAuthorization: true,
+      },
     },
-  });
+  );
 
   const port = configService.server.port;
   await app.listen(port);
@@ -80,16 +87,22 @@ async function bootstrap() {
   loggerService.log(`Application started successfully`, 'Bootstrap', {
     port,
     environment: configService.server.nodeEnv,
-    swaggerUrl: `http://localhost:${port}/api/docs`,
+    swaggerUrl: `http://localhost:${port}/${configService.apiPrefix}/${configService.apiVersion}/docs`,
   });
 
-  return port;
+  return {
+    port,
+    apiPrefix: configService.apiPrefix,
+    apiVersion: configService.apiVersion,
+  };
 }
 
 bootstrap()
-  .then((port) => {
+  .then(({ port, apiPrefix, apiVersion }) => {
     console.log(`🚀 Application is running on: http://localhost:${port}`);
-    console.log(`📚 Swagger documentation: http://localhost:${port}/api/docs`);
+    console.log(
+      `📚 Swagger documentation: http://localhost:${port}/${apiPrefix}/${apiVersion}/docs`,
+    );
   })
   .catch((error) => {
     console.error(`❌ Error starting the application: ${error}`);
