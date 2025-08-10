@@ -17,7 +17,7 @@ export function PasswordStrengthIndicator({ password, className = '' }: Password
     if (/[^A-Za-z0-9]/.test(password)) score++;
 
     const labels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
-    const colors = ['text-red-500', 'text-orange-500', 'text-yellow-500', 'text-blue-500', 'text-green-500'];
+    const colors = ['text-red-500', 'text-red-500', 'text-orange-500', 'text-blue-500', 'text-green-500'];
     
     return {
       score: Math.min(score, 4),

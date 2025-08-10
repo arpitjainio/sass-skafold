@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { BarChart3, LogOut, X, User } from "lucide-react";
+import { LogOut, X, User } from "lucide-react";
 import { SidebarProps } from "@/shared/types";
 import { cn } from "@repo/utils/cn";
 import { Button } from "@repo/ui";
 
-export function Sidebar({ sidebarOpen, setSidebarOpen, navigation, pathname }: SidebarProps) {
+export function Sidebar({ sidebarOpen, setSidebarOpen, navigation, pathname, onLogout }: SidebarProps) {
   return (
     <aside className={cn(
     "fixed inset-y-0 left-0 z-50 w-64 bg-primary-50 dark:bg-primary-950 shadow-lg transition-transform duration-300 ease-in-out",
@@ -77,6 +77,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen, navigation, pathname }: S
           variant="ghost"
           size="sm"
           aria-label="Sign out"
+          onClick={onLogout}
         >
           <LogOut className="w-4 h-4" aria-hidden="true" />
         </Button>

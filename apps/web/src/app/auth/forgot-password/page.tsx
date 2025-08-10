@@ -1,28 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { ForgotPasswordForm } from '../components/ForgotPasswordForm';
 
 export default function ForgotPasswordPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { forgotPassword, isLoading } = useAuth();
 
-  const handleSubmit = async (email: string) => {
-    setIsLoading(true);
-    
+  const handleForgotPassword = async (email: string) => {
     try {
-      // TODO: Implement actual password reset logic
-      console.log('Password reset request for:', email);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await forgotPassword(email);
     } catch (error) {
-      console.error('Password reset error:', error);
-      throw error; // Re-throw to let the form handle the error
-    } finally {
-      setIsLoading(false);
+      console.error('Forgot password error:', error);
+      // Error handling will be done in the AuthContext
     }
   };
 
-  return <ForgotPasswordForm onSubmit={handleSubmit} isLoading={isLoading} />;
+  return (
+    <ForgotPasswordForm 
+      onSubmit={handleForgotPassword}
+      isLoading={isLoading}
+    />
+  );
 } 

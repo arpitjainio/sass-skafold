@@ -1,35 +1,34 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { RegisterForm } from '../components/RegisterForm';
 
 export default function RegisterPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { register, isLoading } = useAuth();
 
-  const handleSubmit = async (data: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
+  const handleRegister = async (data: { 
+    name: string; 
+    email: string; 
+    password: string; 
     confirmPassword: string;
-    acceptTerms: boolean;
+    agreeToTerms: boolean;
   }) => {
-    setIsLoading(true);
-    
     try {
-      // TODO: Implement actual registration logic
-      console.log('Registration attempt:', data);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // TODO: Redirect to dashboard or email verification page
+      await register({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
     } catch (error) {
       console.error('Registration error:', error);
-    } finally {
-      setIsLoading(false);
+      // Error handling will be done in the AuthContext
     }
   };
 
-  return <RegisterForm onSubmit={handleSubmit} isLoading={isLoading} />;
+  return (
+    <RegisterForm 
+      onSubmit={handleRegister}
+      isLoading={isLoading}
+    />
+  );
 } 

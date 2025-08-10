@@ -27,7 +27,7 @@ export class AuthService {
   ): Promise<UserWithRoles | null> {
     this.logger.debug('Validating user credentials', 'Auth', { email });
 
-    const user = await this.userRepository.findWithRoles(email);
+    const user = await this.userRepository.findByEmail(email);
     if (!user || !user.password) {
       this.logger.debug(
         'User not found or has no password during validation',

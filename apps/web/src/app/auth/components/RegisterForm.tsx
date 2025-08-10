@@ -103,11 +103,6 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
             {...(errors.name && { error: errors.name })}
             aria-describedby={errors.name ? "name-error" : undefined}
           />
-          {errors.name && (
-            <p id="name-error" className="mt-1 text-sm text-danger" role="alert">
-              {errors.name}
-            </p>
-          )}
         </div>
 
         <div>
@@ -124,11 +119,6 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
             {...(errors.email && { error: errors.email })}
             aria-describedby={errors.email ? "email-error" : undefined}
           />
-          {errors.email && (
-            <p id="email-error" className="mt-1 text-sm text-danger" role="alert">
-              {errors.email}
-            </p>
-          )}
         </div>
 
         <div>
@@ -148,11 +138,6 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
           {formData.password && (
             <PasswordStrengthIndicator password={formData.password} />
           )}
-          {errors.password && (
-            <p id="password-error" className="mt-1 text-sm text-danger" role="alert">
-              {errors.password}
-            </p>
-          )}
         </div>
 
         <div>
@@ -169,42 +154,39 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
             {...(errors.confirmPassword && { error: errors.confirmPassword })}
             aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
           />
-          {errors.confirmPassword && (
-            <p id="confirm-password-error" className="mt-1 text-sm text-danger" role="alert">
-              {errors.confirmPassword}
-            </p>
-          )}
         </div>
 
-        <div className="flex items-start space-x-2">
-          <Checkbox
-            id="agree-terms"
-            checked={formData.agreeToTerms}
-            onCheckedChange={handleCheckboxChange}
-          />
-          <div className="flex-1">
-            <label htmlFor="agree-terms" className="text-sm text-gray-600 dark:text-gray-400">
-              I agree to the{' '}
-              <a 
-                href="/terms" 
-                className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
-              >
-                Terms of Service
-              </a>
-              {' '}and{' '}
-              <a 
-                href="/privacy" 
-                className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
-              >
-                Privacy Policy
-              </a>
-            </label>
-            {errors.agreeToTerms && (
-              <p className="mt-1 text-sm text-danger" role="alert">
-                {errors.agreeToTerms}
-              </p>
-            )}
+        <div className="flex flex-col">
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="agree-terms"
+              checked={formData.agreeToTerms}
+              onCheckedChange={handleCheckboxChange}
+            />
+            <div className="flex-1">
+              <label htmlFor="agree-terms" className="text-sm text-gray-600 dark:text-gray-400">
+                I agree to the{' '}
+                <a
+                  href="/terms"
+                  className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+                >
+                  Terms of Service
+                </a>
+                {' '}and{' '}
+                <a
+                  href="/privacy"
+                  className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+                >
+                  Privacy Policy
+                </a>
+              </label>
+            </div>
           </div>
+          {errors.agreeToTerms && (
+            <small className="mt-1 text-xs text-danger" role="alert">
+              {errors.agreeToTerms}
+            </small>
+          )}
         </div>
 
         <Button 

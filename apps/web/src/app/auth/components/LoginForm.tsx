@@ -75,11 +75,6 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
             {...(errors.email && { error: errors.email })}
             aria-describedby={errors.email ? "email-error" : undefined}
           />
-          {errors.email && (
-            <p id="email-error" className="mt-1 text-sm text-danger" role="alert">
-              {errors.email}
-            </p>
-          )}
         </div>
 
         <div>
@@ -96,11 +91,6 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
             {...(errors.password && { error: errors.password })}
             aria-describedby={errors.password ? "password-error" : undefined}
           />
-          {errors.password && (
-            <p id="password-error" className="mt-1 text-sm text-danger" role="alert">
-              {errors.password}
-            </p>
-          )}
         </div>
 
         <div className="flex items-center justify-between">

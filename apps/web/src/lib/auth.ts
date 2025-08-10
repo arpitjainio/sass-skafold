@@ -10,7 +10,6 @@ export interface RegisterRequest {
   name: string;
   email: string;
   password: string;
-  confirmPassword: string;
 }
 
 export interface AuthResponse {
@@ -25,19 +24,19 @@ export interface AuthResponse {
 
 export const authApi = {
   login: (data: LoginRequest) =>
-    apiClient.post<ApiResponse<AuthResponse>>("/auth/login", data),
+    apiClient.post<ApiResponse<AuthResponse>, LoginRequest>("/auth/login", data),
 
   register: (data: RegisterRequest) =>
-    apiClient.post<ApiResponse<AuthResponse>>("/auth/register", data),
+    apiClient.post<ApiResponse<AuthResponse>, RegisterRequest>("/auth/register", data),
 
   forgotPassword: (email: string) =>
-    apiClient.post<ApiResponse>("/auth/forgot-password", { email }),
+    apiClient.post<ApiResponse, { email: string }>("/auth/forgot-password", { email }),
 
   resetPassword: (token: string, password: string) =>
-    apiClient.post<ApiResponse>("/auth/reset-password", { token, password }),
+    apiClient.post<ApiResponse, { token: string; password: string }>("/auth/reset-password", { token, password }),
 
-  logout: () => apiClient.post<ApiResponse>("/auth/logout"),
+  logout: () => apiClient.post<ApiResponse, void>("/auth/logout"),
 
   refreshToken: () =>
-    apiClient.post<ApiResponse<{ token: string }>>("/auth/refresh"),
+    apiClient.post<ApiResponse<{ token: string }>, void>("/auth/refresh"),
 };

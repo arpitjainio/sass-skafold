@@ -16,7 +16,6 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AuthResponseDto } from '../common/dto/api-response.dto';
 
@@ -33,7 +32,6 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  @UseGuards(LocalAuthGuard)
   @ApiOperation({ summary: 'User login' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({
@@ -49,6 +47,7 @@ export class AuthController {
     @Request() req: AuthenticatedRequest,
     @Body() loginDto: LoginDto,
   ): Promise<AuthResponseDto> {
+    console.log(loginDto);
     return this.authService.login(loginDto);
   }
 

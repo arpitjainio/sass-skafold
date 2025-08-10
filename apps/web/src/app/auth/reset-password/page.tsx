@@ -1,28 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { ResetPasswordForm } from '../components/ResetPasswordForm';
 
 export default function ResetPasswordPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { resetPassword, isLoading } = useAuth();
 
-  const handleSubmit = async (data: { password: string; confirmPassword: string }) => {
-    setIsLoading(true);
-    
+  const handleResetPassword = async (data: { token: string; password: string; confirmPassword: string }) => {
     try {
-      // TODO: Implement actual password reset logic
-      console.log('Password reset with new password:', data.password);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await resetPassword(data.token, data.password);
     } catch (error) {
-      console.error('Password reset error:', error);
-      throw error; // Re-throw to let the form handle the error
-    } finally {
-      setIsLoading(false);
+      console.error('Reset password error:', error);
+      // Error handling will be done in the AuthContext
     }
   };
 
-  return <ResetPasswordForm onSubmit={handleSubmit} isLoading={isLoading} />;
+  return (
+    <ResetPasswordForm 
+      onSubmit={handleResetPassword}
+      isLoading={isLoading}
+    />
+  );
 } 

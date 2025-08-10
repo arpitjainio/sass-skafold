@@ -13,6 +13,7 @@ export interface SidebarProps {
   setSidebarOpen: (open: boolean) => void;
   navigation: NavigationItem[];
   pathname: string;
+  onLogout: () => void;
 }
 
 export interface TopbarProps {

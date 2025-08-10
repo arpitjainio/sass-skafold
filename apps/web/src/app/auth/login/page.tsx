@@ -1,28 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
-import {LoginForm} from '../components/LoginForm';
+import { useAuth } from '@/contexts/AuthContext';
+import { LoginForm } from '../components/LoginForm';
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { login, isLoading } = useAuth();
 
-  const handleSubmit = async (data: { email: string; password: string }) => {
-    setIsLoading(true);
-    
+  const handleLogin = async (data: { email: string; password: string; rememberMe: boolean }) => {
     try {
-      // TODO: Implement actual login logic
-      console.log('Login attempt:', data);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // TODO: Redirect to dashboard on success
+      await login({
+        email: data.email,
+        password: data.password,
+      });
     } catch (error) {
       console.error('Login error:', error);
-    } finally {
-      setIsLoading(false);
+      // Error handling will be done in the AuthContext
     }
   };
 
-  return <LoginForm onSubmit={handleSubmit} />;
+  return (
+    <LoginForm 
+      onSubmit={handleLogin}
+      isLoading={isLoading}
+    />
+  );
 } 

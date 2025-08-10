@@ -1,10 +1,11 @@
 import { envConfig } from "@/config";
+import { getAuthToken } from "./utils";
 
 // Base API configuration
 const API_BASE_URL = envConfig.apiUrl;
 
 // Common headers
-const getHeaders = (token?: string) => {
+const getHeaders = (token: string | null) => {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -50,7 +51,7 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
-    const token = this.getToken();
+    const token = getAuthToken();
     
     const config: RequestInit = {
       headers: getHeaders(token),
@@ -79,33 +80,26 @@ class ApiClient {
     }
   }
 
-  private getToken(): string | undefined {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('auth_token') || undefined;
-    }
-    return undefined;
-  }
-
   // Generic HTTP methods
   async get<T>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, { method: 'GET' });
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<T> {
+  async post<T, R>(endpoint: string, data?: R): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : null,
     });
   }
 
-  async put<T>(endpoint: string, data?: any): Promise<T> {
+  async put<T, R>(endpoint: string, data?: R): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: data ? JSON.stringify(data) : null,
     });
   }
 
-  async patch<T>(endpoint: string, data?: any): Promise<T> {
+  async patch<T, R>(endpoint: string, data?: R): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'PATCH',
       body: data ? JSON.stringify(data) : null,

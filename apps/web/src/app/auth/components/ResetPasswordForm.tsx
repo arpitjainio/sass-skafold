@@ -9,7 +9,7 @@ import { StatusMessage } from './StatusMessage';
 import { PasswordStrengthIndicator } from './PasswordStrengthIndicator';
 
 interface ResetPasswordFormProps {
-  onSubmit?: (data: { password: string; confirmPassword: string }) => Promise<void>;
+  onSubmit?: (data: { password: string; confirmPassword: string; token: string }) => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -71,8 +71,8 @@ export function ResetPasswordForm({ onSubmit, isLoading = false }: ResetPassword
     
     if (!validateForm()) return;
 
-    if (onSubmit) {
-      await onSubmit(formData);
+    if (onSubmit && token) {
+      await onSubmit({ ...formData, token });
       setIsSuccess(true);
     }
   };
