@@ -72,7 +72,7 @@ export class AuthService {
     });
 
     const authResponse: AuthResponse = {
-      access_token: accessToken,
+      accessToken: accessToken,
       user: {
         id: user.id,
         email: user.email,
@@ -133,7 +133,7 @@ export class AuthService {
     });
 
     const authResponse: AuthResponse = {
-      access_token: accessToken,
+      accessToken: accessToken,
       user: {
         id: user.id,
         email: user.email,

@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoggerService } from '../common/logger/logger.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private userRepository: UserRepository,
     private logger: LoggerService,
+    private prisma: PrismaService,
   ) {}
 
   async findById(id: string): Promise<unknown> {
@@ -21,7 +23,16 @@ export class UserService {
     }
 
     this.logger.debug('User found by ID', 'User', { userId: id });
-    return user;
+
+    // Format response for frontend - return the data directly, the controller wrapper will add success/message
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      roles: user.roles.map((ur) => ur.role.name),
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 
   async findByEmail(email: string): Promise<unknown> {
@@ -71,5 +82,41 @@ export class UserService {
     });
 
     return roles;
+  }
+
+  async getUserDashboardAnalytics(userId: string): Promise<unknown> {
+    this.logger.debug('Getting user dashboard analytics', 'User', { userId });
+
+    // Get user's own subscriptions and basic stats
+    const user = await this.userRepository.findWithSubscriptions(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const [userSubscriptions, activeSubscriptionCount] = await Promise.all([
+      this.prisma.subscription.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.subscription.count({
+        where: {
+          userId,
+          status: 'ACTIVE',
+        },
+      }),
+    ]);
+
+    // For non-admin users, show limited analytics focused on their own data
+    return {
+      totalUsers: 1, // Just the current user
+      activeSubscriptions: activeSubscriptionCount,
+      totalRevenue: 0, // Users don't see revenue
+      userGrowth: 0, // Users don't see growth
+      subscriptionStats: {
+        ACTIVE: activeSubscriptionCount,
+        INACTIVE: userSubscriptions.length - activeSubscriptionCount,
+      },
+    };
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, 
   Mail, 
@@ -13,41 +13,47 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, Switch, Heading } from '@repo/ui';
-
-// Mock user data
-const userProfile = {
-  id: 1,
-  name: 'John Doe',
-  email: 'john@example.com',
-  phone: '+1 (555) 123-4567',
-  location: 'San Francisco, CA',
-  avatar: '/api/placeholder/150/150',
-  role: 'Admin',
-  joinedDate: 'January 15, 2024',
-  lastLogin: '2 hours ago',
-  timezone: 'Pacific Time (PT)',
-  language: 'English',
-  notifications: {
-    email: true,
-    push: true,
-    sms: false,
-    marketing: false
-  }
-};
+import { useAuth } from '@/contexts/AuthContext';
+import { useUserProfile } from '@/lib/hooks/useUsers';
+import { useNotifications } from '@/components/Notification';
 
 export default function ProfilePage() {
+  const { user } = useAuth();
+  const { data: userProfile, loading, error, updateProfile } = useUserProfile();
+  const { addNotification } = useNotifications();
+  
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    name: userProfile.name,
-    email: userProfile.email,
-    phone: userProfile.phone,
-    location: userProfile.location,
+    name: '',
+    email: '',
+    phone: '',
+    location: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
-  const [notifications, setNotifications] = useState(userProfile.notifications);
+  const [notifications, setNotifications] = useState({
+    email: true,
+    push: true,
+    sms: false,
+    marketing: false
+  });
+
+  // Update form data when user profile loads
+  useEffect(() => {
+    if (userProfile) {
+      setFormData({
+        name: userProfile.name || '',
+        email: userProfile.email || '',
+        phone: '', // Not available in current API
+        location: '', // Not available in current API
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+    }
+  }, [userProfile]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -58,24 +64,93 @@ export default function ProfilePage() {
     setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleSave = () => {
-    // Here you would typically save to API
-    console.log('Saving profile:', formData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      await updateProfile({
+        name: formData.name,
+        email: formData.email,
+      });
+      
+      addNotification({
+        type: 'success',
+        title: 'Profile updated',
+        message: 'Your profile has been updated successfully.',
+      });
+      
+      setIsEditing(false);
+    } catch (error) {
+      addNotification({
+        type: 'error',
+        title: 'Update failed',
+        message: 'Failed to update profile. Please try again.',
+      });
+    }
   };
 
   const handleCancel = () => {
-    setFormData({
-      name: userProfile.name,
-      email: userProfile.email,
-      phone: userProfile.phone,
-      location: userProfile.location,
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
+    if (userProfile) {
+      setFormData({
+        name: userProfile.name || '',
+        email: userProfile.email || '',
+        phone: '',
+        location: '',
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+    }
     setIsEditing(false);
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Heading level="h3">Profile Settings</Heading>
+          <p className="text-neutral-600 dark:text-neutral-200">
+            Loading profile data...
+          </p>
+        </div>
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1">
+            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          </div>
+          <div className="lg:col-span-2 space-y-6">
+            <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+            <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Heading level="h3">Profile Settings</Heading>
+          <p className="text-red-600 dark:text-red-400">
+            Error loading profile: {error}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userProfile) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Heading level="h3">Profile Settings</Heading>
+          <p className="text-neutral-600 dark:text-neutral-200">
+            No profile data available.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -131,7 +206,7 @@ export default function ProfilePage() {
                   {userProfile.name}
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {userProfile.role}
+                  {userProfile.roles.join(', ') || 'User'}
                 </p>
               </div>
 
@@ -146,13 +221,13 @@ export default function ProfilePage() {
                 <div className="flex items-center space-x-3">
                   <Calendar className="w-4 h-4 text-gray-400" aria-hidden="true" />
                   <span className="text-sm text-gray-600 dark:text-gray-400">
-                    Joined {userProfile.joinedDate}
+                    Joined {new Date(userProfile.createdAt).toLocaleDateString()}
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Shield className="w-4 h-4 text-gray-400" aria-hidden="true" />
                   <span className="text-sm text-gray-600 dark:text-gray-400">
-                    Last login: {userProfile.lastLogin}
+                    Last updated: {new Date(userProfile.updatedAt).toLocaleDateString()}
                   </span>
                 </div>
               </div>

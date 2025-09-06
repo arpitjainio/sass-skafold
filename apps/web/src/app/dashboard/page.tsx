@@ -9,42 +9,7 @@ import {
   Download
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Heading, StatsCard } from '@repo/ui';
-
-// Mock data for demonstration
-const stats = [
-  {
-    title: 'Total Users',
-    value: '2,847',
-    change: '+12.5%',
-    changeType: 'positive',
-    icon: Users,
-    color: 'bg-blue-500',
-  },
-  {
-    title: 'Active Subscriptions',
-    value: '1,234',
-    change: '+8.2%',
-    changeType: 'positive',
-    icon: CreditCard,
-    color: 'bg-green-500',
-  },
-  {
-    title: 'Monthly Revenue',
-    value: '$45,231',
-    change: '+23.1%',
-    changeType: 'positive',
-    icon: TrendingUp,
-    color: 'bg-purple-500',
-  },
-  {
-    title: 'Active Sessions',
-    value: '892',
-    change: '-2.4%',
-    changeType: 'negative',
-    icon: Activity,
-    color: 'bg-orange-500',
-  },
-];
+import { useDashboardAnalytics } from '@/lib/hooks/useAnalytics';
 
 const recentUsers = [
   { id: 1, name: 'John Doe', email: 'john@example.com', status: 'Active', joined: '2 hours ago' },
@@ -62,6 +27,75 @@ const recentTransactions = [
 ];
 
 export default function DashboardPage() {
+  const { data: analytics, loading, error } = useDashboardAnalytics();
+
+  // Generate stats from analytics data
+  const stats = [
+    {
+      title: 'Total Users',
+      value: analytics?.totalUsers?.toString() || '0',
+      change: '+12.5%',
+      changeType: 'positive' as const,
+      icon: Users,
+      color: 'bg-blue-500',
+    },
+    {
+      title: 'Active Subscriptions',
+      value: analytics?.activeSubscriptions?.toString() || '0',
+      change: '+8.2%',
+      changeType: 'positive' as const,
+      icon: CreditCard,
+      color: 'bg-green-500',
+    },
+    {
+      title: 'Total Revenue',
+      value: `$${analytics?.totalRevenue?.toLocaleString() || '0'}`,
+      change: '+23.1%',
+      changeType: 'positive' as const,
+      icon: TrendingUp,
+      color: 'bg-purple-500',
+    },
+    {
+      title: 'User Growth',
+      value: analytics?.userGrowth?.toString() || '0',
+      change: '+15.3%',
+      changeType: 'positive' as const,
+      icon: Activity,
+      color: 'bg-orange-500',
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Heading level="h3">Dashboard</Heading>
+          <p className="text-neutral-600 dark:text-neutral-200">
+            Loading dashboard data...
+          </p>
+        </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Heading level="h3">Dashboard</Heading>
+          <p className="text-red-600 dark:text-red-400">
+            Error loading dashboard: {error}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Page header */}
@@ -77,7 +111,7 @@ export default function DashboardPage() {
       {/* Stats cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <StatsCard key={stat.title} {...stat} changeType={stat.changeType as 'positive' | 'negative' | 'neutral'} />
+          <StatsCard key={stat.title} {...stat} changeType={stat.changeType} />
         ))}
       </div>
 

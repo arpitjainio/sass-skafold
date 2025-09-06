@@ -41,4 +41,11 @@ export class UserController {
   async getUserRoles(@Request() req: AuthenticatedRequest) {
     return this.userService.getUserRoles(req.user.userId);
   }
+
+  @Get('analytics/dashboard')
+  @ApiOperation({ summary: 'Get user dashboard analytics' })
+  @ApiResponse({ status: 200, description: 'User dashboard analytics' })
+  async getUserDashboardAnalytics(@Request() req: AuthenticatedRequest) {
+    return this.userService.getUserDashboardAnalytics(req.user.userId);
+  }
 }

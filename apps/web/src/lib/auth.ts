@@ -14,12 +14,21 @@ export interface RegisterRequest {
 
 export interface AuthResponse {
   user: {
-    id: number;
+    id: string;
     name: string;
     email: string;
     role: string;
   };
-  token: string;
+  accessToken: string;
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  roles: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export const authApi = {
@@ -28,6 +37,9 @@ export const authApi = {
 
   register: (data: RegisterRequest) =>
     apiClient.post<ApiResponse<AuthResponse>, RegisterRequest>("/auth/register", data),
+
+  getCurrentUser: () =>
+    apiClient.get<ApiResponse<UserProfile>>("/users/me"),
 
   forgotPassword: (email: string) =>
     apiClient.post<ApiResponse, { email: string }>("/auth/forgot-password", { email }),

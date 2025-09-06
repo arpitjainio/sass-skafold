@@ -1,50 +1,85 @@
-import { apiClient, ApiResponse, PaginatedResponse } from "./api";
+import { apiClient, ApiResponse } from "./api";
 
-// User API
+// User API types
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
-  role: string;
-  status: "active" | "inactive" | "suspended";
-  lastLogin?: string;
+  roles: string[];
+  subscriptionCount: number;
+  hasActiveSubscription: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface CreateUserRequest {
+export interface UserProfile {
+  id: string;
   name: string;
   email: string;
-  password: string;
-  role: string;
+  roles: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UpdateUserRequest {
   name?: string;
   email?: string;
-  role?: string;
-  status?: string;
+  roles?: string[];
+}
+
+export interface PaginatedUsersResponse {
+  data: User[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }
 
 export const userApi = {
-  getUsers: (params?: {
+  // Get current user profile
+  getProfile: () =>
+    apiClient.get<ApiResponse<UserProfile>>("/users/me"),
+
+  // Update current user profile
+  updateProfile: (data: UpdateUserRequest) =>
+    apiClient.put<ApiResponse<UserProfile>, UpdateUserRequest>("/users/me", data),
+
+  // Get user roles
+  getUserRoles: () =>
+    apiClient.get<ApiResponse<string[]>>("/users/roles"),
+
+  // Admin: Get all users
+  getAllUsers: (params?: {
     page?: number;
     limit?: number;
     search?: string;
     role?: string;
     status?: string;
-  }) =>
-    apiClient.get<ApiResponse<PaginatedResponse<User>>>(
-      "/users" + (params ? `?${new URLSearchParams(params as any)}` : "")
-    ),
+  }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.append('page', params.page.toString());
+    if (params?.limit) searchParams.append('limit', params.limit.toString());
+    if (params?.search) searchParams.append('search', params.search);
+    if (params?.role) searchParams.append('role', params.role);
+    if (params?.status) searchParams.append('status', params.status);
+    
+    const query = searchParams.toString();
+    const endpoint = `/admin/users${query ? `?${query}` : ''}`;
+    
+    return apiClient.get<ApiResponse<PaginatedUsersResponse>>(endpoint);
+  },
 
-  getUser: (id: number) => apiClient.get<ApiResponse<User>>(`/users/${id}`),
+  // Admin: Get user by ID
+  getUserById: (id: string) =>
+    apiClient.get<ApiResponse<User>>(`/admin/users/${id}`),
 
-  createUser: (data: CreateUserRequest) =>
-    apiClient.post<ApiResponse<User>>("/users", data),
+  // Admin: Update user
+  updateUser: (id: string, data: UpdateUserRequest) =>
+    apiClient.put<ApiResponse<User>, UpdateUserRequest>(`/admin/users/${id}`, data),
 
-  updateUser: (id: number, data: UpdateUserRequest) =>
-    apiClient.put<ApiResponse<User>>(`/users/${id}`, data),
-
-  deleteUser: (id: number) => apiClient.delete<ApiResponse>(`/users/${id}`),
+  // Admin: Delete user
+  deleteUser: (id: string) =>
+    apiClient.delete<ApiResponse<{ message: string }>>(`/admin/users/${id}`),
 };

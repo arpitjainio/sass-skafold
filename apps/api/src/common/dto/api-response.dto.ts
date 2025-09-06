@@ -22,7 +22,7 @@ export class UserResponseDto {
 
 export class AuthResponseDto {
   @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
-  access_token: string;
+  accessToken: string;
 
   @ApiProperty({ type: UserResponseDto })
   user: UserResponseDto;

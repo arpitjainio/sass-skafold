@@ -18,93 +18,39 @@ import {
   Calendar
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, Select, Checkbox, Heading } from '@repo/ui';
-
-// Mock subscription data
-const subscriptions = [
-  { 
-    id: 1, 
-    user: 'John Doe', 
-    email: 'john@example.com',
-    plan: 'Pro', 
-    status: 'Active', 
-    amount: '$99.99', 
-    nextBilling: '2024-02-15',
-    startDate: '2024-01-15',
-    paymentMethod: 'Visa ****1234'
-  },
-  { 
-    id: 2, 
-    user: 'Jane Smith', 
-    email: 'jane@example.com',
-    plan: 'Basic', 
-    status: 'Active', 
-    amount: '$29.99', 
-    nextBilling: '2024-02-10',
-    startDate: '2024-01-10',
-    paymentMethod: 'Mastercard ****5678'
-  },
-  { 
-    id: 3, 
-    user: 'Bob Johnson', 
-    email: 'bob@example.com',
-    plan: 'Enterprise', 
-    status: 'Cancelled', 
-    amount: '$299.99', 
-    nextBilling: '2024-02-05',
-    startDate: '2024-01-05',
-    paymentMethod: 'PayPal'
-  },
-  { 
-    id: 4, 
-    user: 'Alice Brown', 
-    email: 'alice@example.com',
-    plan: 'Pro', 
-    status: 'Past Due', 
-    amount: '$99.99', 
-    nextBilling: '2024-02-12',
-    startDate: '2024-01-12',
-    paymentMethod: 'Visa ****9012'
-  },
-  { 
-    id: 5, 
-    user: 'Charlie Wilson', 
-    email: 'charlie@example.com',
-    plan: 'Basic', 
-    status: 'Active', 
-    amount: '$29.99', 
-    nextBilling: '2024-02-08',
-    startDate: '2024-01-08',
-    paymentMethod: 'Mastercard ****3456'
-  },
-  { 
-    id: 6, 
-    user: 'Diana Prince', 
-    email: 'diana@example.com',
-    plan: 'Pro', 
-    status: 'Suspended', 
-    amount: '$99.99', 
-    nextBilling: '2024-02-03',
-    startDate: '2024-01-03',
-    paymentMethod: 'Visa ****7890'
-  },
-];
+import { useAdminSubscriptions } from '@/lib/hooks/useSubscriptions';
+import { useAuth } from '@/contexts/AuthContext';
 
 const plans = ['All', 'Basic', 'Pro', 'Enterprise'];
-const statuses = ['All', 'Active', 'Cancelled', 'Past Due', 'Suspended'];
+const statuses = ['All', 'ACTIVE', 'CANCELED', 'PAST_DUE', 'INCOMPLETE'];
 
 export default function SubscriptionsPage() {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPlan, setSelectedPlan] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
-  const [selectedSubscriptions, setSelectedSubscriptions] = useState<number[]>([]);
+  const [selectedSubscriptions, setSelectedSubscriptions] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(10);
 
+  const params = {
+    page: currentPage,
+    limit,
+    ...(selectedStatus !== 'All' && { status: selectedStatus }),
+    ...(selectedPlan !== 'All' && { plan: selectedPlan }),
+  };
+
+  const { data: subscriptionsData, loading, error, refetch } = useAdminSubscriptions(params);
+
+  const subscriptions = subscriptionsData?.data || [];
+  const totalSubscriptions = subscriptionsData?.meta?.total || 0;
+
+  // Client-side filtering for search (since backend doesn't support search yet)
   const filteredSubscriptions = subscriptions.filter(subscription => {
-    const matchesSearch = subscription.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         subscription.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPlan = selectedPlan === 'All' || subscription.plan === selectedPlan;
-    const matchesStatus = selectedStatus === 'All' || subscription.status === selectedStatus;
-    
-    return matchesSearch && matchesPlan && matchesStatus;
+    if (!searchTerm) return true;
+    const matchesSearch = subscription.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         subscription.user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
   });
 
   const handleSelectAll = () => {
@@ -115,7 +61,7 @@ export default function SubscriptionsPage() {
     }
   };
 
-  const handleSelectSubscription = (subscriptionId: number) => {
+  const handleSelectSubscription = (subscriptionId: string) => {
     setSelectedSubscriptions(prev => 
       prev.includes(subscriptionId) 
         ? prev.filter(id => id !== subscriptionId)
@@ -125,14 +71,16 @@ export default function SubscriptionsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active':
+      case 'ACTIVE':
         return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'Cancelled':
+      case 'CANCELED':
         return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-      case 'Past Due':
+      case 'PAST_DUE':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'Suspended':
+      case 'INCOMPLETE':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      case 'TRIALING':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
       default:
         return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
     }
@@ -153,26 +101,58 @@ export default function SubscriptionsPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'Active':
+      case 'ACTIVE':
         return <CheckCircle className="w-4 h-4 text-green-500" aria-hidden="true" />;
-      case 'Cancelled':
+      case 'CANCELED':
         return <XCircle className="w-4 h-4 text-gray-500" aria-hidden="true" />;
-      case 'Past Due':
+      case 'PAST_DUE':
         return <Clock className="w-4 h-4 text-red-500" aria-hidden="true" />;
-      case 'Suspended':
+      case 'INCOMPLETE':
         return <Clock className="w-4 h-4 text-yellow-500" aria-hidden="true" />;
+      case 'TRIALING':
+        return <CheckCircle className="w-4 h-4 text-blue-500" aria-hidden="true" />;
       default:
         return <Clock className="w-4 h-4 text-gray-500" aria-hidden="true" />;
     }
   };
 
-  // Calculate summary stats
-  const totalRevenue = subscriptions
-    .filter(sub => sub.status === 'Active')
-    .reduce((sum, sub) => sum + parseFloat(sub.amount.replace('$', '')), 0);
+  // Calculate summary stats (for now, without real pricing data)
+  const activeSubscriptions = subscriptions.filter(sub => sub.status === 'ACTIVE').length;
+  const cancelledSubscriptions = subscriptions.filter(sub => sub.status === 'CANCELED').length;
+  const totalRevenue = 0; // Would need pricing data to calculate this
 
-  const activeSubscriptions = subscriptions.filter(sub => sub.status === 'Active').length;
-  const cancelledSubscriptions = subscriptions.filter(sub => sub.status === 'Cancelled').length;
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Heading level="h3">Subscriptions</Heading>
+          <p className="text-neutral-600 dark:text-neutral-200">
+            Loading subscriptions data...
+          </p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Heading level="h3">Subscriptions</Heading>
+          <p className="text-red-600 dark:text-red-400">
+            Error loading subscriptions: {error}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -355,17 +335,17 @@ export default function SubscriptionsPage() {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
-                            {subscription.user}
+                            {subscription.user.name}
                           </p>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {subscription.email}
+                            {subscription.user.email}
                           </p>
                         </div>
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPlanColor(subscription.plan)}`}>
-                        {subscription.plan}
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+                        Standard
                       </span>
                     </td>
                     <td className="py-3 px-4">
@@ -378,14 +358,14 @@ export default function SubscriptionsPage() {
                     </td>
                     <td className="py-3 px-4">
                       <span className="font-medium text-gray-900 dark:text-white">
-                        {subscription.amount}
+                        -
                       </span>
                     </td>
                     <td className="py-3 px-4 text-sm text-gray-500 dark:text-gray-400">
-                      {subscription.nextBilling}
+                      {subscription.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString() : '-'}
                     </td>
                     <td className="py-3 px-4 text-sm text-gray-500 dark:text-gray-400">
-                      {subscription.paymentMethod}
+                      -
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end space-x-2">

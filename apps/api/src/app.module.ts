@@ -11,6 +11,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { AdminModule } from './admin/admin.module';
+import { DevModule } from './dev/dev.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { SubscriptionModule } from './subscription/subscription.module';
     UserModule,
     RoleModule,
     SubscriptionModule,
+    AdminModule,
+    DevModule,
   ],
   controllers: [AppController],
   providers: [

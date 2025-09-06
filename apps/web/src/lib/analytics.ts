@@ -1,45 +1,39 @@
 import { apiClient, ApiResponse } from "./api";
 
-// Analytics API
-export interface AnalyticsData {
-  revenue: {
-    total: number;
-    monthly: number;
-    growth: number;
-  };
-  users: {
-    total: number;
-    active: number;
-    growth: number;
-  };
-  subscriptions: {
-    total: number;
-    active: number;
-    cancelled: number;
-  };
-  charts: {
-    revenue: Array<{ month: string; amount: number }>;
-    users: Array<{ month: string; count: number }>;
-    subscriptions: Array<{ month: string; count: number }>;
-  };
+// Analytics API types
+export interface DashboardAnalytics {
+  totalUsers: number;
+  activeSubscriptions: number;
+  totalRevenue: number;
+  userGrowth: number;
+  subscriptionStats: Record<string, number>;
+}
+
+export interface RevenueAnalytics {
+  month: string;
+  count: number;
+}
+
+export interface UserGrowthAnalytics {
+  month: string;
+  count: number;
+  cumulative: number;
 }
 
 export const analyticsApi = {
-  getDashboardData: () =>
-    apiClient.get<ApiResponse<AnalyticsData>>("/analytics/dashboard"),
+  // Get dashboard overview analytics (for regular users - shows user-specific data)
+  getDashboardAnalytics: () =>
+    apiClient.get<ApiResponse<DashboardAnalytics>>("/users/analytics/dashboard"),
 
-  getRevenueData: (period: string) =>
-    apiClient.get<ApiResponse<AnalyticsData["charts"]["revenue"]>>(
-      `/analytics/revenue?period=${period}`
-    ),
+  // Get revenue analytics (admin only)
+  getRevenueAnalytics: () =>
+    apiClient.get<ApiResponse<RevenueAnalytics[]>>("/admin/analytics/revenue"),
 
-  getUserGrowthData: (period: string) =>
-    apiClient.get<ApiResponse<AnalyticsData["charts"]["users"]>>(
-      `/analytics/users?period=${period}`
-    ),
+  // Get user growth analytics (admin only)
+  getUserGrowthAnalytics: () =>
+    apiClient.get<ApiResponse<UserGrowthAnalytics[]>>("/admin/analytics/user-growth"),
 
-  getSubscriptionData: (period: string) =>
-    apiClient.get<ApiResponse<AnalyticsData["charts"]["subscriptions"]>>(
-      `/analytics/subscriptions?period=${period}`
-    ),
+  // Admin analytics endpoints
+  getAdminDashboardAnalytics: () =>
+    apiClient.get<ApiResponse<DashboardAnalytics>>("/admin/analytics/dashboard"),
 };

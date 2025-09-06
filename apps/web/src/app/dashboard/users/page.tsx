@@ -12,18 +12,7 @@ import {
   Download
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, Checkbox, Select, Heading } from '@repo/ui';
-
-// Mock user data
-const users = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active', lastLogin: '2 hours ago', joined: '2024-01-15' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'Active', lastLogin: '1 day ago', joined: '2024-01-10' },
-  { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User', status: 'Inactive', lastLogin: '1 week ago', joined: '2024-01-05' },
-  { id: 4, name: 'Alice Brown', email: 'alice@example.com', role: 'Moderator', status: 'Active', lastLogin: '3 hours ago', joined: '2024-01-12' },
-  { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', role: 'User', status: 'Active', lastLogin: '5 hours ago', joined: '2024-01-08' },
-  { id: 6, name: 'Diana Prince', email: 'diana@example.com', role: 'User', status: 'Suspended', lastLogin: '2 weeks ago', joined: '2024-01-03' },
-  { id: 7, name: 'Eve Adams', email: 'eve@example.com', role: 'User', status: 'Active', lastLogin: '1 hour ago', joined: '2024-01-20' },
-  { id: 8, name: 'Frank Miller', email: 'frank@example.com', role: 'Moderator', status: 'Active', lastLogin: '4 hours ago', joined: '2024-01-14' },
-];
+import { useUsers } from '@/lib/hooks/useUsers';
 
 const roles = ['All', 'Admin', 'Moderator', 'User'];
 const statuses = ['All', 'Active', 'Inactive', 'Suspended'];
@@ -32,13 +21,28 @@ export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(10);
+
+  const params = {
+    page: currentPage,
+    limit,
+    ...(searchTerm && { search: searchTerm }),
+    ...(selectedRole !== 'All' && { role: selectedRole }),
+    ...(selectedStatus !== 'All' && { status: selectedStatus }),
+  };
+
+  const { data: usersData, loading, error, refetch } = useUsers(params);
+
+  const users = usersData?.data || [];
+  const totalUsers = usersData?.meta?.total || 0;
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = selectedRole === 'All' || user.role === selectedRole;
-    const matchesStatus = selectedStatus === 'All' || user.status === selectedStatus;
+    const matchesRole = selectedRole === 'All' || user.roles.includes(selectedRole);
+    const matchesStatus = selectedStatus === 'All' || (user.hasActiveSubscription ? 'Active' : 'Inactive');
     
     return matchesSearch && matchesRole && matchesStatus;
   });
@@ -51,7 +55,7 @@ export default function UsersPage() {
     }
   };
 
-  const handleSelectUser = (userId: number) => {
+  const handleSelectUser = (userId: string) => {
     setSelectedUsers(prev => 
       prev.includes(userId) 
         ? prev.filter(id => id !== userId)
@@ -217,20 +221,20 @@ export default function UsersPage() {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                        {user.role}
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.roles[0] || 'User')}`}>
+                        {user.roles[0] || 'User'}
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
-                        {user.status}
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.hasActiveSubscription ? 'Active' : 'Inactive')}`}>
+                        {user.hasActiveSubscription ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-sm text-gray-500 dark:text-gray-400">
-                      {user.lastLogin}
+                      -
                     </td>
                     <td className="py-3 px-4 text-sm text-gray-500 dark:text-gray-400">
-                      {user.joined}
+                      {new Date(user.createdAt).toLocaleDateString()}
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end space-x-2">

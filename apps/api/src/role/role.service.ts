@@ -156,6 +156,64 @@ export class RoleService extends BaseService {
     return { seededCount };
   }
 
+  async devSetup(
+    userEmail: string,
+  ): Promise<{ message: string; adminAssigned: boolean }> {
+    this.logOperation('Starting development setup', 'Role', { userEmail });
+
+    // First, seed roles
+    await this.seedRoles();
+
+    // Find the user by email
+    const user = await this.prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Find the admin role
+    const adminRole = await this.prisma.role.findUnique({
+      where: { name: 'admin' },
+    });
+
+    if (!adminRole) {
+      throw new Error('Admin role not found');
+    }
+
+    // Check if user already has admin role
+    const existingUserRole = await this.prisma.userRole.findUnique({
+      where: {
+        userId_roleId: {
+          userId: user.id,
+          roleId: adminRole.id,
+        },
+      },
+    });
+
+    let adminAssigned = false;
+    if (!existingUserRole) {
+      // Assign admin role to user
+      await this.prisma.userRole.create({
+        data: {
+          userId: user.id,
+          roleId: adminRole.id,
+        },
+      });
+      adminAssigned = true;
+      this.logOperation('Admin role assigned to user', 'Role', {
+        userId: user.id,
+        userEmail,
+      });
+    }
+
+    return {
+      message: 'Development setup completed successfully',
+      adminAssigned,
+    };
+  }
+
   async getRolesWithUserCount(): Promise<Array<Role & { userCount: number }>> {
     this.logDebug('Getting roles with user count', 'Role');
 

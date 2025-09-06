@@ -2,17 +2,19 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { authApi } from '@/lib/auth';
+import { authApi, UserProfile } from '@/lib/auth';
 import { LoginRequest, RegisterRequest } from '@/lib/auth';
 import { setAuthToken, getAuthToken, removeAuthToken } from '@/lib/utils';
 import { ApiError } from '@/lib/api';
 import { useNotifications } from '@/components/Notification';
 
 interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
-  role: string;
+  roles: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface AuthContextType {
@@ -34,17 +36,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { addNotification } = useNotifications();
 
-  // Check if user is authenticated on mount
+  // Check if user is authenticated on mount and validate token
   useEffect(() => {
-    const token = getAuthToken();
-    if (token) {
-      // TODO: Validate token with backend
-      // For now, we'll assume the token is valid
-      // In a real app, you'd make an API call to validate the token
+    const initializeAuth = async () => {
+      const token = getAuthToken();
+      if (token) {
+        try {
+          const response = await authApi.getCurrentUser();
+          if (response.success) {
+            setUser(response.data);
+          } else {
+            // Invalid token, remove it
+            removeAuthToken();
+          }
+        } catch (error) {
+          // Token validation failed, remove it
+          removeAuthToken();
+          console.error('Token validation failed:', error);
+        }
+      }
       setIsLoading(false);
-    } else {
-      setIsLoading(false);
-    }
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (data: LoginRequest) => {
@@ -53,8 +67,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await authApi.login(data);
       
       if (response.success) {
-        const { user, token } = response.data;
-        setAuthToken(token);
+        const { user: authUser, accessToken } = response.data;
+        setAuthToken(accessToken);
+        
+        // Transform auth response user to match our User interface
+        const user: User = {
+          id: authUser.id,
+          name: authUser.name,
+          email: authUser.email,
+          roles: [authUser.role], // Convert single role to array
+          createdAt: new Date().toISOString(), // Will be updated when we fetch full profile
+          updatedAt: new Date().toISOString(),
+        };
+        
         setUser(user);
         addNotification({
           type: 'success',
@@ -91,8 +116,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await authApi.register(data);
       
       if (response.success) {
-        const { user, token } = response.data;
-        setAuthToken(token);
+        const { user: authUser, accessToken } = response.data;
+        setAuthToken(accessToken);
+        
+        // Transform auth response user to match our User interface
+        const user: User = {
+          id: authUser.id,
+          name: authUser.name,
+          email: authUser.email,
+          roles: [authUser.role], // Convert single role to array
+          createdAt: new Date().toISOString(), // Will be updated when we fetch full profile
+          updatedAt: new Date().toISOString(),
+        };
+        
         setUser(user);
         addNotification({
           type: 'success',
