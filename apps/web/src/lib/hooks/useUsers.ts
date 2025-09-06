@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { userApi, User, PaginatedUsersResponse } from '../user';
+import { userApi, User, UserProfile, PaginatedUsersResponse } from '../user';
 import { ApiResponse } from '../api';
 
 export function useUsers(params?: {
@@ -33,7 +33,7 @@ export function useUsers(params?: {
     };
 
     fetchData();
-  }, [params?.page, params?.limit, params?.search, params?.role, params?.status]);
+  }, [params]);
 
   const refetch = () => {
     setLoading(true);
@@ -61,7 +61,7 @@ export function useUsers(params?: {
 }
 
 export function useUserProfile() {
-  const [data, setData] = useState<User | null>(null);
+  const [data, setData] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,7 +70,7 @@ export function useUserProfile() {
       try {
         setLoading(true);
         setError(null);
-        const response: ApiResponse<User> = await userApi.getProfile();
+        const response: ApiResponse<UserProfile> = await userApi.getProfile();
         
         if (response.success) {
           setData(response.data);
@@ -91,7 +91,7 @@ export function useUserProfile() {
     try {
       setLoading(true);
       setError(null);
-      const response: ApiResponse<User> = await userApi.updateProfile(updateData);
+      const response: ApiResponse<UserProfile> = await userApi.updateProfile(updateData);
       
       if (response.success) {
         setData(response.data);

@@ -40,6 +40,7 @@ export interface BadgeProps
     VariantProps<typeof badgeVariants>,
     BaseComponentProps {
   as?: React.ElementType;
+  className?: string;
 }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(

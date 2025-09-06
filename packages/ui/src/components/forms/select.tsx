@@ -31,6 +31,7 @@ export interface SelectProps
     BaseComponentProps {
   error?: string;
   success?: boolean;
+  className?: string;
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(

@@ -1,5 +1,3 @@
-import { useSearchParams } from 'next/navigation';
-
 export interface AuthPageMetadata {
   title: string;
   subtitle?: string;

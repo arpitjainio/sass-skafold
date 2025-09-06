@@ -30,7 +30,8 @@ export interface TextareaProps
     VariantProps<typeof textareaVariants>,
     BaseComponentProps {
   error?: string;
-  success?: boolean;
+  success?: boolean;  
+  className?: string;
 }
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(

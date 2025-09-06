@@ -40,6 +40,8 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants>,
     BaseButtonProps {
   asChild?: boolean;
+  className?: string;
+  disabled?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(

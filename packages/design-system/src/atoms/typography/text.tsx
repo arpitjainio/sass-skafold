@@ -46,6 +46,7 @@ export interface TextProps
     VariantProps<typeof textVariants>,
     BaseComponentProps {
   as?: "p" | "span" | "div";
+  className?: string;
 }
 
 const Text = React.forwardRef<HTMLParagraphElement, TextProps>(

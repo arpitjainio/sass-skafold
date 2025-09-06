@@ -38,6 +38,7 @@ export interface HeadingProps
     VariantProps<typeof headingVariants>,
     BaseComponentProps {
   as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+  className?: string;
 }
 
 const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(

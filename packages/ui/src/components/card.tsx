@@ -71,7 +71,9 @@ const cardFooterVariants = cva("flex items-center p-6 pt-0", {
 export interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof cardVariants>,
-    BaseCardProps {}
+    BaseCardProps {
+  className?: string;
+}
   
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant, padding, ...props }, ref) => (

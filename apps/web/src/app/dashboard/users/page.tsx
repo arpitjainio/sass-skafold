@@ -33,10 +33,9 @@ export default function UsersPage() {
     ...(selectedStatus !== 'All' && { status: selectedStatus }),
   };
 
-  const { data: usersData, loading, error, refetch } = useUsers(params);
+  const { data: usersData, loading, error } = useUsers(params);
 
   const users = usersData?.data || [];
-  const totalUsers = usersData?.meta?.total || 0;
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

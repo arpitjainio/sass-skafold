@@ -72,6 +72,7 @@ export interface AvatarProps
     VariantProps<typeof avatarVariants>,
     BaseComponentProps {
   as?: React.ElementType;
+  className?: string;
 }
 
 const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
@@ -91,7 +92,9 @@ Avatar.displayName = "Avatar";
 export interface AvatarImageProps
   extends React.ImgHTMLAttributes<HTMLImageElement>,
     VariantProps<typeof avatarImageVariants>,
-    BaseComponentProps {}
+    BaseComponentProps {
+  className?: string;
+    }
 
 const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
   ({ className, size, ...props }, ref) => {
@@ -112,6 +115,7 @@ export interface AvatarFallbackProps
     VariantProps<typeof avatarFallbackVariants>,
     BaseComponentProps {
   delayMs?: number;
+  className?: string;
 }
 
 const AvatarFallback = React.forwardRef<HTMLDivElement, AvatarFallbackProps>(

@@ -124,7 +124,7 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
         <SocialLoginButtons />
 
         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <a 
             href="/auth/register" 
             className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"

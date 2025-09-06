@@ -117,7 +117,7 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="h-64 flex items-end justify-between space-x-2">
-              {chartData.map((data, index) => (
+              {chartData.map((data) => (
                 <div key={data.month} className="flex flex-col items-center space-y-2">
                   <div 
                     className="w-8 bg-primary-600 rounded-t"
@@ -144,7 +144,7 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="h-64 flex items-end justify-between space-x-2">
-              {chartData.map((data, index) => (
+              {chartData.map((data) => (
                 <div key={data.month} className="flex flex-col items-center space-y-2">
                   <div 
                     className="w-8 bg-blue-600 rounded-t"

@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { 
   CreditCard, 
   Search, 
-  Filter, 
   MoreHorizontal,
   Edit,
   Trash2,
@@ -15,17 +14,14 @@ import {
   XCircle,
   Clock,
   DollarSign,
-  Calendar
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, Select, Checkbox, Heading } from '@repo/ui';
 import { useAdminSubscriptions } from '@/lib/hooks/useSubscriptions';
-import { useAuth } from '@/contexts/AuthContext';
 
 const plans = ['All', 'Basic', 'Pro', 'Enterprise'];
 const statuses = ['All', 'ACTIVE', 'CANCELED', 'PAST_DUE', 'INCOMPLETE'];
 
 export default function SubscriptionsPage() {
-  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPlan, setSelectedPlan] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
@@ -40,10 +36,9 @@ export default function SubscriptionsPage() {
     ...(selectedPlan !== 'All' && { plan: selectedPlan }),
   };
 
-  const { data: subscriptionsData, loading, error, refetch } = useAdminSubscriptions(params);
+  const { data: subscriptionsData, loading, error } = useAdminSubscriptions(params);
 
   const subscriptions = subscriptionsData?.data || [];
-  const totalSubscriptions = subscriptionsData?.meta?.total || 0;
 
   // Client-side filtering for search (since backend doesn't support search yet)
   const filteredSubscriptions = subscriptions.filter(subscription => {
@@ -81,19 +76,6 @@ export default function SubscriptionsPage() {
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
       case 'TRIALING':
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-    }
-  };
-
-  const getPlanColor = (plan: string) => {
-    switch (plan) {
-      case 'Enterprise':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-      case 'Pro':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'Basic':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       default:
         return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
     }
@@ -147,7 +129,7 @@ export default function SubscriptionsPage() {
         <div>
           <Heading level="h3">Subscriptions</Heading>
           <p className="text-red-600 dark:text-red-400">
-            Error loading subscriptions: {error}
+            Error loading subscriptions; due to: {error? error : 'Unknown error'}
           </p>
         </div>
       </div>

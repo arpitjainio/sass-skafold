@@ -18,7 +18,7 @@ const getHeaders = (token: string | null) => {
 };
 
 // API response types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   message?: string;
   success: boolean;
@@ -37,7 +37,7 @@ export class ApiError extends Error {
   constructor(
     public status: number,
     public message: string,
-    public data?: any
+    public data?: unknown
   ) {
     super(message);
     this.name = 'ApiError';
@@ -72,7 +72,7 @@ class ApiClient {
 
       const data = await response.json();
       return data;
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ApiError) {
         throw error;
       }

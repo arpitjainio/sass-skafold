@@ -43,18 +43,12 @@ export function ForgotPasswordForm({ onSubmit, isLoading = false }: ForgotPasswo
     }
   };
 
-  const handleTryAgain = () => {
-    setIsSubmitted(false);
-    setEmail('');
-    setError('');
-  };
-
   if (isSubmitted) {
     return (
       <StatusMessage
         type="success"
         title="Reset link sent!"
-        message={`We've sent a password reset link to ${email}`}
+        message={`We&apos;ve sent a password reset link to ${email}`}
         actions={[
           {
             label: '← Back to sign in',
@@ -100,7 +94,7 @@ export function ForgotPasswordForm({ onSubmit, isLoading = false }: ForgotPasswo
             </h3>
             <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               <p>
-                Enter your email address and we'll send you a link to reset your password.
+                Enter your email address and we&apos;ll send you a link to reset your password.
                 The link will expire in 1 hour for security.
               </p>
             </div>

@@ -39,6 +39,7 @@ export interface IconProps
     BaseComponentProps {
   as?: React.ElementType;
   children?: React.ReactNode;
+  className?: string;
 }
 
 const Icon = React.forwardRef<HTMLDivElement, IconProps>(

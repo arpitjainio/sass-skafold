@@ -49,6 +49,7 @@ export interface SwitchProps
     BaseComponentProps {
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
+  className?: string;
 }
 
 const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(

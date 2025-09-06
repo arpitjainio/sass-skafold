@@ -35,6 +35,7 @@ export interface SkeletonProps
     VariantProps<typeof skeletonVariants>,
     BaseComponentProps {
   as?: React.ElementType;
+  className?: string;
 }
 
 const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(

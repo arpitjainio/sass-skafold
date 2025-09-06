@@ -35,7 +35,7 @@ export function ProtectedRoute({
       return;
     }
 
-    if (roles.length > 0 && user && !roles.includes(user.role)) {
+    if (roles.length > 0 && user && !user.roles?.some((r) => roles.includes(r))) {
       // User doesn't have required role, redirect to dashboard
       router.push('/dashboard');
       return;
@@ -62,7 +62,7 @@ export function ProtectedRoute({
   }
 
   // Don't render children if user doesn't have required role
-  if (roles.length > 0 && user && !roles.includes(user.role)) {
+  if (roles.length > 0 && user && !user.roles?.some((r) => roles.includes(r))) {
     return null;
   }
 

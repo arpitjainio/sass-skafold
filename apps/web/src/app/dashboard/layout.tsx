@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { Sidebar } from "./components/sidebar";
 import { Topbar } from "./components/topbar";
-import { Button } from "@repo/ui";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
 

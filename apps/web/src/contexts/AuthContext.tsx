@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { authApi, UserProfile } from '@/lib/auth';
+import { authApi } from '@/lib/auth';
 import { LoginRequest, RegisterRequest } from '@/lib/auth';
 import { setAuthToken, getAuthToken, removeAuthToken } from '@/lib/utils';
 import { ApiError } from '@/lib/api';

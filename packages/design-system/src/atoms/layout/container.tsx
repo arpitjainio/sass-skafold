@@ -41,6 +41,7 @@ export interface ContainerProps
     VariantProps<typeof containerVariants>,
     BaseComponentProps {
   as?: React.ElementType;
+  className?: string;
 }
 
 const Container = React.forwardRef<HTMLDivElement, ContainerProps>(

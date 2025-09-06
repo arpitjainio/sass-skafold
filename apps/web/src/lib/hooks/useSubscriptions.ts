@@ -84,7 +84,7 @@ export function useAdminSubscriptions(params?: {
     };
 
     fetchData();
-  }, [params?.page, params?.limit, params?.status, params?.plan]);
+  }, [params]);
 
   const refetch = () => {
     setLoading(true);

@@ -31,6 +31,7 @@ export interface InputProps
     BaseComponentProps {
   error?: string;
   success?: boolean;
+  className?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(

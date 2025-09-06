@@ -41,15 +41,15 @@ export const profileApi = {
   getProfile: () => apiClient.get<ApiResponse<Profile>>("/profile"),
 
   updateProfile: (data: UpdateProfileRequest) =>
-    apiClient.put<ApiResponse<Profile>>("/profile", data),
+    apiClient.put<ApiResponse<Profile>, UpdateProfileRequest>("/profile", data),
 
   changePassword: (data: ChangePasswordRequest) =>
-    apiClient.post<ApiResponse>("/profile/change-password", data),
+    apiClient.post<ApiResponse, ChangePasswordRequest>("/profile/change-password", data),
 
   updateAvatar: (file: File) => {
     const formData = new FormData();
     formData.append("avatar", file);
-    return apiClient.post<ApiResponse<{ avatar: string }>>(
+    return apiClient.post<ApiResponse<{ avatar: string }>, FormData>(
       "/profile/avatar",
       formData
     );

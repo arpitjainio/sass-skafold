@@ -25,7 +25,6 @@ export function StatusMessage({
   className = '' 
 }: StatusMessageProps) {
   const bgColor = type === 'success' ? 'bg-green-100' : 'bg-red-100';
-  const iconColor = type === 'success' ? 'text-green-600' : 'text-red-600';
 
   const defaultIcon = type === 'success' ? (
     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

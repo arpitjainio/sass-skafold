@@ -69,6 +69,7 @@ export interface BoxProps
     VariantProps<typeof boxVariants>,
     BaseComponentProps {
   as?: React.ElementType;
+  className?: string;
 }
 
 const Box = React.forwardRef<HTMLDivElement, BoxProps>(

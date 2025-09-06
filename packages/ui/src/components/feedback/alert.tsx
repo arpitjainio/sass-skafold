@@ -26,6 +26,7 @@ export interface AlertProps
     VariantProps<typeof alertVariants>,
     BaseComponentProps {
   as?: React.ElementType;
+  className?: string;
 }
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(

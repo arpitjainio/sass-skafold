@@ -34,6 +34,7 @@ export interface CheckboxProps
     BaseComponentProps {
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
+  className?: string;
 }
 
 const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(

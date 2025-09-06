@@ -13,12 +13,10 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, Switch, Heading } from '@repo/ui';
-import { useAuth } from '@/contexts/AuthContext';
 import { useUserProfile } from '@/lib/hooks/useUsers';
 import { useNotifications } from '@/components/Notification';
 
 export default function ProfilePage() {
-  const { user } = useAuth();
   const { data: userProfile, loading, error, updateProfile } = useUserProfile();
   const { addNotification } = useNotifications();
   
@@ -78,11 +76,11 @@ export default function ProfilePage() {
       });
       
       setIsEditing(false);
-    } catch (error) {
+    } catch (error: unknown) {
       addNotification({
         type: 'error',
         title: 'Update failed',
-        message: 'Failed to update profile. Please try again.',
+        message: `Failed to update profile. Please try again. Due to: ${error instanceof Error ? error.message : 'Unknown error'}`,
       });
     }
   };
