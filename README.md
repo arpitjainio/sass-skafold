@@ -276,9 +276,9 @@ While this is a commercial product, we welcome feedback and suggestions. Please 
 
 Need help getting started? Have questions about customization?
 
-- 📧 **Email**: [Your Support Email]
-- 💬 **Discord**: [Your Discord Server]
-- 📖 **Documentation**: [Your Documentation Site]
+- 📧 **Email**: Contact us at [i-ayana@outlook.com](mailto:i-ayana@outlook.com)
+- 💬 **Discord**: Join our Discord [server](https://discord.gg/wFFndB6D)
+- 📖 **Documentation**: [Coming soon]
 
 ---
 
