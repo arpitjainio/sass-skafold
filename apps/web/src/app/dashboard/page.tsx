@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Users, 
   CreditCard, 
@@ -10,24 +11,49 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Heading, StatsCard } from '@repo/ui';
 import { useDashboardAnalytics } from '@/lib/hooks/useAnalytics';
-
-const recentUsers = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', status: 'Active', joined: '2 hours ago' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'Active', joined: '4 hours ago' },
-  { id: 3, name: 'Bob Johnson', email: 'bob@example.com', status: 'Inactive', joined: '1 day ago' },
-  { id: 4, name: 'Alice Brown', email: 'alice@example.com', status: 'Active', joined: '2 days ago' },
-  { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', status: 'Active', joined: '3 days ago' },
-];
-
-const recentTransactions = [
-  { id: 1, user: 'John Doe', amount: '$99.99', status: 'Completed', date: '2 hours ago' },
-  { id: 2, user: 'Jane Smith', amount: '$149.99', status: 'Pending', date: '4 hours ago' },
-  { id: 3, user: 'Bob Johnson', amount: '$79.99', status: 'Failed', date: '1 day ago' },
-  { id: 4, user: 'Alice Brown', amount: '$199.99', status: 'Completed', date: '2 days ago' },
-];
+import { useRecentUsers, useRecentActivity } from '@/lib/hooks/useRecentData';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const { data: analytics, loading, error } = useDashboardAnalytics();
+  const { data: recentUsers, loading: usersLoading, error: usersError } = useRecentUsers(5);
+  const { data: recentActivity, loading: activityLoading, error: activityError } = useRecentActivity(4);
+
+  // Action handlers
+  const handleViewAllUsers = () => {
+    router.push('/dashboard/users');
+  };
+
+  const handleViewAllActivity = () => {
+    router.push('/dashboard/analytics');
+  };
+
+  const handleAddNewUser = () => {
+    router.push('/dashboard/users');
+  };
+
+  const handleCreateSubscription = () => {
+    router.push('/dashboard/subscriptions');
+  };
+
+  const handleExportData = () => {
+    // Export all dashboard data as CSV
+    const csvContent = [
+      ['Metric', 'Value', 'Change'],
+      ['Total Users', analytics?.totalUsers?.toString() || '0', '+12.5%'],
+      ['Active Subscriptions', analytics?.activeSubscriptions?.toString() || '0', '+8.2%'],
+      ['Total Revenue', `$${analytics?.totalRevenue?.toLocaleString() || '0'}`, '+23.1%'],
+      ['User Growth', analytics?.userGrowth?.toString() || '0', '+15.3%'],
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dashboard-export-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
   // Generate stats from analytics data
   const stats = [
@@ -65,7 +91,10 @@ export default function DashboardPage() {
     },
   ];
 
-  if (loading) {
+  const isLoading = loading || usersLoading || activityLoading;
+  const hasError = error || usersError || activityError;
+
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div>
@@ -79,17 +108,22 @@ export default function DashboardPage() {
             <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
           ))}
         </div>
+        <div className="grid lg:grid-cols-2 gap-6">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          ))}
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (hasError) {
     return (
       <div className="space-y-6">
         <div>
           <Heading level="h3">Dashboard</Heading>
           <p className="text-red-600 dark:text-red-400">
-            Error loading dashboard: {error}
+            Error loading dashboard: {error || usersError || activityError}
           </p>
         </div>
       </div>
@@ -122,14 +156,17 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
               <span>Recent Users</span>
-              <button className="text-sm text-primary-600 hover:text-primary-500 font-medium">
+              <button 
+                className="text-sm text-primary-600 hover:text-primary-500 font-medium"
+                onClick={handleViewAllUsers}
+              >
                 View all
               </button>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentUsers.map((user) => (
+              {recentUsers.length > 0 ? recentUsers.map((user) => (
                 <div key={user.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
@@ -153,58 +190,68 @@ export default function DashboardPage() {
                       {user.status}
                     </span>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {user.joined}
+                      {new Date(user.joined).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  No recent users found
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Recent Transactions */}
+        {/* Recent Activity */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
-              <span>Recent Transactions</span>
-              <button className="text-sm text-primary-600 hover:text-primary-500 font-medium">
+              <span>Recent Activity</span>
+              <button 
+                className="text-sm text-primary-600 hover:text-primary-500 font-medium"
+                onClick={handleViewAllActivity}
+              >
                 View all
               </button>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentTransactions.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              {recentActivity.length > 0 ? recentActivity.map((activity, index) => (
+                <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                      <CreditCard className="w-5 h-5 text-gray-600 dark:text-gray-400" aria-hidden="true" />
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      activity.type === 'subscription' ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400' :
+                      activity.type === 'user' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400' :
+                      activity.type === 'cancellation' ? 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400' :
+                      'bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-400'
+                    }`}>
+                      {activity.type === 'subscription' && <CreditCard className="w-5 h-5" aria-hidden="true" />}
+                      {activity.type === 'user' && <Users className="w-5 h-5" aria-hidden="true" />}
+                      {activity.type === 'cancellation' && <Activity className="w-5 h-5" aria-hidden="true" />}
+                      {activity.type === 'payment' && <TrendingUp className="w-5 h-5" aria-hidden="true" />}
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">
-                        {transaction.user}
+                        {activity.action}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {transaction.amount}
+                        {activity.user}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      transaction.status === 'Completed'
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                        : transaction.status === 'Pending'
-                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                    }`}>
-                      {transaction.status}
-                    </span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {transaction.date}
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {new Date(activity.time).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  No recent activity found
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -217,19 +264,28 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           <div className="grid   md:grid-cols-3 gap-4">
-            <button className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <button 
+              className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              onClick={handleAddNewUser}
+            >
               <Users className="w-5 h-5 text-gray-600 dark:text-gray-400 mr-2" aria-hidden="true" />
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Add New User
               </span>
             </button>
-            <button className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <button 
+              className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              onClick={handleCreateSubscription}
+            >
               <CreditCard className="w-5 h-5 text-gray-600 dark:text-gray-400 mr-2" aria-hidden="true" />
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Create Subscription
               </span>
             </button>
-            <button className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <button 
+              className="flex items-center justify-center p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              onClick={handleExportData}
+            >
               <Download className="w-5 h-5 text-gray-600 dark:text-gray-400 mr-2" aria-hidden="true" />
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Export Data

@@ -66,7 +66,6 @@ export default function ProfilePage() {
     try {
       await updateProfile({
         name: formData.name,
-        email: formData.email,
       });
       
       addNotification({
@@ -262,8 +261,7 @@ export default function ProfilePage() {
                     name="email"
                     type="email"
                     value={formData.email}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
+                    disabled={true}
                     className="w-full"
                   />
                 </div>

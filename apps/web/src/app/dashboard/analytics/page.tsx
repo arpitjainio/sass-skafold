@@ -10,54 +10,89 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Heading } from '@repo/ui';
-
-// Mock analytics data
-const metrics = [
-  {
-    title: 'Total Revenue',
-    value: '$45,231',
-    change: '+20.1%',
-    changeType: 'positive',
-    icon: DollarSign,
-    color: 'bg-green-500',
-  },
-  {
-    title: 'New Users',
-    value: '2,350',
-    change: '+180.1%',
-    changeType: 'positive',
-    icon: Users,
-    color: 'bg-blue-500',
-  },
-  {
-    title: 'Active Subscriptions',
-    value: '1,234',
-    change: '+19%',
-    changeType: 'positive',
-    icon: CreditCard,
-    color: 'bg-purple-500',
-  },
-  {
-    title: 'Churn Rate',
-    value: '2.4%',
-    change: '-0.8%',
-    changeType: 'negative',
-    icon: Activity,
-    color: 'bg-orange-500',
-  },
-];
-
-const chartData = [
-  { month: 'Jan', revenue: 4000, users: 2400, subscriptions: 1800 },
-  { month: 'Feb', revenue: 3000, users: 1398, subscriptions: 2210 },
-  { month: 'Mar', revenue: 2000, users: 9800, subscriptions: 2290 },
-  { month: 'Apr', revenue: 2780, users: 3908, subscriptions: 2000 },
-  { month: 'May', revenue: 1890, users: 4800, subscriptions: 2181 },
-  { month: 'Jun', revenue: 2390, users: 3800, subscriptions: 2500 },
-  { month: 'Jul', revenue: 3490, users: 4300, subscriptions: 2100 },
-];
+import { useDashboardAnalytics, useRevenueAnalytics, useUserGrowthAnalytics } from '@/lib/hooks/useAnalytics';
+import { useRecentActivity } from '@/lib/hooks/useRecentData';
 
 export default function AnalyticsPage() {
+  const { data: analytics, loading, error } = useDashboardAnalytics();
+  const { data: revenueData, loading: revenueLoading } = useRevenueAnalytics();
+  const { data: userGrowthData, loading: userGrowthLoading } = useUserGrowthAnalytics();
+  const { data: recentActivity, loading: activityLoading } = useRecentActivity(5);
+
+  // Generate metrics from analytics data
+  const metrics = [
+    {
+      title: 'Total Revenue',
+      value: `$${analytics?.totalRevenue?.toLocaleString() || '0'}`,
+      change: '+20.1%', // This would need to be calculated from historical data
+      changeType: 'positive' as const,
+      icon: DollarSign,
+      color: 'bg-green-500',
+    },
+    {
+      title: 'Total Users',
+      value: analytics?.totalUsers?.toString() || '0',
+      change: '+15.3%', // This would need to be calculated from historical data
+      changeType: 'positive' as const,
+      icon: Users,
+      color: 'bg-blue-500',
+    },
+    {
+      title: 'Active Subscriptions',
+      value: analytics?.activeSubscriptions?.toString() || '0',
+      change: '+8.2%', // This would need to be calculated from historical data
+      changeType: 'positive' as const,
+      icon: CreditCard,
+      color: 'bg-purple-500',
+    },
+    {
+      title: 'User Growth',
+      value: analytics?.userGrowth?.toString() || '0',
+      change: '+12.5%', // This would need to be calculated from historical data
+      changeType: 'positive' as const,
+      icon: Activity,
+      color: 'bg-orange-500',
+    },
+  ];
+
+  const isLoading = loading || revenueLoading || userGrowthLoading || activityLoading;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Heading level="h3">Analytics</Heading>
+          <p className="text-neutral-600 dark:text-neutral-200">
+            Loading analytics data...
+          </p>
+        </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          ))}
+        </div>
+        <div className="grid lg:grid-cols-2 gap-6">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Heading level="h3">Analytics</Heading>
+          <p className="text-red-600 dark:text-red-400">
+            Error loading analytics: {error}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Page header */}
@@ -117,21 +152,28 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="h-64 flex items-end justify-between space-x-2">
-              {chartData.map((data) => (
-                <div key={data.month} className="flex flex-col items-center space-y-2">
-                  <div 
-                    className="w-8 bg-primary-600 rounded-t"
-                    style={{ height: `${(data.revenue / 4000) * 200}px` }}
-                  />
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {data.month}
-                  </span>
+              {revenueData && revenueData.length > 0 ? revenueData.map((data, index) => {
+                const maxCount = Math.max(...revenueData.map(d => d.count));
+                return (
+                  <div key={index} className="flex flex-col items-center space-y-2">
+                    <div 
+                      className="w-8 bg-primary-600 rounded-t"
+                      style={{ height: `${(data.count / maxCount) * 200}px` }}
+                    />
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {data.month}
+                    </span>
+                  </div>
+                );
+              }) : (
+                <div className="flex items-center justify-center h-full w-full text-gray-500 dark:text-gray-400">
+                  No revenue data available
                 </div>
-              ))}
+              )}
             </div>
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Monthly revenue trend over the last 7 months
+                Monthly revenue trend over the last 12 months
               </p>
             </div>
           </CardContent>
@@ -144,21 +186,28 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="h-64 flex items-end justify-between space-x-2">
-              {chartData.map((data) => (
-                <div key={data.month} className="flex flex-col items-center space-y-2">
-                  <div 
-                    className="w-8 bg-blue-600 rounded-t"
-                    style={{ height: `${(data.users / 9800) * 200}px` }}
-                  />
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {data.month}
-                  </span>
+              {userGrowthData && userGrowthData.length > 0 ? userGrowthData.map((data, index) => {
+                const maxCount = Math.max(...userGrowthData.map(d => d.count));
+                return (
+                  <div key={index} className="flex flex-col items-center space-y-2">
+                    <div 
+                      className="w-8 bg-blue-600 rounded-t"
+                      style={{ height: `${(data.count / maxCount) * 200}px` }}
+                    />
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {data.month}
+                    </span>
+                  </div>
+                );
+              }) : (
+                <div className="flex items-center justify-center h-full w-full text-gray-500 dark:text-gray-400">
+                  No user growth data available
                 </div>
-              ))}
+              )}
             </div>
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                New user registrations over the last 7 months
+                New user registrations over the last 12 months
               </p>
             </div>
           </CardContent>
@@ -172,13 +221,7 @@ export default function AnalyticsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {[
-              { action: 'New subscription', user: 'John Doe', time: '2 hours ago', type: 'subscription' },
-              { action: 'User registered', user: 'Jane Smith', time: '4 hours ago', type: 'user' },
-              { action: 'Payment received', user: 'Bob Johnson', time: '6 hours ago', type: 'payment' },
-              { action: 'Subscription cancelled', user: 'Alice Brown', time: '1 day ago', type: 'cancellation' },
-              { action: 'New subscription', user: 'Charlie Wilson', time: '2 days ago', type: 'subscription' },
-            ].map((activity, index) => (
+            {recentActivity && recentActivity.length > 0 ? recentActivity.map((activity, index) => (
               <div key={index} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                   activity.type === 'subscription' ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400' :
@@ -200,10 +243,14 @@ export default function AnalyticsPage() {
                   </p>
                 </div>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {activity.time}
+                  {new Date(activity.time).toLocaleDateString()}
                 </span>
               </div>
-            ))}
+            )) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                No recent activity found
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

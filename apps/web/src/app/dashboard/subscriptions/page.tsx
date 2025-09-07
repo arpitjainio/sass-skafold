@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { 
   CreditCard, 
   Search, 
-  MoreHorizontal,
   Edit,
   Trash2,
   Eye,
@@ -17,6 +16,10 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, Select, Checkbox, Heading } from '@repo/ui';
 import { useAdminSubscriptions } from '@/lib/hooks/useSubscriptions';
+import { subscriptionApi, Subscription } from '@/lib/subscription';
+import SubscriptionModal from '@/components/SubscriptionModal';
+import ConfirmationDialog from '@/components/ConfirmationDialog';
+import { useNotifications } from '@/components/Notification';
 
 const plans = ['All', 'Basic', 'Pro', 'Enterprise'];
 const statuses = ['All', 'ACTIVE', 'CANCELED', 'PAST_DUE', 'INCOMPLETE'];
@@ -26,8 +29,30 @@ export default function SubscriptionsPage() {
   const [selectedPlan, setSelectedPlan] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [selectedSubscriptions, setSelectedSubscriptions] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage] = useState(1);
   const [limit] = useState(10);
+  
+  // Modal state
+  const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
+  const [modalMode, setModalMode] = useState<'view' | 'edit'>('view');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  
+  // Confirmation dialog state
+  const [confirmationDialog, setConfirmationDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    variant?: 'danger' | 'warning' | 'info';
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
+  
+  const { addNotification } = useNotifications();
 
   const params = {
     page: currentPage,
@@ -62,6 +87,76 @@ export default function SubscriptionsPage() {
         ? prev.filter(id => id !== subscriptionId)
         : [...prev, subscriptionId]
     );
+  };
+
+  // Action handlers
+  const handleViewSubscription = (subscription: Subscription) => {
+    setSelectedSubscription(subscription);
+    setModalMode('view');
+    setIsModalOpen(true);
+  };
+
+  const handleEditSubscription = (subscription: Subscription) => {
+    setSelectedSubscription(subscription);
+    setModalMode('edit');
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteSubscription = (subscription: Subscription) => {
+    setConfirmationDialog({
+      isOpen: true,
+      title: 'Delete Subscription',
+      message: `Are you sure you want to delete subscription ${subscription.id}? This action cannot be undone.`,
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          setIsDeleting(subscription.id);
+          await subscriptionApi.deleteSubscription(subscription.id);
+          addNotification({
+            type: 'success',
+            message: 'Subscription deleted successfully',
+            title: 'Subscription deleted',
+          });
+          // Refresh the subscriptions list
+          window.location.reload();
+        } catch (error) {
+          addNotification({
+            type: 'error',
+            message: `Failed to delete subscription. Due to: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            title: 'Error',
+          });
+        } finally {
+          setIsDeleting(null);
+          setConfirmationDialog(prev => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
+  };
+
+  const handleSaveSubscription = async (subscriptionData: Partial<Subscription>) => {
+    if (!selectedSubscription) return;
+    
+    try {
+      await subscriptionApi.updateSubscription(selectedSubscription.id, {
+        status: subscriptionData.status || '',
+        currentPeriodEnd: subscriptionData.currentPeriodEnd || '',
+        canceledAt: subscriptionData.canceledAt || '',
+      });
+      // Refresh the subscriptions list
+      window.location.reload();
+    } catch (error) {
+      addNotification({
+        type: 'error',
+        message: `Failed to update subscription. Due to: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        title: 'Error',
+      });
+      throw error; // Let the modal handle the error
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedSubscription(null);
   };
 
   const getStatusColor = (status: string) => {
@@ -351,14 +446,31 @@ export default function SubscriptionsPage() {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="View subscription">
+                        <button 
+                          className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" 
+                          aria-label="View subscription"
+                          onClick={() => handleViewSubscription(subscription)}
+                        >
                           <Eye className="w-4 h-4" aria-hidden="true" />
                         </button>
-                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="Edit subscription">
+                        <button 
+                          className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" 
+                          aria-label="Edit subscription"
+                          onClick={() => handleEditSubscription(subscription)}
+                        >
                           <Edit className="w-4 h-4" aria-hidden="true" />
                         </button>
-                        <button className="p-1 text-gray-400 hover:text-red-600" aria-label="More options">
-                          <MoreHorizontal className="w-4 h-4" aria-hidden="true" />
+                        <button 
+                          className="p-1 text-gray-400 hover:text-red-600 disabled:opacity-50" 
+                          aria-label="Delete subscription"
+                          onClick={() => handleDeleteSubscription(subscription)}
+                          disabled={isDeleting === subscription.id}
+                        >
+                          {isDeleting === subscription.id ? (
+                            <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" aria-hidden="true" />
+                          )}
                         </button>
                       </div>
                     </td>
@@ -369,6 +481,26 @@ export default function SubscriptionsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Subscription Modal */}
+      <SubscriptionModal
+        subscription={selectedSubscription}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveSubscription}
+        mode={modalMode}
+      />
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmationDialog.isOpen}
+        onClose={() => setConfirmationDialog(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmationDialog.onConfirm}
+        title={confirmationDialog.title}
+        message={confirmationDialog.message}
+        variant={confirmationDialog.variant || 'danger'}
+        isLoading={isDeleting !== null}
+      />
     </div>
   );
 } 

@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { 
   Users, 
   Search, 
-  MoreHorizontal,
   Edit,
   Trash2,
   Eye,
@@ -13,6 +12,11 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, Checkbox, Select, Heading } from '@repo/ui';
 import { useUsers } from '@/lib/hooks/useUsers';
+import { userApi, User } from '@/lib/user';
+import UserModal from '@/components/UserModal';
+import CreateUserModal from '@/components/CreateUserModal';
+import ConfirmationDialog from '@/components/ConfirmationDialog';
+import { useNotifications } from '@/components/Notification';
 
 const roles = ['All', 'Admin', 'Moderator', 'User'];
 const statuses = ['All', 'Active', 'Inactive', 'Suspended'];
@@ -24,6 +28,29 @@ export default function UsersPage() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(10);
+  
+  // Modal state
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [modalMode, setModalMode] = useState<'view' | 'edit'>('view');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  
+  // Confirmation dialog state
+  const [confirmationDialog, setConfirmationDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    variant?: 'danger' | 'warning' | 'info';
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
+  
+  const { addNotification } = useNotifications();
 
   const params = {
     page: currentPage,
@@ -36,21 +63,13 @@ export default function UsersPage() {
   const { data: usersData, loading, error } = useUsers(params);
 
   const users = usersData?.data || [];
-
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = selectedRole === 'All' || user.roles.includes(selectedRole);
-    const matchesStatus = selectedStatus === 'All' || (user.hasActiveSubscription ? 'Active' : 'Inactive');
-    
-    return matchesSearch && matchesRole && matchesStatus;
-  });
+  const totalUsers = usersData?.meta?.total || 0;
 
   const handleSelectAll = () => {
-    if (selectedUsers.length === filteredUsers.length) {
+    if (selectedUsers.length === users.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(filteredUsers.map(user => user.id));
+      setSelectedUsers(users.map(user => user.id));
     }
   };
 
@@ -60,6 +79,148 @@ export default function UsersPage() {
         ? prev.filter(id => id !== userId)
         : [...prev, userId]
     );
+  };
+
+  // Action handlers
+  const handleViewUser = (user: User) => {
+    setSelectedUser(user);
+    setModalMode('view');
+    setIsModalOpen(true);
+  };
+
+  const handleEditUser = (user: User) => {
+    setSelectedUser(user);
+    setModalMode('edit');
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteUser = (user: User) => {
+    setConfirmationDialog({
+      isOpen: true,
+      title: 'Delete User',
+      message: `Are you sure you want to delete ${user.name}? This action cannot be undone.`,
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          setIsDeleting(user.id);
+          await userApi.deleteUser(user.id);
+          addNotification({
+            title: 'User deleted',
+            type: 'success',
+            message: 'User deleted successfully',
+          });
+          // Refresh the users list
+          window.location.reload();
+        } catch (error) {
+          addNotification({
+            title: 'Error',
+            type: 'error',
+            message: `Failed to delete user. Due to: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          });
+        } finally {
+          setIsDeleting(null);
+          setConfirmationDialog(prev => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
+  };
+
+  const handleSaveUser = async (userData: Partial<User>) => {
+    if (!selectedUser) return;
+    
+    await userApi.updateUser(selectedUser.id, {
+      name: userData.name || '',
+      email: userData.email || '',
+      roles: userData.roles || [],
+    });
+    // Refresh the users list
+    window.location.reload();
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleCreateUser = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCreateUserSuccess = () => {
+    // Refresh the users list
+    window.location.reload();
+  };
+
+  // Bulk actions
+  const handleBulkDelete = () => {
+    if (selectedUsers.length === 0) {
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: 'Please select users to delete',
+      });
+      return;
+    }
+
+    setConfirmationDialog({
+      isOpen: true,
+      title: 'Delete Multiple Users',
+      message: `Are you sure you want to delete ${selectedUsers.length} users? This action cannot be undone.`,
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          // Delete users one by one
+          for (const userId of selectedUsers) {
+            await userApi.deleteUser(userId);
+          }
+          
+          addNotification({
+            type: 'success',
+            title: 'Success',
+            message: `${selectedUsers.length} users deleted successfully`,
+          });
+          
+          setSelectedUsers([]);
+          window.location.reload();
+        } catch {
+          addNotification({
+            type: 'error',
+            title: 'Error',
+            message: 'Failed to delete some users',
+          });
+        } finally {
+          setConfirmationDialog(prev => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
+  };
+
+  const handleExportUsers = () => {
+    // Simple CSV export
+    const csvContent = [
+      ['Name', 'Email', 'Role', 'Subscription Count', 'Created At'],
+      ...users.map(user => [
+        user.name,
+        user.email,
+        user.roles.join(', '),
+        user.subscriptionCount.toString(),
+        new Date(user.createdAt).toLocaleDateString()
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `users-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+
+    addNotification({
+      type: 'success',
+      title: 'Success',
+      message: 'Users exported successfully',
+    });
   };
 
   const getStatusColor = (status: string) => {
@@ -88,6 +249,37 @@ export default function UsersPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Heading level="h3">Users</Heading>
+          <p className="text-neutral-600 dark:text-neutral-200">
+            Loading users...
+          </p>
+        </div>
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Heading level="h3">Users</Heading>
+          <p className="text-red-600 dark:text-red-400">
+            Error loading users: {error}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Page header */}
@@ -100,7 +292,10 @@ export default function UsersPage() {
             Manage your users and their permissions.
           </p>
         </div>
-        <Button className="flex items-center space-x-2">
+        <Button 
+          className="flex items-center space-x-2"
+          onClick={handleCreateUser}
+        >
           <Plus className="w-4 h-4" />
           <span>Add User</span>
         </Button>
@@ -146,7 +341,11 @@ export default function UsersPage() {
             </Select>
 
             {/* Export button */}
-            <Button variant="outline" className="flex items-center space-x-2">
+            <Button 
+              variant="outline" 
+              className="flex items-center space-x-2"
+              onClick={handleExportUsers}
+            >
               <Download className="w-4 h-4" />
               <span>Export</span>
             </Button>
@@ -158,7 +357,7 @@ export default function UsersPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white leading-[32px]">
-            <span>Users ({filteredUsers.length})</span>
+            <span>Users ({totalUsers})</span>
             {selectedUsers.length > 0 && (
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -168,7 +367,12 @@ export default function UsersPage() {
                   <Edit className="w-4 h-4 mr-2" />
                   Edit
                 </Button>
-                <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-red-600 hover:text-red-700"
+                  onClick={handleBulkDelete}
+                >
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete
                 </Button>
@@ -183,7 +387,7 @@ export default function UsersPage() {
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th className="text-left py-3 px-4">
                     <Checkbox
-                      checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
+                      checked={selectedUsers.length === users.length && users.length > 0}
                       onCheckedChange={handleSelectAll}
                     />
                   </th>
@@ -196,7 +400,14 @@ export default function UsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.map((user) => (
+                {users.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      No users found
+                    </td>
+                  </tr>
+                ) : (
+                  users.map((user) => (
                   <tr key={user.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="py-3 px-4">
                       <Checkbox
@@ -237,24 +448,99 @@ export default function UsersPage() {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="View user">
+                        <button 
+                          className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" 
+                          aria-label="View user"
+                          onClick={() => handleViewUser(user)}
+                        >
                           <Eye className="w-4 h-4" aria-hidden="true" />
                         </button>
-                        <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" aria-label="Edit user">
+                        <button 
+                          className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" 
+                          aria-label="Edit user"
+                          onClick={() => handleEditUser(user)}
+                        >
                           <Edit className="w-4 h-4" aria-hidden="true" />
                         </button>
-                        <button className="p-1 text-gray-400 hover:text-red-600" aria-label="More options">
-                          <MoreHorizontal className="w-4 h-4" aria-hidden="true" />
+                        <button 
+                          className="p-1 text-gray-400 hover:text-red-600 disabled:opacity-50" 
+                          aria-label="Delete user"
+                          onClick={() => handleDeleteUser(user)}
+                          disabled={isDeleting === user.id}
+                        >
+                          {isDeleting === user.id ? (
+                            <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" aria-hidden="true" />
+                          )}
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))}
+                  ))
+                )}
               </tbody>
             </table>
           </div>
+          
+          {/* Pagination */}
+          {usersData?.meta && usersData.meta.totalPages > 1 && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, totalUsers)} of {totalUsers} users
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  Page {currentPage} of {usersData.meta.totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.min(usersData.meta.totalPages, prev + 1))}
+                  disabled={currentPage === usersData.meta.totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
+
+      {/* User Modal */}
+      <UserModal
+        user={selectedUser}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveUser}
+        mode={modalMode}
+      />
+
+      {/* Create User Modal */}
+      <CreateUserModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={handleCreateUserSuccess}
+      />
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmationDialog.isOpen}
+        onClose={() => setConfirmationDialog(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmationDialog.onConfirm}
+        title={confirmationDialog.title}
+        message={confirmationDialog.message}
+        variant={confirmationDialog.variant || 'danger'}
+        isLoading={isDeleting !== null}
+      />
     </div>
   );
 } 
