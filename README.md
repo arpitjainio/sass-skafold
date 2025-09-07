@@ -1,135 +1,285 @@
-# Turborepo starter
+# SaaS Skafold - Complete SaaS Starter Template
 
-This Turborepo starter is maintained by the Turborepo core team.
+A production-ready, full-stack SaaS starter template built with modern technologies. Jumpstart your SaaS application with authentication, subscription management, user roles, and a beautiful dashboard - all configured and ready to deploy.
 
-## Using this example
+## 🚀 What's Included
 
-Run the following command:
+### Core Features
+- **🔐 Complete Authentication System** - JWT-based auth with secure password hashing
+- **💳 Stripe Integration** - Ready-to-use subscription management with webhooks
+- **👥 User Management** - Role-based access control (RBAC) system
+- **📊 Admin Dashboard** - Comprehensive admin panel for user and subscription management
+- **🎨 Modern UI/UX** - Beautiful, responsive design with Tailwind CSS and Radix UI
+- **📱 Mobile-First Design** - Optimized for all device sizes
+- **🔒 Security First** - Built-in security best practices and validation
 
-```sh
-npx create-turbo@latest
-```
+### Applications & Packages
 
-## What's inside?
+#### Apps
+- **`web`** - Next.js 15 frontend application with React 19
+- **`api`** - NestJS backend API with TypeScript
 
-This Turborepo includes the following packages/apps:
+#### Packages
+- **`@repo/ui`** - Reusable UI component library with Radix UI primitives
+- **`@repo/design-system`** - Design tokens and styling system
+- **`@repo/utils`** - Shared utility functions
+- **`@repo/config-eslint`** - ESLint configurations for the monorepo
+- **`@repo/config-typescript`** - TypeScript configurations
 
-### Apps and Packages
+## 🛠 Tech Stack
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Frontend
+- **Next.js 15** - React framework with App Router
+- **React 19** - Latest React with concurrent features
+- **TypeScript** - Type-safe development
+- **Tailwind CSS 4** - Utility-first CSS framework
+- **Radix UI** - Accessible component primitives
+- **Lucide React** - Beautiful icons
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+### Backend
+- **NestJS** - Scalable Node.js server framework
+- **Prisma** - Modern database ORM
+- **PostgreSQL** - Robust relational database
+- **JWT** - Secure authentication tokens
+- **Stripe** - Payment processing and subscriptions
+- **Winston** - Logging system
 
-### Utilities
+### Development & Deployment
+- **Turborepo** - High-performance monorepo build system
+- **pnpm** - Fast, disk space efficient package manager
+- **ESLint & Prettier** - Code quality and formatting
+- **Jest** - Testing framework
 
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
+## 🏗 Project Structure
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+saas-skafold/
+├── apps/
+│   ├── api/                 # NestJS backend API
+│   │   ├── src/
+│   │   │   ├── auth/        # Authentication module
+│   │   │   ├── user/        # User management
+│   │   │   ├── subscription/ # Subscription handling
+│   │   │   ├── admin/       # Admin functionality
+│   │   │   └── common/      # Shared utilities
+│   │   └── package.json
+│   └── web/                 # Next.js frontend
+│       ├── src/
+│       │   ├── app/         # App Router pages
+│       │   ├── components/  # React components
+│       │   ├── lib/         # Utilities and hooks
+│       │   └── contexts/    # React contexts
+│       └── package.json
+├── packages/
+│   ├── ui/                  # UI component library
+│   ├── design-system/       # Design tokens
+│   ├── utils/               # Shared utilities
+│   └── config-*/            # Shared configurations
+├── prisma/
+│   └── schema.prisma        # Database schema
+└── package.json
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## 🚀 Getting Started
 
+### Prerequisites
+
+- **Node.js** >= 18
+- **pnpm** (recommended) or npm/yarn
+- **PostgreSQL** database
+- **Stripe** account (for payments)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd saas-skafold
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   # Copy the example environment file
+   cp apps/api/env.example apps/api/.env
+   
+   # Edit the .env file with your configuration
+   nano apps/api/.env
+   ```
+
+4. **Configure your environment variables**
+   ```env
+   # Database
+   DATABASE_URL="postgresql://username:password@localhost:5432/saas_skafold"
+   
+   # JWT
+   JWT_SECRET="your-super-secret-jwt-key"
+   
+   # Stripe
+   STRIPE_SECRET_KEY="sk_test_..."
+   STRIPE_WEBHOOK_SECRET="whsec_..."
+   
+   # App
+   NODE_ENV="development"
+   PORT=3001
+   ```
+
+5. **Set up the database**
+   ```bash
+   # Generate Prisma client
+   pnpm prisma generate
+   
+   # Run database migrations
+   pnpm prisma migrate dev
+   
+   # (Optional) Seed the database
+   pnpm --filter api setup
+   ```
+
+6. **Start the development servers**
+   ```bash
+   # Start all applications
+   pnpm dev
+   
+   # Or start individually
+   pnpm --filter web dev    # Frontend on http://localhost:3000
+   pnpm --filter api dev    # Backend on http://localhost:3001
+   ```
+
+### First Steps
+
+1. **Visit the application** at `http://localhost:3000`
+2. **Create an admin user** using the setup script or registration
+3. **Configure Stripe** webhooks for subscription events
+4. **Customize** the branding and styling to match your brand
+
+## 📋 Available Scripts
+
+### Root Level
+```bash
+pnpm dev          # Start all applications in development
+pnpm build        # Build all applications
+pnpm lint         # Lint all packages
+pnpm format       # Format code with Prettier
+pnpm check-types  # Type check all packages
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+### Individual Applications
+```bash
+# API (Backend)
+pnpm --filter api dev        # Start API server
+pnpm --filter api build      # Build API
+pnpm --filter api setup      # Run database setup
+
+# Web (Frontend)
+pnpm --filter web dev        # Start Next.js dev server
+pnpm --filter web build      # Build Next.js app
+pnpm --filter web lint       # Lint frontend code
 ```
 
-### Remote Caching
+## 🎯 Key Features Explained
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### Authentication System
+- Secure JWT-based authentication
+- Password hashing with bcrypt
+- Protected routes and API endpoints
+- Role-based access control
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+### Subscription Management
+- Stripe integration for payments
+- Multiple subscription tiers
+- Webhook handling for real-time updates
+- Subscription status tracking
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+### User Management
+- Complete CRUD operations for users
+- Role assignment and management
+- User profile management
+- Admin dashboard for user oversight
 
+### Modern UI/UX
+- Responsive design that works on all devices
+- Accessible components with Radix UI
+- Consistent design system
+- Dark/light mode support (configurable)
+
+## 🚀 Deployment
+
+### Environment Setup
+1. Set up a PostgreSQL database (recommended: Supabase, Railway, or Neon)
+2. Configure environment variables for production
+3. Set up Stripe webhooks for your production domain
+4. Deploy to your preferred platform
+
+### Recommended Platforms
+- **Frontend**: Vercel, Netlify, or AWS Amplify
+- **Backend**: Railway, Render, or AWS
+- **Database**: Supabase, Railway, or Neon
+
+### Build for Production
+```bash
+# Build all applications
+pnpm build
+
+# The built applications will be in:
+# - apps/web/.next/ (Next.js build)
+# - apps/api/dist/ (NestJS build)
 ```
-cd my-turborepo
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+## 💡 Benefits
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
+### For Developers
+- **⚡ Rapid Development** - Start building features immediately, not infrastructure
+- **🔧 Production Ready** - Battle-tested patterns and security practices
+- **📚 Well Documented** - Comprehensive documentation and examples
+- **🎨 Modern Stack** - Latest technologies and best practices
+- **🔒 Security First** - Built-in security measures and validation
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### For Businesses
+- **💰 Faster Time to Market** - Launch your SaaS in weeks, not months
+- **📈 Scalable Architecture** - Built to handle growth from day one
+- **💳 Revenue Ready** - Subscription billing integrated from the start
+- **👥 User Management** - Complete user and admin functionality
+- **🎯 Focus on Value** - Spend time on your unique features, not boilerplate
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+### For Teams
+- **🔄 Monorepo Benefits** - Shared code and consistent tooling
+- **📦 Component Library** - Reusable UI components across projects
+- **🛠 Developer Experience** - Hot reload, type safety, and great tooling
+- **📊 Admin Tools** - Built-in admin dashboard for user management
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+## 📄 License & Usage
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+This project is licensed under a **Commercial License**. See the [LICENSE](LICENSE) file for details.
 
-## Useful Links
+### Usage Terms
+- ✅ **Single Project Use** - Use for one commercial project
+- ✅ **Modification Allowed** - Customize and extend as needed
+- ✅ **Commercial Use** - Use in commercial applications
+- ❌ **Resale Prohibited** - Cannot resell or redistribute the template
+- ❌ **Multiple Projects** - Requires separate license for each project
 
-Learn more about the power of Turborepo:
+### Support
+- 📧 Email support for setup and configuration
+- 📚 Comprehensive documentation
+- 🔄 Regular updates and improvements
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+## 🤝 Contributing
+
+While this is a commercial product, we welcome feedback and suggestions. Please contact us through our support channels.
+
+## 📞 Support
+
+Need help getting started? Have questions about customization?
+
+- 📧 **Email**: [Your Support Email]
+- 💬 **Discord**: [Your Discord Server]
+- 📖 **Documentation**: [Your Documentation Site]
+
+---
+
+**Ready to launch your SaaS?** Get started with SaaS Skafold today and focus on what makes your product unique! 🚀
