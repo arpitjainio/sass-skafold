@@ -82,4 +82,8 @@ export const userApi = {
   // Admin: Delete user
   deleteUser: (id: string) =>
     apiClient.delete<ApiResponse<{ message: string }>>(`/admin/users/${id}`),
+
+  // Admin: Create user
+  createUser: (data: { name: string; email: string; password: string; roles: string[] }) =>
+    apiClient.post<ApiResponse<User>, { name: string; email: string; password: string; roles: string[] }>('/admin/users', data),
 };

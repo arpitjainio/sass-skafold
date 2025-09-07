@@ -3,6 +3,7 @@ import { apiClient, ApiResponse } from "./api";
 // Subscription API types
 export interface Subscription {
   id: string;
+  stripeSubId: string;
   status: string;
   currentPeriodEnd: string;
   canceledAt?: string;
@@ -22,7 +23,9 @@ export interface CreateSubscriptionRequest {
 }
 
 export interface UpdateSubscriptionRequest {
-  priceId: string;
+  status: string;
+  currentPeriodEnd: string;
+  canceledAt: string;
 }
 
 export interface CancelSubscriptionRequest {
@@ -82,4 +85,12 @@ export const subscriptionApi = {
     
     return apiClient.get<ApiResponse<PaginatedSubscriptionsResponse>>(endpoint);
   },
+
+  // Admin: Update subscription
+  adminUpdateSubscription: (id: string, data: { status?: string; currentPeriodEnd?: string; canceledAt?: string }) =>
+    apiClient.put<ApiResponse<Subscription>, { status?: string; currentPeriodEnd?: string; canceledAt?: string }>(`/admin/subscriptions/${id}`, data),
+
+  // Admin: Delete subscription
+  deleteSubscription: (id: string) =>
+    apiClient.delete<ApiResponse<{ message: string }>>(`/admin/subscriptions/${id}`),
 };

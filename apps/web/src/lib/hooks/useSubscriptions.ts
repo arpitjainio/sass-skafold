@@ -84,7 +84,8 @@ export function useAdminSubscriptions(params?: {
     };
 
     fetchData();
-  }, [params]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params?.page, params?.limit, params?.status, params?.plan]);
 
   const refetch = () => {
     setLoading(true);

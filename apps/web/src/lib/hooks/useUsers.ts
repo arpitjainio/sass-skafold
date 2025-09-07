@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { userApi, User, UserProfile, PaginatedUsersResponse } from '../user';
+import { userApi, UserProfile, PaginatedUsersResponse } from '../user';
 import { ApiResponse } from '../api';
 
 export function useUsers(params?: {
@@ -33,7 +33,8 @@ export function useUsers(params?: {
     };
 
     fetchData();
-  }, [params]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params?.page, params?.limit, params?.search, params?.role, params?.status]);
 
   const refetch = () => {
     setLoading(true);
