@@ -11,6 +11,8 @@ node_modules
 .env.development.local
 .env.test.local
 .env.production.local
+!.env.example
+!**/.env.example
 
 # Testing
 coverage
@@ -109,7 +111,6 @@ dist
 
 # Gatsby files
 .cache/
-public
 
 # Storybook build outputs
 .out
@@ -136,9 +137,6 @@ temp/
 ehthumbs.db
 Thumbs.db
 
-# Prisma
-prisma/migrations/
-
 # Database
 *.db
 *.sqlite
@@ -150,5 +148,4 @@ prisma/migrations/
 *.crt
 
 # Misc
-.env.example
 .env.template

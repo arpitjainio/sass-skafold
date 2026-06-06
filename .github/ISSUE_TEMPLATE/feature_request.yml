@@ -1,0 +1,35 @@
+name: Feature request
+description: Suggest an improvement for the starter
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What workflow or pain point would this improve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the feature or change you want to see.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Share any workarounds or alternative approaches you considered.
+
+  - type: checkboxes
+    id: starter-fit
+    attributes:
+      label: Starter fit
+      options:
+        - label: This feature is broadly useful for a reusable SaaS starter.
+          required: true

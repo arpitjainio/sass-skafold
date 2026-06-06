@@ -1,285 +1,126 @@
-# SaaS Skafold - Complete SaaS Starter Template
+# SaaS Skafold
 
-A production-ready, full-stack SaaS starter template built with modern technologies. Jumpstart your SaaS application with authentication, subscription management, user roles, and a beautiful dashboard - all configured and ready to deploy.
+Open-source full-stack SaaS starter built as a monorepo with a Next.js frontend, a NestJS API, Prisma, JWT auth, RBAC, and shared UI packages.
 
-## 🚀 What's Included
+The goal of this repository is to give teams a clean starting point for a SaaS product without licensing fees or royalties. You can use it for personal or commercial work under the MIT license.
 
-### Core Features
-- **🔐 Complete Authentication System** - JWT-based auth with secure password hashing
-- **💳 Stripe Integration** - Ready-to-use subscription management with webhooks
-- **👥 User Management** - Role-based access control (RBAC) system
-- **📊 Admin Dashboard** - Comprehensive admin panel for user and subscription management
-- **🎨 Modern UI/UX** - Beautiful, responsive design with Tailwind CSS and Radix UI
-- **📱 Mobile-First Design** - Optimized for all device sizes
-- **🔒 Security First** - Built-in security best practices and validation
+## What is included
 
-### Applications & Packages
+- Next.js 15 web app with auth screens and dashboard scaffolding
+- NestJS API with JWT auth, user management, roles, and admin endpoints
+- Prisma schema and migrations for PostgreSQL
+- Shared design system and UI component packages
+- Optional Stripe subscription scaffolding
+- Turborepo + pnpm monorepo setup
 
-#### Apps
-- **`web`** - Next.js 15 frontend application with React 19
-- **`api`** - NestJS backend API with TypeScript
+## Monorepo layout
 
-#### Packages
-- **`@repo/ui`** - Reusable UI component library with Radix UI primitives
-- **`@repo/design-system`** - Design tokens and styling system
-- **`@repo/utils`** - Shared utility functions
-- **`@repo/config-eslint`** - ESLint configurations for the monorepo
-- **`@repo/config-typescript`** - TypeScript configurations
-
-## 🛠 Tech Stack
-
-### Frontend
-- **Next.js 15** - React framework with App Router
-- **React 19** - Latest React with concurrent features
-- **TypeScript** - Type-safe development
-- **Tailwind CSS 4** - Utility-first CSS framework
-- **Radix UI** - Accessible component primitives
-- **Lucide React** - Beautiful icons
-
-### Backend
-- **NestJS** - Scalable Node.js server framework
-- **Prisma** - Modern database ORM
-- **PostgreSQL** - Robust relational database
-- **JWT** - Secure authentication tokens
-- **Stripe** - Payment processing and subscriptions
-- **Winston** - Logging system
-
-### Development & Deployment
-- **Turborepo** - High-performance monorepo build system
-- **pnpm** - Fast, disk space efficient package manager
-- **ESLint & Prettier** - Code quality and formatting
-- **Jest** - Testing framework
-
-## 🏗 Project Structure
-
-```
-saas-skafold/
-├── apps/
-│   ├── api/                 # NestJS backend API
-│   │   ├── src/
-│   │   │   ├── auth/        # Authentication module
-│   │   │   ├── user/        # User management
-│   │   │   ├── subscription/ # Subscription handling
-│   │   │   ├── admin/       # Admin functionality
-│   │   │   └── common/      # Shared utilities
-│   │   └── package.json
-│   └── web/                 # Next.js frontend
-│       ├── src/
-│       │   ├── app/         # App Router pages
-│       │   ├── components/  # React components
-│       │   ├── lib/         # Utilities and hooks
-│       │   └── contexts/    # React contexts
-│       └── package.json
-├── packages/
-│   ├── ui/                  # UI component library
-│   ├── design-system/       # Design tokens
-│   ├── utils/               # Shared utilities
-│   └── config-*/            # Shared configurations
-├── prisma/
-│   └── schema.prisma        # Database schema
-└── package.json
+```text
+.
+├── apps
+│   ├── api
+│   └── web
+├── packages
+│   ├── config-eslint
+│   ├── config-typescript
+│   ├── design-system
+│   ├── ui
+│   └── utils
+├── prisma
+└── docs
 ```
 
-## 🚀 Getting Started
+## Quick start
 
 ### Prerequisites
 
-- **Node.js** >= 18
-- **pnpm** (recommended) or npm/yarn
-- **PostgreSQL** database
-- **Stripe** account (for payments)
+- Node.js 18+
+- pnpm 9+
+- PostgreSQL
 
-### Installation
+### Install
 
-1. **Clone the repository**
-   ```bash
-   git clone <your-repo-url>
-   cd saas-skafold
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pnpm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   # Copy the example environment file
-   cp apps/api/env.example apps/api/.env
-   
-   # Edit the .env file with your configuration
-   nano apps/api/.env
-   ```
-
-4. **Configure your environment variables**
-   ```env
-   # Database
-   DATABASE_URL="postgresql://username:password@localhost:5432/saas_skafold"
-   
-   # JWT
-   JWT_SECRET="your-super-secret-jwt-key"
-   
-   # Stripe
-   STRIPE_SECRET_KEY="sk_test_..."
-   STRIPE_WEBHOOK_SECRET="whsec_..."
-   
-   # App
-   NODE_ENV="development"
-   PORT=3001
-   ```
-
-5. **Set up the database**
-   ```bash
-   # Generate Prisma client
-   pnpm prisma generate
-   
-   # Run database migrations
-   pnpm prisma migrate dev
-   
-   # (Optional) Seed the database
-   pnpm --filter api setup
-   ```
-
-6. **Start the development servers**
-   ```bash
-   # Start all applications
-   pnpm dev
-   
-   # Or start individually
-   pnpm --filter web dev    # Frontend on http://localhost:3000
-   pnpm --filter api dev    # Backend on http://localhost:3001
-   ```
-
-### First Steps
-
-1. **Visit the application** at `http://localhost:3000`
-2. **Create an admin user** using the setup script or registration
-3. **Configure Stripe** webhooks for subscription events
-4. **Customize** the branding and styling to match your brand
-
-## 📋 Available Scripts
-
-### Root Level
 ```bash
-pnpm dev          # Start all applications in development
-pnpm build        # Build all applications
-pnpm lint         # Lint all packages
-pnpm format       # Format code with Prettier
-pnpm check-types  # Type check all packages
+pnpm install
 ```
 
-### Individual Applications
-```bash
-# API (Backend)
-pnpm --filter api dev        # Start API server
-pnpm --filter api build      # Build API
-pnpm --filter api setup      # Run database setup
+### Configure environment variables
 
-# Web (Frontend)
-pnpm --filter web dev        # Start Next.js dev server
-pnpm --filter web build      # Build Next.js app
-pnpm --filter web lint       # Lint frontend code
+```bash
+cp .env.example .env
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env.local
 ```
 
-## 🎯 Key Features Explained
+Update the copied files with your local values:
 
-### Authentication System
-- Secure JWT-based authentication
-- Password hashing with bcrypt
-- Protected routes and API endpoints
-- Role-based access control
+- `.env`: used by Prisma commands run from the repo root
+- `apps/api/.env`: used by the NestJS API
+- `apps/web/.env.local`: used by the Next.js app
 
-### Subscription Management
-- Stripe integration for payments
-- Multiple subscription tiers
-- Webhook handling for real-time updates
-- Subscription status tracking
+### Set up the database
 
-### User Management
-- Complete CRUD operations for users
-- Role assignment and management
-- User profile management
-- Admin dashboard for user oversight
-
-### Modern UI/UX
-- Responsive design that works on all devices
-- Accessible components with Radix UI
-- Consistent design system
-- Dark/light mode support (configurable)
-
-## 🚀 Deployment
-
-### Environment Setup
-1. Set up a PostgreSQL database (recommended: Supabase, Railway, or Neon)
-2. Configure environment variables for production
-3. Set up Stripe webhooks for your production domain
-4. Deploy to your preferred platform
-
-### Recommended Platforms
-- **Frontend**: Vercel, Netlify, or AWS Amplify
-- **Backend**: Railway, Render, or AWS
-- **Database**: Supabase, Railway, or Neon
-
-### Build for Production
 ```bash
-# Build all applications
+pnpm prisma generate
+pnpm prisma migrate dev
+pnpm --filter api setup
+```
+
+### Start the apps
+
+```bash
+pnpm dev
+```
+
+Default local URLs:
+
+- Web: `http://localhost:3000`
+- API: `http://localhost:3001`
+- Swagger: `http://localhost:3001/api/v1/docs`
+
+## Useful commands
+
+```bash
+pnpm dev
 pnpm build
-
-# The built applications will be in:
-# - apps/web/.next/ (Next.js build)
-# - apps/api/dist/ (NestJS build)
+pnpm lint
+pnpm check-types
+pnpm test
+pnpm --filter api test
+pnpm --filter web type-check
 ```
 
-## 💡 Benefits
+## What is production-ready vs scaffolded
 
-### For Developers
-- **⚡ Rapid Development** - Start building features immediately, not infrastructure
-- **🔧 Production Ready** - Battle-tested patterns and security practices
-- **📚 Well Documented** - Comprehensive documentation and examples
-- **🎨 Modern Stack** - Latest technologies and best practices
-- **🔒 Security First** - Built-in security measures and validation
+Already wired:
 
-### For Businesses
-- **💰 Faster Time to Market** - Launch your SaaS in weeks, not months
-- **📈 Scalable Architecture** - Built to handle growth from day one
-- **💳 Revenue Ready** - Subscription billing integrated from the start
-- **👥 User Management** - Complete user and admin functionality
-- **🎯 Focus on Value** - Spend time on your unique features, not boilerplate
+- Email/password registration and login
+- JWT-protected API routes
+- User profile endpoints
+- Role and admin management scaffolding
+- Shared UI/design-system packages
 
-### For Teams
-- **🔄 Monorepo Benefits** - Shared code and consistent tooling
-- **📦 Component Library** - Reusable UI components across projects
-- **🛠 Developer Experience** - Hot reload, type safety, and great tooling
-- **📊 Admin Tools** - Built-in admin dashboard for user management
+Still intended for product-specific implementation:
 
-## 📄 License & Usage
+- Password reset backend flow
+- Social login/OAuth providers
+- Transactional email delivery
+- Stripe product and price configuration
+- Deployment and infra automation
 
-This project is licensed under a **Commercial License**. See the [LICENSE](LICENSE) file for details.
+## Documentation
 
-### Usage Terms
-- ✅ **Single Project Use** - Use for one commercial project
-- ✅ **Modification Allowed** - Customize and extend as needed
-- ✅ **Commercial Use** - Use in commercial applications
-- ❌ **Resale Prohibited** - Cannot resell or redistribute the template
-- ❌ **Multiple Projects** - Requires separate license for each project
+- [Usage guide](docs/usage.md)
+- [GitHub OSS launch guide](docs/open-source-launch.md)
 
-### Support
-- 📧 Email support for setup and configuration
-- 📚 Comprehensive documentation
-- 🔄 Regular updates and improvements
+## Open-source usage
 
-## 🤝 Contributing
+This project is licensed under the MIT License. That means you can use, modify, distribute, and commercialize it without paying a fee or royalty, as long as the license notice stays with the software.
 
-While this is a commercial product, we welcome feedback and suggestions. Please contact us through our support channels.
+## Contributing
 
-## 📞 Support
+Issues and pull requests are welcome.
 
-Need help getting started? Have questions about customization?
-
-- 📧 **Email**: Contact us at [i-ayana@outlook.com](mailto:i-ayana@outlook.com)
-- 💬 **Discord**: Join our Discord [server](https://discord.gg/wFFndB6D)
-- 📖 **Documentation**: [Coming soon]
-
----
-
-**Ready to launch your SaaS?** Get started with SaaS Skafold today and focus on what makes your product unique! 🚀
+- Contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Code of conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- Security policy: [SECURITY.md](SECURITY.md)
