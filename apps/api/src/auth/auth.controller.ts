@@ -3,8 +3,8 @@ import {
   Post,
   Body,
   UseGuards,
-  Request,
   Headers,
+  Request,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -43,11 +43,7 @@ export class AuthController {
     status: 401,
     description: 'Unauthorized',
   })
-  async login(
-    @Request() req: AuthenticatedRequest,
-    @Body() loginDto: LoginDto,
-  ): Promise<AuthResponseDto> {
-    console.log(loginDto);
+  async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
     return this.authService.login(loginDto);
   }
 

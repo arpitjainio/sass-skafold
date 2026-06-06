@@ -28,7 +28,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                 <BarChart3 className="w-6 h-6 text-white" aria-hidden="true" />
               </div>
               <span className="text-2xl font-bold text-white">
-                SaaS Skaffold
+                SaaS Skafold
               </span>
             </div>
 

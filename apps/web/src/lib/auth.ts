@@ -15,9 +15,11 @@ export interface RegisterRequest {
 export interface AuthResponse {
   user: {
     id: string;
-    name: string;
+    name: string | null;
     email: string;
-    role: string;
+    roles: string[];
+    createdAt: string;
+    updatedAt: string;
   };
   accessToken: string;
 }

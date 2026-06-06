@@ -26,7 +26,7 @@ export function ResetPasswordForm({ onSubmit, isLoading = false }: ResetPassword
   const [isTokenValid, setIsTokenValid] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // TODO: Validate token with API
+    // Reset-token validation is product-specific until the backend reset flow is implemented.
     if (token) {
       // Simulate token validation
       setTimeout(() => {

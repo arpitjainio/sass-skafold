@@ -11,7 +11,9 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 import { LoggerService } from './common/logger/logger.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true,
+  });
 
   // Get config service and validate environment
   const configService = app.get(AppConfigService);

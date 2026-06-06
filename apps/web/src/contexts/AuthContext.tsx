@@ -30,6 +30,26 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function normalizeAuthUser(authUser: {
+  id: string;
+  name: string | null;
+  email: string;
+  roles?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}): User {
+  const timestamp = new Date().toISOString();
+
+  return {
+    id: authUser.id,
+    name: authUser.name ?? 'User',
+    email: authUser.email,
+    roles: authUser.roles ?? [],
+    createdAt: authUser.createdAt ?? timestamp,
+    updatedAt: authUser.updatedAt ?? timestamp,
+  };
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,16 +89,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.success) {
         const { user: authUser, accessToken } = response.data;
         setAuthToken(accessToken);
-        
-        // Transform auth response user to match our User interface
-        const user: User = {
-          id: authUser.id,
-          name: authUser.name,
-          email: authUser.email,
-          roles: [authUser.role], // Convert single role to array
-          createdAt: new Date().toISOString(), // Will be updated when we fetch full profile
-          updatedAt: new Date().toISOString(),
-        };
+
+        const user = normalizeAuthUser(authUser);
         
         setUser(user);
         addNotification({
@@ -118,22 +130,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.success) {
         const { user: authUser, accessToken } = response.data;
         setAuthToken(accessToken);
-        
-        // Transform auth response user to match our User interface
-        const user: User = {
-          id: authUser.id,
-          name: authUser.name,
-          email: authUser.email,
-          roles: [authUser.role], // Convert single role to array
-          createdAt: new Date().toISOString(), // Will be updated when we fetch full profile
-          updatedAt: new Date().toISOString(),
-        };
+
+        const user = normalizeAuthUser(authUser);
         
         setUser(user);
         addNotification({
           type: 'success',
           title: 'Registration successful',
-          message: `Welcome to SaaS Skaffold, ${user.name}!`,
+          message: `Welcome to SaaS Skafold, ${user.name}!`,
         });
         router.push('/dashboard');
       } else {
@@ -198,12 +202,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
     } catch (error) {
       if (error instanceof ApiError) {
+        const message =
+          error.status === 404
+            ? 'Password reset endpoints are not implemented in this starter yet.'
+            : error.message;
+
         addNotification({
           type: 'error',
           title: 'Failed to send reset email',
-          message: error.message,
+          message,
         });
-        throw new Error(error.message);
+        throw new Error(message);
       }
       addNotification({
         type: 'error',
@@ -235,12 +244,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       router.push('/auth/login');
     } catch (error) {
       if (error instanceof ApiError) {
+        const message =
+          error.status === 404
+            ? 'Password reset endpoints are not implemented in this starter yet.'
+            : error.message;
+
         addNotification({
           type: 'error',
           title: 'Failed to reset password',
-          message: error.message,
+          message,
         });
-        throw new Error(error.message);
+        throw new Error(message);
       }
       addNotification({
         type: 'error',

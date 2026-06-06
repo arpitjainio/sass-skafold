@@ -20,7 +20,6 @@ import {
   ApiResponse,
   ApiBody,
 } from '@nestjs/swagger';
-import Stripe from 'stripe';
 
 import { SubscriptionService } from './subscription.service';
 import {
@@ -33,9 +32,7 @@ import { LoggerService } from '../common/logger/logger.service';
 import { AuthenticatedRequest } from 'src/common/types';
 
 @Controller('subscriptions')
-@UseGuards(JwtAuthGuard)
 @ApiTags('Subscriptions')
-@ApiBearerAuth()
 export class SubscriptionController {
   constructor(
     private subscriptionService: SubscriptionService,
@@ -43,6 +40,8 @@ export class SubscriptionController {
   ) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user subscriptions' })
   @ApiResponse({ status: 200, description: 'User subscriptions' })
   async getUserSubscriptions(@Request() req: AuthenticatedRequest) {
@@ -51,6 +50,8 @@ export class SubscriptionController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new subscription' })
   @ApiBody({ type: CreateSubscriptionDto })
   @ApiResponse({ status: 201, description: 'Subscription created' })
@@ -68,6 +69,8 @@ export class SubscriptionController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update subscription' })
   @ApiBody({ type: UpdateSubscriptionDto })
   @ApiResponse({ status: 200, description: 'Subscription updated' })
@@ -89,6 +92,8 @@ export class SubscriptionController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Cancel subscription' })
   @ApiBody({ type: CancelSubscriptionDto })
   @ApiResponse({ status: 200, description: 'Subscription canceled' })
@@ -110,6 +115,8 @@ export class SubscriptionController {
   }
 
   @Post('billing-portal')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create billing portal session' })
   @ApiResponse({ status: 200, description: 'Billing portal session created' })
   async createBillingPortalSession(
@@ -142,8 +149,11 @@ export class SubscriptionController {
         throw new BadRequestException('No webhook body received');
       }
 
-      const event: unknown = JSON.parse(request.rawBody.toString('utf-8'));
-      return this.subscriptionService.handleWebhook(event as Stripe.Event);
+      const event = this.subscriptionService.constructWebhookEvent(
+        request.rawBody,
+        signature,
+      );
+      return this.subscriptionService.handleWebhook(event);
     } catch (error: unknown) {
       this.logger.error(
         'Webhook processing failed',

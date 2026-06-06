@@ -14,6 +14,9 @@ import { SubscriptionModule } from './subscription/subscription.module';
 import { AdminModule } from './admin/admin.module';
 import { DevModule } from './dev/dev.module';
 
+const developmentImports =
+  process.env.NODE_ENV === 'development' ? [DevModule] : [];
+
 @Module({
   imports: [
     AppConfigModule,
@@ -25,7 +28,7 @@ import { DevModule } from './dev/dev.module';
     RoleModule,
     SubscriptionModule,
     AdminModule,
-    DevModule,
+    ...developmentImports,
   ],
   controllers: [AppController],
   providers: [
