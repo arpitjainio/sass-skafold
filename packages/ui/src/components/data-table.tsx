@@ -9,7 +9,7 @@ import { Checkbox } from './forms/checkbox';
 export interface DataTableColumn<T> {
   key: keyof T;
   header: string;
-  render?: (value: any, row: T) => React.ReactNode;
+  render?: (value: T[keyof T], row: T) => React.ReactNode;
   sortable?: boolean;
 }
 

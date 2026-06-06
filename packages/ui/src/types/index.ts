@@ -10,8 +10,7 @@ export interface ButtonProps extends BaseComponentProps {
   loading?: boolean;
 }
 
-export interface CardProps extends BaseComponentProps {
-}
+export type CardProps = BaseComponentProps;
 
 export interface InputProps extends BaseComponentProps {
   type?: "text" | "email" | "password" | "number" | "tel" | "url";
@@ -24,7 +23,7 @@ export interface InputProps extends BaseComponentProps {
 }
 
 export interface TableProps extends BaseComponentProps {
-  data: any[];
+  data: unknown[];
   columns: TableColumn[];
   sortable?: boolean;
   pagination?: PaginationProps;
@@ -35,7 +34,7 @@ export interface TableColumn {
   label: string;
   sortable?: boolean;
   width?: string;
-  render?: (value: any, row: any) => ReactNode;
+  render?: (value: unknown, row: unknown) => ReactNode;
 }
 
 export interface PaginationProps {

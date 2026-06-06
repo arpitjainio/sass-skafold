@@ -42,7 +42,7 @@ export function StatsCard({
   };
 
   return (
-    <Card>
+    <Card className={className}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>

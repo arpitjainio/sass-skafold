@@ -1,19 +1,24 @@
 {
-    "name": "@repo/utils",
-    "version": "1.0.0",
-    "private": true,
-    "exports": {
-      "./cn": "./src/cn.ts"
-    },
-    "dependencies": {
-      "clsx": "^2.1.1",
-      "tailwind-merge": "^3.2.0"
-    },
-    "devDependencies": {
-      "@repo/config-eslint": "workspace:*",
-      "@repo/config-typescript": "workspace:*",
-      "@types/react": "^19.1.8",
-      "@types/react-dom": "^19.1.5",
-      "typescript": "^5.8.3"
-    }
+  "name": "@repo/utils",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint 'src/**/*.ts'",
+    "type-check": "tsc --noEmit"
+  },
+  "exports": {
+    "./cn": "./src/cn.ts"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.2.0"
+  },
+  "devDependencies": {
+    "@repo/config-eslint": "workspace:*",
+    "@repo/config-typescript": "workspace:*",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.5",
+    "typescript": "^5.8.3"
   }
+}
