@@ -100,7 +100,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   }
 
   private mapStatusToErrorCode(status: number): string {
-    switch (status as HttpStatus) {
+    switch (status) {
       case HttpStatus.BAD_REQUEST:
         return 'BAD_REQUEST';
       case HttpStatus.UNAUTHORIZED:
