@@ -15,7 +15,7 @@ import {
   ApiOperation,
   ApiQuery,
 } from '@nestjs/swagger';
-import { Prisma, SubscriptionStatus } from '@prisma/client';
+import { Prisma, SubscriptionStatus } from '../../generated/prisma/client';
 import * as bcrypt from 'bcrypt';
 
 import { AdminGuard } from '../common/guards/admin.guard';

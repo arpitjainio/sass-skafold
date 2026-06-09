@@ -6,12 +6,34 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { LoggerService } from '../common/logger/logger.service';
 import { AppConfigService } from '../config/config.service';
-import { SubscriptionStatus } from '@prisma/client';
+import { SubscriptionStatus } from '../../generated/prisma/client';
 import Stripe from 'stripe';
+
+const createStripeClient = (secretKey: string) =>
+  new Stripe(secretKey, {
+    apiVersion: '2026-05-27.dahlia',
+  });
+
+type StripeClient = ReturnType<typeof createStripeClient>;
+type StripeWebhookEvent = ReturnType<
+  StripeClient['webhooks']['constructEvent']
+>;
+
+interface StripeSubscriptionPayload {
+  id: string;
+  status: string;
+  current_period_end: number;
+  canceled_at?: number | null;
+}
+
+interface StripeInvoicePayload {
+  id: string | null;
+  status: string | null;
+}
 
 @Injectable()
 export class SubscriptionService {
-  private stripe?: Stripe;
+  private stripe?: StripeClient;
 
   constructor(
     private prisma: PrismaService,
@@ -19,7 +41,7 @@ export class SubscriptionService {
     private configService: AppConfigService,
   ) {}
 
-  private getStripeClient(): Stripe {
+  private getStripeClient(): StripeClient {
     if (this.stripe) {
       return this.stripe;
     }
@@ -31,15 +53,16 @@ export class SubscriptionService {
       );
     }
 
-    this.stripe = new Stripe(stripeKey, {
-      apiVersion: '2024-06-20',
-    });
+    this.stripe = createStripeClient(stripeKey);
 
     this.logger.log('Stripe client initialized', 'Subscription');
     return this.stripe;
   }
 
-  constructWebhookEvent(payload: Buffer, signature?: string): Stripe.Event {
+  constructWebhookEvent(
+    payload: Buffer,
+    signature?: string,
+  ): StripeWebhookEvent {
     if (!signature) {
       throw new BadRequestException('Missing Stripe signature header');
     }
@@ -160,7 +183,9 @@ export class SubscriptionService {
       }
 
       // Create Stripe subscription
-      const subscriptionData: Stripe.SubscriptionCreateParams = {
+      const subscriptionData: Parameters<
+        StripeClient['subscriptions']['create']
+      >[0] = {
         customer: stripeCustomerId,
         items: [{ price: priceId }],
         payment_behavior: 'default_incomplete',
@@ -176,8 +201,9 @@ export class SubscriptionService {
         priceId,
       });
 
-      const stripeSubscription =
-        await stripe.subscriptions.create(subscriptionData);
+      const stripeSubscription = (await stripe.subscriptions.create(
+        subscriptionData,
+      )) as unknown as StripeSubscriptionPayload;
 
       // Save to database
       const subscription = await this.prisma.subscription.create({
@@ -249,12 +275,12 @@ export class SubscriptionService {
       }
 
       // Cancel in Stripe
-      const stripeSubscription = await stripe.subscriptions.update(
+      const stripeSubscription = (await stripe.subscriptions.update(
         subscription.stripeSubId,
         {
           cancel_at_period_end: cancelAtPeriodEnd,
         },
-      );
+      )) as unknown as StripeSubscriptionPayload;
 
       // Update in database
       const updatedSubscription = await this.prisma.subscription.update({
@@ -319,12 +345,12 @@ export class SubscriptionService {
       }
 
       // Update in Stripe
-      const stripeSubscription = await stripe.subscriptions.update(
+      const stripeSubscription = (await stripe.subscriptions.update(
         subscription.stripeSubId,
         {
           items: [{ id: subscription.stripeSubId, price: priceId }],
         },
-      );
+      )) as unknown as StripeSubscriptionPayload;
 
       // Update in database
       const updatedSubscription = await this.prisma.subscription.update({
@@ -361,7 +387,7 @@ export class SubscriptionService {
     }
   }
 
-  async handleWebhook(event: Stripe.Event): Promise<void> {
+  async handleWebhook(event: StripeWebhookEvent): Promise<void> {
     this.logger.log('Processing webhook event', 'Subscription', {
       type: event.type,
       id: event.id,
@@ -371,7 +397,9 @@ export class SubscriptionService {
       switch (event.type) {
         case 'customer.subscription.updated':
         case 'customer.subscription.deleted':
-          await this.handleSubscriptionEvent(event.data.object);
+          await this.handleSubscriptionEvent(
+            event.data.object as unknown as StripeSubscriptionPayload,
+          );
           break;
         case 'invoice.payment_succeeded':
         case 'invoice.payment_failed':
@@ -397,7 +425,7 @@ export class SubscriptionService {
   }
 
   private async handleSubscriptionEvent(
-    subscription: Stripe.Subscription,
+    subscription: StripeSubscriptionPayload,
   ): Promise<void> {
     this.logger.log('Handling subscription event', 'Subscription', {
       subscriptionId: subscription.id,
@@ -421,7 +449,9 @@ export class SubscriptionService {
     });
   }
 
-  private async handleInvoiceEvent(invoice: Stripe.Invoice): Promise<void> {
+  private async handleInvoiceEvent(
+    invoice: StripeInvoicePayload,
+  ): Promise<void> {
     this.logger.log('Handling invoice event', 'Subscription', {
       invoiceId: invoice.id,
       status: invoice.status,

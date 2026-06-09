@@ -29,7 +29,7 @@ import {
 } from './dto/create-subscription.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { LoggerService } from '../common/logger/logger.service';
-import { AuthenticatedRequest } from 'src/common/types';
+import { AuthenticatedRequest } from '../common/types';
 
 @Controller('subscriptions')
 @ApiTags('Subscriptions')

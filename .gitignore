@@ -31,6 +31,7 @@ build
 dist/
 **/dist/
 **/build/
+apps/api/generated/
 
 # Logs
 logs/

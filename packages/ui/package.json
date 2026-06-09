@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
-    "lint": "./node_modules/@repo/config-eslint/node_modules/.bin/eslint 'src/**/*.{ts,tsx}'",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
     "dev": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch",
     "type-check": "tsc --noEmit"
   },
@@ -35,7 +35,7 @@
     "@tailwindcss/cli": "^4.3.0",
     "@tailwindcss/postcss": "^4.3.0",
     "class-variance-authority": "^0.7.0",
-    "lucide-react": "^0.494.0",
+    "lucide-react": "^1.17.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.0"
   },
@@ -48,6 +48,6 @@
     "@repo/config-typescript": "workspace:*",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }
