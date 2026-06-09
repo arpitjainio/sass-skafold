@@ -26,14 +26,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     // Handle different types of exceptions
     if (exception instanceof HttpException) {
-      status = exception.getStatus();
+      const exceptionStatus = exception.getStatus();
+      status = exceptionStatus;
       const exceptionResponse = exception.getResponse() as ExceptionResponse;
 
       message = this.extractMessage(exceptionResponse, exception.message);
       errors = this.extractErrors(exceptionResponse, exception.message);
 
       // Map HTTP status to error codes
-      errorCode = this.mapStatusToErrorCode(status);
+      errorCode = this.mapStatusToErrorCode(exceptionStatus);
     } else if (exception instanceof Error) {
       message = exception.message;
       errors = [exception.message];
@@ -100,26 +101,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   }
 
   private mapStatusToErrorCode(status: number): string {
-    switch (status) {
-      case HttpStatus.BAD_REQUEST:
-        return 'BAD_REQUEST';
-      case HttpStatus.UNAUTHORIZED:
-        return 'UNAUTHORIZED';
-      case HttpStatus.FORBIDDEN:
-        return 'FORBIDDEN';
-      case HttpStatus.NOT_FOUND:
-        return 'NOT_FOUND';
-      case HttpStatus.CONFLICT:
-        return 'CONFLICT';
-      case HttpStatus.UNPROCESSABLE_ENTITY:
-        return 'VALIDATION_ERROR';
-      case HttpStatus.TOO_MANY_REQUESTS:
-        return 'RATE_LIMIT_EXCEEDED';
-      case HttpStatus.INTERNAL_SERVER_ERROR:
-        return 'INTERNAL_ERROR';
-      default:
-        return 'UNKNOWN_ERROR';
-    }
+    const statusCodeMap: Record<number, string> = {
+      [HttpStatus.BAD_REQUEST]: 'BAD_REQUEST',
+      [HttpStatus.UNAUTHORIZED]: 'UNAUTHORIZED',
+      [HttpStatus.FORBIDDEN]: 'FORBIDDEN',
+      [HttpStatus.NOT_FOUND]: 'NOT_FOUND',
+      [HttpStatus.CONFLICT]: 'CONFLICT',
+      [HttpStatus.UNPROCESSABLE_ENTITY]: 'VALIDATION_ERROR',
+      [HttpStatus.TOO_MANY_REQUESTS]: 'RATE_LIMIT_EXCEEDED',
+      [HttpStatus.INTERNAL_SERVER_ERROR]: 'INTERNAL_ERROR',
+    };
+
+    return statusCodeMap[status] ?? 'UNKNOWN_ERROR';
   }
 
   private getClientIp(request: Request): string {

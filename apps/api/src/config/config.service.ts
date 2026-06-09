@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService as NestConfigService } from '@nestjs/config';
+import type { JwtModuleOptions } from '@nestjs/jwt';
+
+export type JwtExpiresIn = NonNullable<
+  NonNullable<JwtModuleOptions['signOptions']>['expiresIn']
+>;
 
 export interface AppConfig {
   // Database
@@ -10,7 +15,7 @@ export interface AppConfig {
   // JWT
   jwt: {
     secret: string;
-    expiresIn: string;
+    expiresIn: JwtExpiresIn;
   };
 
   // Server
@@ -44,7 +49,10 @@ export class AppConfigService {
   get jwt() {
     return {
       secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_EXPIRES_IN', '24h'),
+      expiresIn: this.configService.get<JwtExpiresIn>(
+        'JWT_EXPIRES_IN',
+        '24h' as JwtExpiresIn,
+      ),
     };
   }
 
