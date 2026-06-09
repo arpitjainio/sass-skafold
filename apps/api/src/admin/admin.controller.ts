@@ -16,6 +16,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { Prisma, SubscriptionStatus } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 import { AdminGuard } from '../common/guards/admin.guard';
 import { PrismaService } from '../prisma/prisma.service';
@@ -114,7 +115,13 @@ export class AdminController {
   @Post('users')
   @ApiOperation({ summary: 'Create user (admin only)' })
   async createUser(
-    @Body() createData: { name: string; email: string; password: string; roles: string[] },
+    @Body()
+    createData: {
+      name: string;
+      email: string;
+      password: string;
+      roles: string[];
+    },
   ) {
     // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
@@ -130,7 +137,6 @@ export class AdminController {
     }
 
     // Hash password
-    const bcrypt = require('bcrypt');
     const hashedPassword = await bcrypt.hash(createData.password, 10);
 
     // Create user
@@ -383,7 +389,12 @@ export class AdminController {
   @ApiOperation({ summary: 'Update subscription (admin only)' })
   async updateSubscription(
     @Param('id') id: string,
-    @Body() updateData: { status?: string; currentPeriodEnd?: string; canceledAt?: string },
+    @Body()
+    updateData: {
+      status?: SubscriptionStatus;
+      currentPeriodEnd?: string;
+      canceledAt?: string;
+    },
   ) {
     const subscription = await this.prisma.subscription.findUnique({
       where: { id },
@@ -409,9 +420,13 @@ export class AdminController {
     const updatedSubscription = await this.prisma.subscription.update({
       where: { id },
       data: {
-        status: updateData.status as any,
-        currentPeriodEnd: updateData.currentPeriodEnd ? new Date(updateData.currentPeriodEnd) : undefined,
-        canceledAt: updateData.canceledAt ? new Date(updateData.canceledAt) : undefined,
+        status: updateData.status,
+        currentPeriodEnd: updateData.currentPeriodEnd
+          ? new Date(updateData.currentPeriodEnd)
+          : undefined,
+        canceledAt: updateData.canceledAt
+          ? new Date(updateData.canceledAt)
+          : undefined,
       },
       include: {
         user: {
@@ -606,13 +621,13 @@ export class AdminController {
       },
     });
 
-    return recentUsers.map(user => ({
+    return recentUsers.map((user) => ({
       id: user.id,
       name: user.name,
       email: user.email,
       status: user.subscriptions.length > 0 ? 'Active' : 'Inactive',
       joined: user.createdAt,
-      roles: user.roles.map(ur => ur.role.name),
+      roles: user.roles.map((ur) => ur.role.name),
     }));
   }
 
@@ -648,21 +663,29 @@ export class AdminController {
     ]);
 
     const activities = [
-      ...recentUsers.map(user => ({
+      ...recentUsers.map((user) => ({
         action: 'User registered',
         user: user.name,
         time: user.createdAt,
         type: 'user' as const,
       })),
-      ...recentSubscriptions.map(sub => ({
-        action: sub.status === 'ACTIVE' ? 'New subscription' : 
-                sub.status === 'CANCELED' ? 'Subscription cancelled' : 
-                'Subscription updated',
+      ...recentSubscriptions.map((sub) => ({
+        action:
+          sub.status === 'ACTIVE'
+            ? 'New subscription'
+            : sub.status === 'CANCELED'
+              ? 'Subscription cancelled'
+              : 'Subscription updated',
         user: sub.user.name,
         time: sub.createdAt,
-        type: sub.status === 'CANCELED' ? 'cancellation' as const : 'subscription' as const,
+        type:
+          sub.status === 'CANCELED'
+            ? ('cancellation' as const)
+            : ('subscription' as const),
       })),
-    ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, limitNum);
+    ]
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+      .slice(0, limitNum);
 
     return activities;
   }

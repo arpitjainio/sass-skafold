@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
-    "lint": "eslint src/",
+    "lint": "./node_modules/@repo/config-eslint/node_modules/.bin/eslint 'src/**/*.{ts,tsx}'",
     "dev": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch",
     "type-check": "tsc --noEmit"
   },
