@@ -4,7 +4,46 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
+    groups:
+      tooling:
+        applies-to: version-updates
+        patterns:
+          - "turbo"
+          - "eslint*"
+          - "typescript-eslint"
+          - "ts-jest"
+          - "globals"
+        update-types:
+          - "minor"
+          - "patch"
+      react-stack:
+        applies-to: version-updates
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+        update-types:
+          - "minor"
+          - "patch"
+      nest:
+        applies-to: version-updates
+        patterns:
+          - "@nestjs*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "prisma"
+        update-types:
+          - "version-update:semver-major"
+      - dependency-name: "@prisma/client"
+        update-types:
+          - "version-update:semver-major"
+      - dependency-name: "@types/node"
+        update-types:
+          - "version-update:semver-major"
 
   - package-ecosystem: "github-actions"
     directory: "/"
