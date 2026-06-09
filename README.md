@@ -6,9 +6,9 @@ The goal of this repository is to give teams a clean starting point for a SaaS p
 
 ## What is included
 
-- Next.js 15 web app with auth screens and dashboard scaffolding
+- Next.js 16 web app with auth screens and dashboard scaffolding
 - NestJS API with JWT auth, user management, roles, and admin endpoints
-- Prisma schema and migrations for PostgreSQL
+- Prisma 7 schema, generated client, and migrations for PostgreSQL
 - Shared design system and UI component packages
 - Optional Stripe subscription scaffolding
 - Turborepo + pnpm monorepo setup
@@ -34,7 +34,7 @@ The goal of this repository is to give teams a clean starting point for a SaaS p
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20.19+
 - pnpm 9+
 - PostgreSQL
 
@@ -43,6 +43,8 @@ The goal of this repository is to give teams a clean starting point for a SaaS p
 ```bash
 pnpm install
 ```
+
+`pnpm install` now generates the Prisma client automatically through the root `postinstall` script.
 
 ### Configure environment variables
 
@@ -61,10 +63,11 @@ Update the copied files with your local values:
 ### Set up the database
 
 ```bash
-pnpm prisma generate
 pnpm prisma migrate dev
 pnpm --filter api setup
 ```
+
+Run `pnpm prisma generate` manually whenever you change `prisma/schema.prisma`.
 
 ### Start the apps
 

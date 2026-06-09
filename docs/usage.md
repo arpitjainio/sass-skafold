@@ -56,6 +56,8 @@ Install dependencies:
 pnpm install
 ```
 
+The install step generates the Prisma client automatically.
+
 Copy env files:
 
 ```bash
@@ -67,10 +69,11 @@ cp apps/web/.env.example apps/web/.env.local
 Prepare the database:
 
 ```bash
-pnpm prisma generate
 pnpm prisma migrate dev
 pnpm --filter api setup
 ```
+
+If you update `prisma/schema.prisma`, run `pnpm prisma generate` before building or testing.
 
 Start everything:
 
