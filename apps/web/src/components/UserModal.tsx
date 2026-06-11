@@ -1,22 +1,36 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { X, Save, User, Shield, Calendar } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Select } from '@repo/ui';
-import { User as UserType } from '@/lib/user';
-import { useNotifications } from './Notification';
+import React, { useState, useEffect } from "react";
+import { X, Save, User, Shield, Calendar } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Button,
+  Input,
+  Select,
+} from "@repo/ui";
+import { User as UserType } from "@/lib/user";
+import { useNotifications } from "./Notification";
 
 interface UserModalProps {
   user: UserType | null;
   isOpen: boolean;
   onClose: () => void;
   onSave: (userData: Partial<UserType>) => Promise<void>;
-  mode: 'view' | 'edit';
+  mode: "view" | "edit";
 }
 
-const roles = ['admin', 'user', 'premium'];
+const roles = ["admin", "user", "premium"];
 
-export default function UserModal({ user, isOpen, onClose, onSave, mode }: UserModalProps) {
+export default function UserModal({
+  user,
+  isOpen,
+  onClose,
+  onSave,
+  mode,
+}: UserModalProps) {
   const [formData, setFormData] = useState<Partial<UserType>>({});
   const [isLoading, setIsLoading] = useState(false);
   const { addNotification } = useNotifications();
@@ -38,21 +52,21 @@ export default function UserModal({ user, isOpen, onClose, onSave, mode }: UserM
 
   const handleSave = async () => {
     if (!user) return;
-    
+
     try {
       setIsLoading(true);
       await onSave(formData);
       addNotification({
-        title: 'User updated successfully',
-        type: 'success',
-        message: 'User updated successfully',
+        title: "User updated successfully",
+        type: "success",
+        message: "User updated successfully",
       });
       onClose();
     } catch (error) {
       addNotification({
-        title: 'Error',
-        type: 'error',
-        message: `Failed to update user. Due to: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        title: "Error",
+        type: "error",
+        message: `Failed to update user. Due to: ${error instanceof Error ? error.message : "Unknown error"}`,
       });
     } finally {
       setIsLoading(false);
@@ -60,14 +74,14 @@ export default function UserModal({ user, isOpen, onClose, onSave, mode }: UserM
   };
 
   const handleInputChange = (field: keyof UserType, value: unknown) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: value as UserType[keyof UserType],
     }));
   };
 
   const handleRoleChange = (role: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       roles: [role],
     }));
@@ -82,7 +96,7 @@ export default function UserModal({ user, isOpen, onClose, onSave, mode }: UserM
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center space-x-2">
               <User className="w-5 h-5" />
-              <span>{mode === 'view' ? 'View User' : 'Edit User'}</span>
+              <span>{mode === "view" ? "View User" : "Edit User"}</span>
             </CardTitle>
             <Button
               variant="outline"
@@ -117,9 +131,9 @@ export default function UserModal({ user, isOpen, onClose, onSave, mode }: UserM
                   Name
                 </label>
                 <Input
-                  value={formData.name || ''}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  disabled={mode === 'view'}
+                  value={formData.name || ""}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  disabled={mode === "view"}
                   placeholder="Enter name"
                 />
               </div>
@@ -131,9 +145,9 @@ export default function UserModal({ user, isOpen, onClose, onSave, mode }: UserM
                 </label>
                 <Input
                   type="email"
-                  value={formData.email || ''}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  disabled={mode === 'view'}
+                  value={formData.email || ""}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  disabled={mode === "view"}
                   placeholder="Enter email"
                 />
               </div>
@@ -144,11 +158,11 @@ export default function UserModal({ user, isOpen, onClose, onSave, mode }: UserM
                   Role
                 </label>
                 <Select
-                  value={formData.roles?.[0] || ''}
+                  value={formData.roles?.[0] || ""}
                   onChange={(e) => handleRoleChange(e.target.value)}
-                  disabled={mode === 'view'}
+                  disabled={mode === "view"}
                 >
-                  {roles.map(role => (
+                  {roles.map((role) => (
                     <option key={role} value={role}>
                       {role.charAt(0).toUpperCase() + role.slice(1)}
                     </option>
@@ -162,13 +176,15 @@ export default function UserModal({ user, isOpen, onClose, onSave, mode }: UserM
                   Subscription Status
                 </label>
                 <div className="flex items-center space-x-2">
-                  <div className={`w-3 h-3 rounded-full ${
-                    formData.hasActiveSubscription 
-                      ? 'bg-green-500' 
-                      : 'bg-gray-400'
-                  }`} />
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      formData.hasActiveSubscription
+                        ? "bg-green-500"
+                        : "bg-gray-400"
+                    }`}
+                  />
                   <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {formData.hasActiveSubscription ? 'Active' : 'Inactive'}
+                    {formData.hasActiveSubscription ? "Active" : "Inactive"}
                   </span>
                 </div>
               </div>
@@ -178,7 +194,10 @@ export default function UserModal({ user, isOpen, onClose, onSave, mode }: UserM
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                 <Calendar className="w-4 h-4" />
-                <span>Created: {new Date(formData.createdAt || '').toLocaleDateString()}</span>
+                <span>
+                  Created:{" "}
+                  {new Date(formData.createdAt || "").toLocaleDateString()}
+                </span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                 <Shield className="w-4 h-4" />
@@ -187,7 +206,7 @@ export default function UserModal({ user, isOpen, onClose, onSave, mode }: UserM
             </div>
 
             {/* Action Buttons */}
-            {mode === 'edit' && (
+            {mode === "edit" && (
               <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <Button
                   variant="outline"
@@ -202,7 +221,7 @@ export default function UserModal({ user, isOpen, onClose, onSave, mode }: UserM
                   className="flex items-center space-x-2"
                 >
                   <Save className="w-4 h-4" />
-                  <span>{isLoading ? 'Saving...' : 'Save Changes'}</span>
+                  <span>{isLoading ? "Saving..." : "Save Changes"}</span>
                 </Button>
               </div>
             )}

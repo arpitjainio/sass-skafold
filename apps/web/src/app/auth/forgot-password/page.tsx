@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useAuth } from '@/contexts/AuthContext';
-import { ForgotPasswordForm } from '../components/ForgotPasswordForm';
+import { useAuth } from "@/contexts/AuthContext";
+import { ForgotPasswordForm } from "../components/ForgotPasswordForm";
 
 export default function ForgotPasswordPage() {
   const { forgotPassword, isLoading } = useAuth();
@@ -10,15 +10,12 @@ export default function ForgotPasswordPage() {
     try {
       await forgotPassword(email);
     } catch (error) {
-      console.error('Forgot password error:', error);
+      console.error("Forgot password error:", error);
       // Error handling will be done in the AuthContext
     }
   };
 
   return (
-    <ForgotPasswordForm 
-      onSubmit={handleForgotPassword}
-      isLoading={isLoading}
-    />
+    <ForgotPasswordForm onSubmit={handleForgotPassword} isLoading={isLoading} />
   );
-} 
+}

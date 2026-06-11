@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -10,10 +10,10 @@ interface ProtectedRouteProps {
   roles?: string[];
 }
 
-export function ProtectedRoute({ 
-  children, 
-  requireAuth = true, 
-  roles = [] 
+export function ProtectedRoute({
+  children,
+  requireAuth = true,
+  roles = [],
 }: ProtectedRouteProps) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
@@ -25,19 +25,23 @@ export function ProtectedRoute({
 
     if (requireAuth && !isAuthenticated) {
       // User is not authenticated, redirect to login
-      router.push('/auth/login');
+      router.push("/auth/login");
       return;
     }
 
     if (!requireAuth && isAuthenticated) {
       // User is authenticated but trying to access auth pages, redirect to dashboard
-      router.push('/dashboard');
+      router.push("/dashboard");
       return;
     }
 
-    if (roles.length > 0 && user && !user.roles?.some((r) => roles.includes(r))) {
+    if (
+      roles.length > 0 &&
+      user &&
+      !user.roles?.some((r) => roles.includes(r))
+    ) {
       // User doesn't have required role, redirect to dashboard
-      router.push('/dashboard');
+      router.push("/dashboard");
       return;
     }
   }, [isAuthenticated, isLoading, user, requireAuth, roles, router]);
@@ -67,4 +71,4 @@ export function ProtectedRoute({
   }
 
   return <>{children}</>;
-} 
+}
