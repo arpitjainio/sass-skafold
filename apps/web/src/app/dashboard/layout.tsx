@@ -20,35 +20,45 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: Home, isActive: true },
-  { name: "Users", href: "/dashboard/users", icon: Users, isActive: true },
-  {
-    name: "Subscriptions",
-    href: "/dashboard/subscriptions",
-    icon: CreditCard,
-    isActive: true,
-  },
-  {
-    name: "Analytics",
-    href: "/dashboard/analytics",
-    icon: BarChart3,
-    isActive: true,
-  },
-  { name: "Profile", href: "/dashboard/profile", icon: User, isActive: true },
-  {
-    name: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-    isActive: false,
-  },
-];
-
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const isAdmin = user?.roles?.includes("admin") ?? false;
+
+  const navigation = [
+    { name: "Dashboard", href: "/dashboard", icon: Home, isActive: true },
+    ...(isAdmin
+      ? [
+          {
+            name: "Users",
+            href: "/dashboard/users",
+            icon: Users,
+            isActive: true,
+          },
+        ]
+      : []),
+    {
+      name: "Subscriptions",
+      href: "/dashboard/subscriptions",
+      icon: CreditCard,
+      isActive: true,
+    },
+    {
+      name: "Analytics",
+      href: "/dashboard/analytics",
+      icon: BarChart3,
+      isActive: true,
+    },
+    { name: "Profile", href: "/dashboard/profile", icon: User, isActive: true },
+    {
+      name: "Settings",
+      href: "/dashboard/settings",
+      icon: Settings,
+      isActive: false,
+    },
+  ];
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -88,6 +98,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           navigation={navigation}
           pathname={pathname}
           onLogout={handleLogout}
+          currentUser={user}
         />
 
         {/* Main content */}
@@ -102,6 +113,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             setSidebarOpen={setSidebarOpen}
             toggleTheme={toggleTheme}
             theme={theme}
+            currentUser={user}
           />
 
           {/* Page content */}

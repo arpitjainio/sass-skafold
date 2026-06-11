@@ -1,28 +1,40 @@
-import React from 'react';
+import React from "react";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REQUIREMENTS_MESSAGE,
+} from "@/lib/password";
 
 interface PasswordStrengthIndicatorProps {
   password: string;
   className?: string;
 }
 
-export function PasswordStrengthIndicator({ password, className = '' }: PasswordStrengthIndicatorProps) {
+export function PasswordStrengthIndicator({
+  password,
+  className = "",
+}: PasswordStrengthIndicatorProps) {
   const getPasswordStrength = (password: string) => {
-    if (!password) return { score: 0, label: '', color: '' };
-    
+    if (!password) return { score: 0, label: "", color: "" };
+
     let score = 0;
-    if (password.length >= 8) score++;
+    if (password.length >= PASSWORD_MIN_LENGTH) score++;
     if (/[a-z]/.test(password)) score++;
     if (/[A-Z]/.test(password)) score++;
     if (/[0-9]/.test(password)) score++;
-    if (/[^A-Za-z0-9]/.test(password)) score++;
 
-    const labels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
-    const colors = ['text-red-500', 'text-red-500', 'text-orange-500', 'text-blue-500', 'text-green-500'];
-    
+    const labels = ["Very Weak", "Weak", "Fair", "Good", "Strong"];
+    const colors = [
+      "text-red-500",
+      "text-red-500",
+      "text-orange-500",
+      "text-blue-500",
+      "text-green-500",
+    ];
+
     return {
       score: Math.min(score, 4),
       label: labels[Math.min(score, 4)],
-      color: colors[Math.min(score, 4)]
+      color: colors[Math.min(score, 4)],
     };
   };
 
@@ -39,8 +51,8 @@ export function PasswordStrengthIndicator({ password, className = '' }: Password
               key={index}
               className={`h-1 w-8 rounded-full ${
                 index <= strength.score
-                  ? strength.color?.replace('text-', 'bg-') ?? ''
-                  : 'bg-gray-200 dark:bg-gray-700'
+                  ? (strength.color?.replace("text-", "bg-") ?? "")
+                  : "bg-gray-200 dark:bg-gray-700"
               }`}
             />
           ))}
@@ -50,8 +62,8 @@ export function PasswordStrengthIndicator({ password, className = '' }: Password
         </span>
       </div>
       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-        Password must be at least 8 characters with uppercase, lowercase, number, and special character
+        {PASSWORD_REQUIREMENTS_MESSAGE}
       </p>
     </div>
   );
-} 
+}

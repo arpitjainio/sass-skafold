@@ -23,7 +23,9 @@ export interface UserGrowthAnalytics {
 export const analyticsApi = {
   // Get dashboard overview analytics (for regular users - shows user-specific data)
   getDashboardAnalytics: () =>
-    apiClient.get<ApiResponse<DashboardAnalytics>>("/users/analytics/dashboard"),
+    apiClient.get<ApiResponse<DashboardAnalytics>>(
+      "/users/analytics/dashboard"
+    ),
 
   // Get revenue analytics (admin only)
   getRevenueAnalytics: () =>
@@ -31,9 +33,13 @@ export const analyticsApi = {
 
   // Get user growth analytics (admin only)
   getUserGrowthAnalytics: () =>
-    apiClient.get<ApiResponse<UserGrowthAnalytics[]>>("/admin/analytics/user-growth"),
+    apiClient.get<ApiResponse<UserGrowthAnalytics[]>>(
+      "/admin/analytics/user-growth"
+    ),
 
   // Admin analytics endpoints
   getAdminDashboardAnalytics: () =>
-    apiClient.get<ApiResponse<DashboardAnalytics>>("/admin/analytics/dashboard"),
+    apiClient.get<ApiResponse<DashboardAnalytics>>(
+      "/admin/analytics/dashboard"
+    ),
 };
