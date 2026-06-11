@@ -2,6 +2,7 @@ import * as bcrypt from 'bcryptjs';
 
 export class PasswordUtil {
   private static readonly SALT_ROUNDS = 10;
+  private static readonly MIN_LENGTH = 8;
 
   /**
    * Hash a password using bcrypt
@@ -26,8 +27,10 @@ export class PasswordUtil {
   } {
     const errors: string[] = [];
 
-    if (password.length < 6) {
-      errors.push('Password must be at least 6 characters long');
+    if (password.length < this.MIN_LENGTH) {
+      errors.push(
+        `Password must be at least ${this.MIN_LENGTH} characters long`,
+      );
     }
 
     if (!/[A-Z]/.test(password)) {

@@ -9,6 +9,7 @@ import { Request, Response } from 'express';
 import { LoggerService } from '../logger/logger.service';
 import { ResponseUtil } from '../utils/response.util';
 import { ExceptionResponse } from '../types';
+import { Prisma } from '../../../generated/prisma/client';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -35,9 +36,25 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       // Map HTTP status to error codes
       errorCode = this.mapStatusToErrorCode(exceptionStatus);
+    } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaException = exception as Prisma.PrismaClientKnownRequestError;
+      status = this.mapPrismaStatus(prismaException.code);
+      message = this.mapPrismaMessage(prismaException);
+      errors = [message];
+      errorCode = `PRISMA_${prismaException.code}`;
+    } else if (exception instanceof Prisma.PrismaClientValidationError) {
+      status = HttpStatus.BAD_REQUEST;
+      message = 'Invalid database request';
+      errors = [message];
+      errorCode = 'PRISMA_VALIDATION_ERROR';
+    } else if (exception instanceof Prisma.PrismaClientInitializationError) {
+      status = HttpStatus.SERVICE_UNAVAILABLE;
+      message = 'Database connection is not available';
+      errors = [message];
+      errorCode = 'PRISMA_INITIALIZATION_ERROR';
     } else if (exception instanceof Error) {
-      message = exception.message;
-      errors = [exception.message];
+      message = 'An unexpected server error occurred';
+      errors = [message];
       errorCode = 'UNKNOWN_ERROR';
     }
 
@@ -113,6 +130,46 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     };
 
     return statusCodeMap[status] ?? 'UNKNOWN_ERROR';
+  }
+
+  private mapPrismaStatus(code: string): number {
+    switch (code) {
+      case 'P2002':
+        return HttpStatus.CONFLICT;
+      case 'P2025':
+        return HttpStatus.NOT_FOUND;
+      case 'P2003':
+      case 'P2011':
+        return HttpStatus.BAD_REQUEST;
+      default:
+        return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+  }
+
+  private mapPrismaMessage(
+    exception: Prisma.PrismaClientKnownRequestError,
+  ): string {
+    switch (exception.code) {
+      case 'P2002': {
+        const target = Array.isArray(exception.meta?.target)
+          ? exception.meta.target.join(', ')
+          : String(exception.meta?.target ?? '');
+
+        if (target.includes('email')) {
+          return 'A user with this email already exists';
+        }
+
+        return 'A record with the same unique value already exists';
+      }
+      case 'P2003':
+        return 'This operation references related data that could not be found';
+      case 'P2011':
+        return 'A required value is missing';
+      case 'P2025':
+        return 'The requested record could not be found';
+      default:
+        return 'A database error occurred while processing your request';
+    }
   }
 
   private getClientIp(request: Request): string {

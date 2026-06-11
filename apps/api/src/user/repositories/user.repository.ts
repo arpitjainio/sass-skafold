@@ -13,7 +13,15 @@ interface CreateUserInput {
   email: string;
   password?: string;
   name?: string;
+  phone?: string;
+  location?: string;
 }
+
+type UpdateUserRecordInput = {
+  name?: string | null;
+  phone?: string | null;
+  location?: string | null;
+};
 
 @Injectable()
 export class UserRepository implements IUserRepository {
@@ -46,6 +54,9 @@ export class UserRepository implements IUserRepository {
       id: user.id,
       email: user.email,
       name: user.name,
+      phone: user.phone,
+      location: user.location,
+      notificationPreferences: user.notificationPreferences,
       stripeCustomerId: user.stripeCustomerId,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
@@ -74,6 +85,9 @@ export class UserRepository implements IUserRepository {
       id: user.id,
       email: user.email,
       name: user.name,
+      phone: user.phone,
+      location: user.location,
+      notificationPreferences: user.notificationPreferences,
       stripeCustomerId: user.stripeCustomerId,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
@@ -105,6 +119,9 @@ export class UserRepository implements IUserRepository {
       id: user.id,
       email: user.email,
       name: user.name,
+      phone: user.phone,
+      location: user.location,
+      notificationPreferences: user.notificationPreferences,
       stripeCustomerId: user.stripeCustomerId,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
@@ -114,9 +131,17 @@ export class UserRepository implements IUserRepository {
   }
 
   async create(data: CreateUserInput): Promise<UserWithoutPassword> {
-    const createData: { email: string; name?: string; password?: string } = {
+    const createData: {
+      email: string;
+      name?: string;
+      phone?: string;
+      location?: string;
+      password?: string;
+    } = {
       email: data.email,
       name: data.name,
+      phone: data.phone,
+      location: data.location,
     };
 
     if (data.password) {
@@ -131,7 +156,7 @@ export class UserRepository implements IUserRepository {
 
   async update(
     id: string,
-    data: Partial<UserWithoutPassword>,
+    data: UpdateUserRecordInput,
   ): Promise<UserWithoutPassword> {
     return this.prisma.user.update({
       where: { id },

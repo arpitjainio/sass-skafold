@@ -10,6 +10,8 @@ import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AuthenticatedRequest } from '../common/types';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateNotificationPreferencesDto } from './dto/update-notification-preferences.dto';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -33,6 +35,33 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.userService.update(req.user.userId, updateUserDto);
+  }
+
+  @Put('me/password')
+  @ApiOperation({ summary: 'Update current user password' })
+  @ApiResponse({ status: 200, description: 'Password updated successfully' })
+  async updatePassword(
+    @Request() req: AuthenticatedRequest,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.userService.changePassword(req.user.userId, changePasswordDto);
+  }
+
+  @Put('me/notifications')
+  @ApiOperation({ summary: 'Update current user notification preferences' })
+  @ApiResponse({
+    status: 200,
+    description: 'Updated user notification preferences',
+  })
+  async updateNotificationPreferences(
+    @Request() req: AuthenticatedRequest,
+    @Body()
+    updateNotificationPreferencesDto: UpdateNotificationPreferencesDto,
+  ) {
+    return this.userService.updateNotificationPreferences(
+      req.user.userId,
+      updateNotificationPreferencesDto,
+    );
   }
 
   @Get('roles')
