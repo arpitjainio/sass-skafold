@@ -69,11 +69,32 @@ cp apps/web/.env.example apps/web/.env.local
 Prepare the database:
 
 ```bash
-pnpm prisma migrate dev
-pnpm --filter api setup
+pnpm db:setup
 ```
 
-If you update `prisma/schema.prisma`, run `pnpm prisma generate` before building or testing.
+If you update `prisma/schema.prisma` without creating a migration, run `pnpm db:generate` before building or testing.
+
+## Database migrations
+
+Use the root migration scripts for all local and deployment workflows:
+
+```bash
+pnpm db:setup
+pnpm db:migrate -- --name add_user_profile_fields
+pnpm db:migrate:new -- --name add_user_profile_fields
+pnpm db:migrate:reset
+pnpm db:migrate:resolve -- --rolled-back 20250718164617_init
+pnpm db:migrate:status
+pnpm db:migrate:deploy
+```
+
+- `pnpm db:setup`: use this for a fresh local setup; it applies local migrations and runs the API setup script
+- `pnpm db:migrate -- --name <migration_name>`: creates and applies a new development migration
+- `pnpm db:migrate:new -- --name <migration_name>`: creates a migration file without applying it yet
+- `pnpm db:migrate:reset`: use this as the local rollback/reset flow; it recreates the database from the migration history and deletes existing data
+- `pnpm db:migrate:resolve -- --rolled-back <migration_id>`: use this only when you have manually rolled back a migration and need Prisma's migration history to match
+- `pnpm db:migrate:status`: checks the current migration state for the configured database
+- `pnpm db:migrate:deploy`: applies pending migrations in staging or production
 
 Start everything:
 
