@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { Search, MoreHorizontal, Edit, Trash2, Eye } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from './card';
-import { Button } from './forms/button';
-import { Input } from './forms/input';
-import { Select } from './forms/select';
-import { Checkbox } from './forms/checkbox';
+import React, { useState, useMemo } from "react";
+import { Search, MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
+import { Button } from "./forms/button";
+import { Input } from "./forms/input";
+import { Select } from "./forms/select";
+import { Checkbox } from "./forms/checkbox";
 
 export interface DataTableColumn<T> {
   key: keyof T;
@@ -46,10 +46,12 @@ export function DataTable<T extends { id: string | number }>({
   onView,
   selectable = false,
   onSelectionChange,
-  loading = false
+  loading = false,
 }: DataTableProps<T>) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFilters, setSelectedFilters] = useState<
+    Record<string, string>
+  >({});
   const [selectedRows, setSelectedRows] = useState<(string | number)[]>([]);
 
   const filteredData = useMemo(() => {
@@ -57,18 +59,21 @@ export function DataTable<T extends { id: string | number }>({
 
     // Apply search
     if (searchTerm) {
-      filtered = filtered.filter(row =>
-        columns.some(column => {
+      filtered = filtered.filter((row) =>
+        columns.some((column) => {
           const value = row[column.key];
-          return value && value.toString().toLowerCase().includes(searchTerm.toLowerCase());
-        })
+          return (
+            value &&
+            value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        }),
       );
     }
 
     // Apply filters
     Object.entries(selectedFilters).forEach(([key, value]) => {
-      if (value && value !== 'All') {
-        filtered = filtered.filter(row => {
+      if (value && value !== "All") {
+        filtered = filtered.filter((row) => {
           const rowValue = row[key as keyof T];
           return rowValue && rowValue.toString() === value;
         });
@@ -94,7 +99,7 @@ export function DataTable<T extends { id: string | number }>({
       setSelectedRows([]);
       onSelectionChange?.([]);
     } else {
-      const allIds = filteredData.map(row => row.id);
+      const allIds = filteredData.map((row) => row.id);
       setSelectedRows(allIds);
       onSelectionChange?.(allIds);
     }
@@ -102,7 +107,7 @@ export function DataTable<T extends { id: string | number }>({
 
   const handleSelectRow = (id: string | number) => {
     const newSelection = selectedRows.includes(id)
-      ? selectedRows.filter(rowId => rowId !== id)
+      ? selectedRows.filter((rowId) => rowId !== id)
       : [...selectedRows, id];
     setSelectedRows(newSelection);
     onSelectionChange?.(newSelection);
@@ -112,7 +117,9 @@ export function DataTable<T extends { id: string | number }>({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white">
-          <span>{title} ({filteredData.length})</span>
+          <span>
+            {title} ({filteredData.length})
+          </span>
           {selectedRows.length > 0 && (
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -125,7 +132,11 @@ export function DataTable<T extends { id: string | number }>({
                 </Button>
               )}
               {onDelete && (
-                <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-red-600 hover:text-red-700"
+                >
                   <Trash2 className="w-4 h-4 mr-2" aria-hidden="true" />
                   Delete
                 </Button>
@@ -140,7 +151,10 @@ export function DataTable<T extends { id: string | number }>({
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" aria-hidden="true" />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+                aria-hidden="true"
+              />
               <Input
                 placeholder={searchPlaceholder}
                 value={searchTerm}
@@ -153,10 +167,12 @@ export function DataTable<T extends { id: string | number }>({
             {filters.map((filter) => (
               <Select
                 key={filter.key}
-                value={selectedFilters[filter.key] || 'All'}
-                onChange={(value) => handleFilter(filter.key, value as unknown as string)}
+                value={selectedFilters[filter.key] || "All"}
+                onChange={(value) =>
+                  handleFilter(filter.key, value as unknown as string)
+                }
               >
-                {filter.options.map(option => (
+                {filter.options.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
@@ -174,13 +190,19 @@ export function DataTable<T extends { id: string | number }>({
                 {selectable && (
                   <th className="text-left py-3 px-4">
                     <Checkbox
-                      checked={selectedRows.length === filteredData.length && filteredData.length > 0}
+                      checked={
+                        selectedRows.length === filteredData.length &&
+                        filteredData.length > 0
+                      }
                       onCheckedChange={handleSelectAll}
                     />
                   </th>
                 )}
                 {columns.map((column) => (
-                  <th key={String(column.key)} className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">
+                  <th
+                    key={String(column.key)}
+                    className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white"
+                  >
                     {column.header}
                   </th>
                 ))}
@@ -194,19 +216,36 @@ export function DataTable<T extends { id: string | number }>({
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={columns.length + (selectable ? 1 : 0) + ((onView || onEdit || onDelete) ? 1 : 0)} className="text-center py-8">
+                  <td
+                    colSpan={
+                      columns.length +
+                      (selectable ? 1 : 0) +
+                      (onView || onEdit || onDelete ? 1 : 0)
+                    }
+                    className="text-center py-8"
+                  >
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
                   </td>
                 </tr>
               ) : filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length + (selectable ? 1 : 0) + ((onView || onEdit || onDelete) ? 1 : 0)} className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  <td
+                    colSpan={
+                      columns.length +
+                      (selectable ? 1 : 0) +
+                      (onView || onEdit || onDelete ? 1 : 0)
+                    }
+                    className="text-center py-8 text-gray-500 dark:text-gray-400"
+                  >
                     No data found
                   </td>
                 </tr>
               ) : (
                 filteredData.map((row) => (
-                  <tr key={row.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <tr
+                    key={row.id}
+                    className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
                     {selectable && (
                       <td className="py-3 px-4">
                         <Checkbox
@@ -217,14 +256,16 @@ export function DataTable<T extends { id: string | number }>({
                     )}
                     {columns.map((column) => (
                       <td key={String(column.key)} className="py-3 px-4">
-                        {column.render ? column.render(row[column.key], row) : String(row[column.key] || '')}
+                        {column.render
+                          ? column.render(row[column.key], row)
+                          : String(row[column.key] || "")}
                       </td>
                     ))}
                     {(onView || onEdit || onDelete) && (
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end space-x-2">
                           {onView && (
-                            <button 
+                            <button
                               onClick={() => onView(row)}
                               className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                               aria-label="View"
@@ -233,7 +274,7 @@ export function DataTable<T extends { id: string | number }>({
                             </button>
                           )}
                           {onEdit && (
-                            <button 
+                            <button
                               onClick={() => onEdit(row)}
                               className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                               aria-label="Edit"
@@ -242,12 +283,15 @@ export function DataTable<T extends { id: string | number }>({
                             </button>
                           )}
                           {onDelete && (
-                            <button 
+                            <button
                               onClick={() => onDelete(row)}
                               className="p-1 text-gray-400 hover:text-red-600"
                               aria-label="Delete"
                             >
-                              <MoreHorizontal className="w-4 h-4" aria-hidden="true" />
+                              <MoreHorizontal
+                                className="w-4 h-4"
+                                aria-hidden="true"
+                              />
                             </button>
                           )}
                         </div>
@@ -262,4 +306,4 @@ export function DataTable<T extends { id: string | number }>({
       </CardContent>
     </Card>
   );
-} 
+}

@@ -14,13 +14,13 @@ const badgeVariants = cva(
           "border-transparent bg-accent text-accent-foreground dark:bg-accent-900 dark:text-accent-50 hover:bg-accent/80",
         danger:
           "border-transparent bg-danger text-danger-foreground dark:bg-danger-900 dark:text-danger-50 hover:bg-danger/80",
-        outline: "border-border text-foreground dark:text-background hover:bg-accent hover:text-accent-foreground",
+        outline:
+          "border-border text-foreground dark:text-background hover:bg-accent hover:text-accent-foreground",
         success:
           "border-transparent bg-success text-success-foreground dark:bg-success-900 dark:text-success-50 hover:bg-success/80",
         warning:
           "border-transparent bg-warning text-warning-foreground dark:bg-warning-900 dark:text-warning-50 hover:bg-warning/80",
-        info:
-          "border-transparent bg-info text-info-foreground dark:bg-info-900 dark:text-info-50 hover:bg-info/80",
+        info: "border-transparent bg-info text-info-foreground dark:bg-info-900 dark:text-info-50 hover:bg-info/80",
       },
       size: {
         sm: "px-2.5 py-1 text-xs",
@@ -32,11 +32,12 @@ const badgeVariants = cva(
       variant: "default",
       size: "md",
     },
-  }
+  },
 );
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants>,
     BaseComponentProps {
   as?: React.ElementType;
@@ -44,7 +45,10 @@ export interface BadgeProps
 }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant, size, as: Component = "div", children, ...props }, ref) => {
+  (
+    { className, variant, size, as: Component = "div", children, ...props },
+    ref,
+  ) => {
     return (
       <Component
         ref={ref}
@@ -54,9 +58,9 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
         {children}
       </Component>
     );
-  }
+  },
 );
 
 Badge.displayName = "Badge";
 
-export { Badge, badgeVariants }; 
+export { Badge, badgeVariants };

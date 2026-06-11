@@ -28,26 +28,23 @@ const avatarVariants = cva(
       variant: "default",
       size: "md",
     },
-  }
+  },
 );
 
-const avatarImageVariants = cva(
-  "aspect-square h-full w-full",
-  {
-    variants: {
-      size: {
-        sm: "text-xs",
-        md: "text-sm",
-        lg: "text-base",
-        xl: "text-lg",
-        "2xl": "text-xl",
-      },
+const avatarImageVariants = cva("aspect-square h-full w-full", {
+  variants: {
+    size: {
+      sm: "text-xs",
+      md: "text-sm",
+      lg: "text-base",
+      xl: "text-lg",
+      "2xl": "text-xl",
     },
-    defaultVariants: {
-      size: "md",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
 
 const avatarFallbackVariants = cva(
   "flex h-full w-full items-center justify-center rounded-full bg-muted text-muted-foreground",
@@ -64,11 +61,12 @@ const avatarFallbackVariants = cva(
     defaultVariants: {
       size: "md",
     },
-  }
+  },
 );
 
 export interface AvatarProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof avatarVariants>,
     BaseComponentProps {
   as?: React.ElementType;
@@ -84,17 +82,18 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 Avatar.displayName = "Avatar";
 
 export interface AvatarImageProps
-  extends React.ImgHTMLAttributes<HTMLImageElement>,
+  extends
+    React.ImgHTMLAttributes<HTMLImageElement>,
     VariantProps<typeof avatarImageVariants>,
     BaseComponentProps {
   className?: string;
-    }
+}
 
 const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
   ({ className, size, ...props }, ref) => {
@@ -105,13 +104,14 @@ const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 AvatarImage.displayName = "AvatarImage";
 
 export interface AvatarFallbackProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof avatarFallbackVariants>,
     BaseComponentProps {
   delayMs?: number;
@@ -130,9 +130,16 @@ const AvatarFallback = React.forwardRef<HTMLDivElement, AvatarFallbackProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 AvatarFallback.displayName = "AvatarFallback";
 
-export { Avatar, AvatarImage, AvatarFallback, avatarVariants, avatarImageVariants, avatarFallbackVariants }; 
+export {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  avatarVariants,
+  avatarImageVariants,
+  avatarFallbackVariants,
+};

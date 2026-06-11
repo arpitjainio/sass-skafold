@@ -1,6 +1,6 @@
 /**
  * UI Package - Main Index
- * 
+ *
  * This file exports all UI components and utilities for easy importing.
  * It serves as the single entry point for the UI package.
  */
@@ -13,7 +13,11 @@ export { Badge, badgeVariants } from "./components/feedback/badge";
 export { Alert, alertVariants } from "./components/feedback/alert";
 export { Icon, iconVariants } from "./components/feedback/icon";
 export { Skeleton, skeletonVariants } from "./components/feedback/skeleton";
-export { Avatar, AvatarImage, AvatarFallback } from "./components/feedback/avatar";
+export {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "./components/feedback/avatar";
 
 // Form Components
 export { Button, buttonVariants } from "./components/forms/button";
@@ -24,11 +28,19 @@ export { Switch, switchVariants } from "./components/forms/switch";
 export { Checkbox, checkboxVariants } from "./components/forms/checkbox";
 
 // Layout Components
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, cardVariants } from "./components/card";
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  cardVariants,
+} from "./components/card";
 
 // Data Components
-export { DataTable } from './components/data-table';
-export { StatsCard } from './components/stats-card';
+export { DataTable } from "./components/data-table";
+export { StatsCard } from "./components/stats-card";
 
 // Legacy exports for backward compatibility
 export { buttonVariants as buttonAtomVariants } from "./components/forms/button";
@@ -46,4 +58,4 @@ export type {
   SidebarProps,
   NavigationItem,
   BreadcrumbItem,
-} from "./types"; 
+} from "./types";

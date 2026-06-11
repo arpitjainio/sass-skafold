@@ -8,9 +8,12 @@ const selectVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-neutral-300 dark:border-neutral-600 focus-visible:border-ring dark:border-border dark:focus-visible:border-ring",
-        error: "border-danger focus-visible:ring-danger dark:border-danger dark:focus-visible:ring-danger",
-        success: "border-success focus-visible:ring-success dark:border-success dark:focus-visible:ring-success",
+        default:
+          "border-neutral-300 dark:border-neutral-600 focus-visible:border-ring dark:border-border dark:focus-visible:border-ring",
+        error:
+          "border-danger focus-visible:ring-danger dark:border-danger dark:focus-visible:ring-danger",
+        success:
+          "border-success focus-visible:ring-success dark:border-success dark:focus-visible:ring-success",
       },
       size: {
         sm: "h-8 px-3 py-1.5 text-xs",
@@ -22,11 +25,12 @@ const selectVariants = cva(
       variant: "default",
       size: "md",
     },
-  }
+  },
 );
 
 export interface SelectProps
-  extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size'>,
+  extends
+    Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "size">,
     VariantProps<typeof selectVariants>,
     BaseComponentProps {
   error?: string;
@@ -35,27 +39,42 @@ export interface SelectProps
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, variant, size: selectSize, error, success, children, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size: selectSize,
+      error,
+      success,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     // Determine variant based on error/success state
     const selectVariant = error ? "error" : success ? "success" : variant;
-    
+
     return (
       <div className="relative">
         <select
-          className={cn(selectVariants({ variant: selectVariant, size: selectSize, className }))}
+          className={cn(
+            selectVariants({
+              variant: selectVariant,
+              size: selectSize,
+              className,
+            }),
+          )}
           ref={ref}
           {...props}
         >
           {children}
         </select>
-        {error && (
-          <p className="mt-1 text-xs text-danger">{error}</p>
-        )}
+        {error && <p className="mt-1 text-xs text-danger">{error}</p>}
       </div>
     );
-  }
+  },
 );
 
 Select.displayName = "Select";
 
-export { Select, selectVariants }; 
+export { Select, selectVariants };

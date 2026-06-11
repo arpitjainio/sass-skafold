@@ -10,10 +10,14 @@ const checkboxVariants = cva(
   {
     variants: {
       variant: {
-        default: "data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary-900 dark:data-[state=checked]:text-primary-50",
-        success: "data-[state=checked]:bg-success data-[state=checked]:text-success-foreground dark:data-[state=checked]:bg-success-900 dark:data-[state=checked]:text-success-50",
-        warning: "data-[state=checked]:bg-warning data-[state=checked]:text-warning-foreground dark:data-[state=checked]:bg-warning-900 dark:data-[state=checked]:text-warning-50",
-        danger: "data-[state=checked]:bg-danger data-[state=checked]:text-danger-foreground dark:data-[state=checked]:bg-danger-900 dark:data-[state=checked]:text-danger-50",
+        default:
+          "data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary-900 dark:data-[state=checked]:text-primary-50",
+        success:
+          "data-[state=checked]:bg-success data-[state=checked]:text-success-foreground dark:data-[state=checked]:bg-success-900 dark:data-[state=checked]:text-success-50",
+        warning:
+          "data-[state=checked]:bg-warning data-[state=checked]:text-warning-foreground dark:data-[state=checked]:bg-warning-900 dark:data-[state=checked]:text-warning-50",
+        danger:
+          "data-[state=checked]:bg-danger data-[state=checked]:text-danger-foreground dark:data-[state=checked]:bg-danger-900 dark:data-[state=checked]:text-danger-50",
       },
       size: {
         sm: "h-3 w-3",
@@ -25,11 +29,12 @@ const checkboxVariants = cva(
       variant: "default",
       size: "md",
     },
-  }
+  },
 );
 
 export interface CheckboxProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
+  extends
+    Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
     VariantProps<typeof checkboxVariants>,
     BaseComponentProps {
   checked?: boolean;
@@ -38,7 +43,17 @@ export interface CheckboxProps
 }
 
 const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ className, variant, size: checkboxSize, checked, onCheckedChange, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size: checkboxSize,
+      checked,
+      onCheckedChange,
+      ...props
+    },
+    ref,
+  ) => {
     const [isChecked, setIsChecked] = React.useState(checked || false);
 
     React.useEffect(() => {
@@ -60,15 +75,17 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           ref={ref}
           checked={isChecked}
           onChange={handleChange}
-          className={cn(checkboxVariants({ variant, size: checkboxSize, className }))}
+          className={cn(
+            checkboxVariants({ variant, size: checkboxSize, className }),
+          )}
           data-state={isChecked ? "checked" : "unchecked"}
           {...props}
         />
       </div>
     );
-  }
+  },
 );
 
 Checkbox.displayName = "Checkbox";
 
-export { Checkbox, checkboxVariants }; 
+export { Checkbox, checkboxVariants };

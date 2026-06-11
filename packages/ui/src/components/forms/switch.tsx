@@ -9,10 +9,14 @@ const switchVariants = cva(
   {
     variants: {
       variant: {
-        default: "data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-primary-900 dark:data-[state=unchecked]:bg-input",
-        success: "data-[state=checked]:bg-success data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-success-900 dark:data-[state=unchecked]:bg-input",
-        warning: "data-[state=checked]:bg-warning data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-warning-900 dark:data-[state=unchecked]:bg-input",
-        danger: "data-[state=checked]:bg-danger data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-danger-900 dark:data-[state=unchecked]:bg-input",
+        default:
+          "data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-primary-900 dark:data-[state=unchecked]:bg-input",
+        success:
+          "data-[state=checked]:bg-success data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-success-900 dark:data-[state=unchecked]:bg-input",
+        warning:
+          "data-[state=checked]:bg-warning data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-warning-900 dark:data-[state=unchecked]:bg-input",
+        danger:
+          "data-[state=checked]:bg-danger data-[state=unchecked]:bg-input dark:data-[state=checked]:bg-danger-900 dark:data-[state=unchecked]:bg-input",
       },
       size: {
         sm: "h-5 w-9",
@@ -24,7 +28,7 @@ const switchVariants = cva(
       variant: "default",
       size: "md",
     },
-  }
+  },
 );
 
 const switchThumbVariants = cva(
@@ -40,11 +44,12 @@ const switchThumbVariants = cva(
     defaultVariants: {
       size: "md",
     },
-  }
+  },
 );
 
 export interface SwitchProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof switchVariants>,
     BaseComponentProps {
   checked?: boolean;
@@ -85,9 +90,9 @@ const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
         />
       </button>
     );
-  }
+  },
 );
 
 Switch.displayName = "Switch";
 
-export { Switch, switchVariants, switchThumbVariants }; 
+export { Switch, switchVariants, switchThumbVariants };
