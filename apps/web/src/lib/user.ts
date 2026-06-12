@@ -6,10 +6,20 @@ export interface User {
   name: string;
   email: string;
   roles: string[];
+  phone?: string | null;
+  location?: string | null;
+  notificationPreferences?: NotificationPreferences;
   subscriptionCount: number;
   hasActiveSubscription: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface NotificationPreferences {
+  email: boolean;
+  push: boolean;
+  sms: boolean;
+  marketing: boolean;
 }
 
 export interface UserProfile {
@@ -17,6 +27,9 @@ export interface UserProfile {
   name: string;
   email: string;
   roles: string[];
+  phone?: string | null;
+  location?: string | null;
+  notificationPreferences: NotificationPreferences;
   createdAt: string;
   updatedAt: string;
 }
@@ -24,7 +37,22 @@ export interface UserProfile {
 export interface UpdateUserRequest {
   name?: string;
   email?: string;
+  phone?: string;
+  location?: string;
   roles?: string[];
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface UpdateNotificationPreferencesRequest {
+  email?: boolean;
+  push?: boolean;
+  sms?: boolean;
+  marketing?: boolean;
 }
 
 export interface PaginatedUsersResponse {
@@ -39,16 +67,29 @@ export interface PaginatedUsersResponse {
 
 export const userApi = {
   // Get current user profile
-  getProfile: () =>
-    apiClient.get<ApiResponse<UserProfile>>("/users/me"),
+  getProfile: () => apiClient.get<ApiResponse<UserProfile>>("/users/me"),
 
   // Update current user profile
   updateProfile: (data: UpdateUserRequest) =>
-    apiClient.put<ApiResponse<UserProfile>, UpdateUserRequest>("/users/me", data),
+    apiClient.put<ApiResponse<UserProfile>, UpdateUserRequest>(
+      "/users/me",
+      data
+    ),
+
+  changePassword: (data: ChangePasswordRequest) =>
+    apiClient.put<ApiResponse<{ message: string }>, ChangePasswordRequest>(
+      "/users/me/password",
+      data
+    ),
+
+  updateNotificationPreferences: (data: UpdateNotificationPreferencesRequest) =>
+    apiClient.put<
+      ApiResponse<UserProfile>,
+      UpdateNotificationPreferencesRequest
+    >("/users/me/notifications", data),
 
   // Get user roles
-  getUserRoles: () =>
-    apiClient.get<ApiResponse<string[]>>("/users/roles"),
+  getUserRoles: () => apiClient.get<ApiResponse<string[]>>("/users/roles"),
 
   // Admin: Get all users
   getAllUsers: (params?: {
@@ -59,15 +100,15 @@ export const userApi = {
     status?: string;
   }) => {
     const searchParams = new URLSearchParams();
-    if (params?.page) searchParams.append('page', params.page.toString());
-    if (params?.limit) searchParams.append('limit', params.limit.toString());
-    if (params?.search) searchParams.append('search', params.search);
-    if (params?.role) searchParams.append('role', params.role);
-    if (params?.status) searchParams.append('status', params.status);
-    
+    if (params?.page) searchParams.append("page", params.page.toString());
+    if (params?.limit) searchParams.append("limit", params.limit.toString());
+    if (params?.search) searchParams.append("search", params.search);
+    if (params?.role) searchParams.append("role", params.role);
+    if (params?.status) searchParams.append("status", params.status);
+
     const query = searchParams.toString();
-    const endpoint = `/admin/users${query ? `?${query}` : ''}`;
-    
+    const endpoint = `/admin/users${query ? `?${query}` : ""}`;
+
     return apiClient.get<ApiResponse<PaginatedUsersResponse>>(endpoint);
   },
 
@@ -77,13 +118,24 @@ export const userApi = {
 
   // Admin: Update user
   updateUser: (id: string, data: UpdateUserRequest) =>
-    apiClient.put<ApiResponse<User>, UpdateUserRequest>(`/admin/users/${id}`, data),
+    apiClient.put<ApiResponse<User>, UpdateUserRequest>(
+      `/admin/users/${id}`,
+      data
+    ),
 
   // Admin: Delete user
   deleteUser: (id: string) =>
     apiClient.delete<ApiResponse<{ message: string }>>(`/admin/users/${id}`),
 
   // Admin: Create user
-  createUser: (data: { name: string; email: string; password: string; roles: string[] }) =>
-    apiClient.post<ApiResponse<User>, { name: string; email: string; password: string; roles: string[] }>('/admin/users', data),
+  createUser: (data: {
+    name: string;
+    email: string;
+    password: string;
+    roles: string[];
+  }) =>
+    apiClient.post<
+      ApiResponse<User>,
+      { name: string; email: string; password: string; roles: string[] }
+    >("/admin/users", data),
 };

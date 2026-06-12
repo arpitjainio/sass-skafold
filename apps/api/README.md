@@ -8,7 +8,7 @@ From the repository root:
 
 ```bash
 cp apps/api/.env.example apps/api/.env
-pnpm --filter api setup
+pnpm --filter api run setup
 pnpm --filter api dev
 ```
 

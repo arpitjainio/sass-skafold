@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { userApi, UserProfile, PaginatedUsersResponse } from '../user';
-import { ApiResponse } from '../api';
+import { useState, useEffect } from "react";
+import { userApi, UserProfile, PaginatedUsersResponse } from "../user";
+import { ApiResponse } from "../api";
 
 export function useUsers(params?: {
   page?: number;
@@ -18,23 +18,30 @@ export function useUsers(params?: {
       try {
         setLoading(true);
         setError(null);
-        const response: ApiResponse<PaginatedUsersResponse> = await userApi.getAllUsers(params);
-        
+        const response: ApiResponse<PaginatedUsersResponse> =
+          await userApi.getAllUsers(params);
+
         if (response.success) {
           setData(response.data);
         } else {
-          setError(response.message || 'Failed to fetch users');
+          setError(response.message || "Failed to fetch users");
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params?.page, params?.limit, params?.search, params?.role, params?.status]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    params?.page,
+    params?.limit,
+    params?.search,
+    params?.role,
+    params?.status,
+  ]);
 
   const refetch = () => {
     setLoading(true);
@@ -44,15 +51,16 @@ export function useUsers(params?: {
   const fetchData = async () => {
     try {
       setError(null);
-      const response: ApiResponse<PaginatedUsersResponse> = await userApi.getAllUsers(params);
-      
+      const response: ApiResponse<PaginatedUsersResponse> =
+        await userApi.getAllUsers(params);
+
       if (response.success) {
         setData(response.data);
       } else {
-        setError(response.message || 'Failed to fetch users');
+        setError(response.message || "Failed to fetch users");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -72,14 +80,14 @@ export function useUserProfile() {
         setLoading(true);
         setError(null);
         const response: ApiResponse<UserProfile> = await userApi.getProfile();
-        
+
         if (response.success) {
           setData(response.data);
         } else {
-          setError(response.message || 'Failed to fetch profile');
+          setError(response.message || "Failed to fetch profile");
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
@@ -88,25 +96,78 @@ export function useUserProfile() {
     fetchData();
   }, []);
 
-  const updateProfile = async (updateData: { name?: string; email?: string; roles?: string[] }) => {
+  const updateProfile = async (updateData: {
+    name?: string;
+    phone?: string;
+    location?: string;
+  }) => {
     try {
-      setLoading(true);
       setError(null);
-      const response: ApiResponse<UserProfile> = await userApi.updateProfile(updateData);
-      
+      const response: ApiResponse<UserProfile> =
+        await userApi.updateProfile(updateData);
+
       if (response.success) {
         setData(response.data);
         return response.data;
       } else {
-        throw new Error(response.message || 'Failed to update profile');
+        throw new Error(response.message || "Failed to update profile");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 
-  return { data, loading, error, updateProfile };
-} 
+  const changePassword = async (passwordData: {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }) => {
+    try {
+      setError(null);
+      const response = await userApi.changePassword(passwordData);
+
+      if (!response.success) {
+        throw new Error(response.message || "Failed to change password");
+      }
+
+      return response.data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      throw err;
+    }
+  };
+
+  const updateNotificationPreferences = async (preferences: {
+    email?: boolean;
+    push?: boolean;
+    sms?: boolean;
+    marketing?: boolean;
+  }) => {
+    try {
+      setError(null);
+      const response = await userApi.updateNotificationPreferences(preferences);
+
+      if (response.success) {
+        setData(response.data);
+        return response.data;
+      }
+
+      throw new Error(
+        response.message || "Failed to update notification preferences"
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      throw err;
+    }
+  };
+
+  return {
+    data,
+    loading,
+    error,
+    updateProfile,
+    changePassword,
+    updateNotificationPreferences,
+  };
+}

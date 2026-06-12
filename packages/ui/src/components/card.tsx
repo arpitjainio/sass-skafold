@@ -23,7 +23,7 @@ const cardVariants = cva(
       variant: "default",
       padding: "md",
     },
-  }
+  },
 );
 
 const cardHeaderVariants = cva("flex flex-col space-y-1.5 p-6", {
@@ -69,12 +69,13 @@ const cardFooterVariants = cva("flex items-center p-6 pt-0", {
 });
 
 export interface CardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof cardVariants>,
     BaseCardProps {
   className?: string;
 }
-  
+
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant, padding, ...props }, ref) => (
     <div
@@ -82,7 +83,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       className={cn(cardVariants({ variant, padding, className }))}
       {...props}
     />
-  )
+  ),
 );
 Card.displayName = "Card";
 
@@ -106,7 +107,7 @@ const CardTitle = React.forwardRef<
     ref={ref}
     className={cn(
       "text-2xl font-semibold leading-none tracking-tight",
-      className
+      className,
     )}
     {...props}
   />
@@ -127,7 +128,8 @@ CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof cardContentVariants>
+  React.HTMLAttributes<HTMLDivElement> &
+    VariantProps<typeof cardContentVariants>
 >(({ className, padding, ...props }, ref) => (
   <div
     ref={ref}
@@ -149,4 +151,12 @@ const CardFooter = React.forwardRef<
 ));
 CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, cardVariants }; 
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  cardVariants,
+};

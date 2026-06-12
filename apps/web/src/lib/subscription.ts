@@ -53,19 +53,31 @@ export const subscriptionApi = {
 
   // Create new subscription
   createSubscription: (data: CreateSubscriptionRequest) =>
-    apiClient.post<ApiResponse<Subscription>, CreateSubscriptionRequest>("/subscriptions", data),
+    apiClient.post<ApiResponse<Subscription>, CreateSubscriptionRequest>(
+      "/subscriptions",
+      data
+    ),
 
   // Update subscription
   updateSubscription: (id: string, data: UpdateSubscriptionRequest) =>
-    apiClient.put<ApiResponse<Subscription>, UpdateSubscriptionRequest>(`/subscriptions/${id}`, data),
+    apiClient.put<ApiResponse<Subscription>, UpdateSubscriptionRequest>(
+      `/subscriptions/${id}`,
+      data
+    ),
 
   // Cancel subscription
   cancelSubscription: (id: string, data: CancelSubscriptionRequest) =>
-    apiClient.post<ApiResponse<{ message: string }>, CancelSubscriptionRequest>(`/subscriptions/${id}/cancel`, data),
+    apiClient.post<ApiResponse<{ message: string }>, CancelSubscriptionRequest>(
+      `/subscriptions/${id}/cancel`,
+      data
+    ),
 
   // Create billing portal session
   createBillingPortalSession: (data: BillingPortalRequest) =>
-    apiClient.post<ApiResponse<{ url: string }>, BillingPortalRequest>("/subscriptions/billing-portal", data),
+    apiClient.post<ApiResponse<{ url: string }>, BillingPortalRequest>(
+      "/subscriptions/billing-portal",
+      data
+    ),
 
   // Admin: Get all subscriptions
   getAllSubscriptions: (params?: {
@@ -75,22 +87,30 @@ export const subscriptionApi = {
     plan?: string;
   }) => {
     const searchParams = new URLSearchParams();
-    if (params?.page) searchParams.append('page', params.page.toString());
-    if (params?.limit) searchParams.append('limit', params.limit.toString());
-    if (params?.status) searchParams.append('status', params.status);
-    if (params?.plan) searchParams.append('plan', params.plan);
-    
+    if (params?.page) searchParams.append("page", params.page.toString());
+    if (params?.limit) searchParams.append("limit", params.limit.toString());
+    if (params?.status) searchParams.append("status", params.status);
+    if (params?.plan) searchParams.append("plan", params.plan);
+
     const query = searchParams.toString();
-    const endpoint = `/admin/subscriptions${query ? `?${query}` : ''}`;
-    
+    const endpoint = `/admin/subscriptions${query ? `?${query}` : ""}`;
+
     return apiClient.get<ApiResponse<PaginatedSubscriptionsResponse>>(endpoint);
   },
 
   // Admin: Update subscription
-  adminUpdateSubscription: (id: string, data: { status?: string; currentPeriodEnd?: string; canceledAt?: string }) =>
-    apiClient.put<ApiResponse<Subscription>, { status?: string; currentPeriodEnd?: string; canceledAt?: string }>(`/admin/subscriptions/${id}`, data),
+  adminUpdateSubscription: (
+    id: string,
+    data: { status?: string; currentPeriodEnd?: string; canceledAt?: string }
+  ) =>
+    apiClient.put<
+      ApiResponse<Subscription>,
+      { status?: string; currentPeriodEnd?: string; canceledAt?: string }
+    >(`/admin/subscriptions/${id}`, data),
 
   // Admin: Delete subscription
   deleteSubscription: (id: string) =>
-    apiClient.delete<ApiResponse<{ message: string }>>(`/admin/subscriptions/${id}`),
+    apiClient.delete<ApiResponse<{ message: string }>>(
+      `/admin/subscriptions/${id}`
+    ),
 };

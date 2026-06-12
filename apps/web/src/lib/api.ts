@@ -7,13 +7,13 @@ const API_BASE_URL = envConfig.apiUrl;
 // Common headers
 const getHeaders = (token: string | null) => {
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
-  
+
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers["Authorization"] = `Bearer ${token}`;
   }
-  
+
   return headers;
 };
 
@@ -40,7 +40,7 @@ export class ApiError extends Error {
     public data?: unknown
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
@@ -52,7 +52,7 @@ class ApiClient {
   ): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
     const token = getAuthToken();
-    
+
     const config: RequestInit = {
       headers: getHeaders(token),
       ...options,
@@ -60,7 +60,7 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new ApiError(
@@ -76,41 +76,40 @@ class ApiClient {
       if (error instanceof ApiError) {
         throw error;
       }
-      throw new ApiError(0, 'Network error', { originalError: error });
+      throw new ApiError(0, "Network error", { originalError: error });
     }
   }
 
   // Generic HTTP methods
   async get<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'GET' });
+    return this.request<T>(endpoint, { method: "GET" });
   }
 
   async post<T, R>(endpoint: string, data?: R): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'POST',
+      method: "POST",
       body: data ? JSON.stringify(data) : null,
     });
   }
 
   async put<T, R>(endpoint: string, data?: R): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'PUT',
+      method: "PUT",
       body: data ? JSON.stringify(data) : null,
     });
   }
 
   async patch<T, R>(endpoint: string, data?: R): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'PATCH',
+      method: "PATCH",
       body: data ? JSON.stringify(data) : null,
     });
   }
 
   async delete<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'DELETE' });
+    return this.request<T>(endpoint, { method: "DELETE" });
   }
 }
 
 // Create API client instance
 export const apiClient = new ApiClient();
-

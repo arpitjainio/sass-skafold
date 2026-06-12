@@ -15,6 +15,7 @@ interface AuthLayoutProps {
 export default function AuthLayout({ children }: AuthLayoutProps) {
   const pathname = usePathname();
   const metadata = getAuthMetadata(pathname);
+  const currentYear = new Date().getFullYear();
 
   return (
     <ProtectedRoute requireAuth={false}>
@@ -96,7 +97,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           {/* Footer */}
           <footer className="py-4 text-center border-t border-gray-200 dark:border-gray-800">
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              © 2024 Admin Dashboard. All rights reserved.
+              © {currentYear} Admin Dashboard. All rights reserved.
             </p>
           </footer>
         </main>

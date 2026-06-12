@@ -10,59 +10,62 @@ export interface AuthPageConfig {
 
 // Base metadata configuration
 export const AUTH_PAGE_CONFIG: Record<string, AuthPageConfig> = {
-  '/auth/login': {
+  "/auth/login": {
     default: {
-      title: 'Welcome back',
-      subtitle: 'Sign in to your account to continue'
-    }
+      title: "Welcome back",
+      subtitle: "Sign in to your account to continue",
+    },
   },
-  '/auth/register': {
+  "/auth/register": {
     default: {
-      title: 'Create your account',
-      subtitle: 'Join us and start managing your business'
-    }
+      title: "Create your account",
+      subtitle: "Join us and start managing your business",
+    },
   },
-  '/auth/forgot-password': {
+  "/auth/forgot-password": {
     default: {
-      title: 'Forgot your password?',
-      subtitle: 'No worries, we\'ll send you reset instructions'
+      title: "Forgot your password?",
+      subtitle: "No worries, we'll send you reset instructions",
     },
     states: {
       submitted: {
-        title: 'Check your email',
-        subtitle: 'We\'ve sent you a password reset link'
-      }
-    }
+        title: "Check your email",
+        subtitle: "We've sent you a password reset link",
+      },
+    },
   },
-  '/auth/reset-password': {
+  "/auth/reset-password": {
     default: {
-      title: 'Reset your password',
-      subtitle: 'Enter your new password below'
+      title: "Reset your password",
+      subtitle: "Enter your new password below",
     },
     states: {
       loading: {
-        title: 'Validating reset link',
-        subtitle: 'Please wait while we verify your reset link'
+        title: "Validating reset link",
+        subtitle: "Please wait while we verify your reset link",
       },
       invalid: {
-        title: 'Invalid reset link',
-        subtitle: 'This password reset link is invalid or has expired'
+        title: "Invalid reset link",
+        subtitle: "This password reset link is invalid or has expired",
       },
       success: {
-        title: 'Password reset successful',
-        subtitle: 'Your password has been updated'
-      }
-    }
-  }
+        title: "Password reset successful",
+        subtitle: "Your password has been updated",
+      },
+    },
+  },
 };
 
 // Hook to get metadata based on current path and state
-export function useAuthMetadata(pathname: string, state?: string): AuthPageMetadata {
+export function useAuthMetadata(
+  pathname: string,
+  state?: string
+): AuthPageMetadata {
   const config = AUTH_PAGE_CONFIG[pathname];
-  
+
   if (!config) {
     return {
-      title: 'Welcome'
+      title: "Welcome",
     };
   }
 
@@ -76,12 +79,15 @@ export function useAuthMetadata(pathname: string, state?: string): AuthPageMetad
 }
 
 // Function to get metadata for a specific path and state
-export function getAuthMetadata(pathname: string, state?: string): AuthPageMetadata {
+export function getAuthMetadata(
+  pathname: string,
+  state?: string
+): AuthPageMetadata {
   const config = AUTH_PAGE_CONFIG[pathname];
-  
+
   if (!config) {
     return {
-      title: 'Welcome'
+      title: "Welcome",
     };
   }
 
@@ -92,4 +98,4 @@ export function getAuthMetadata(pathname: string, state?: string): AuthPageMetad
 
   // Otherwise return the default metadata
   return config.default;
-} 
+}

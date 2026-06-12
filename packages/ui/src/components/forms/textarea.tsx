@@ -8,9 +8,12 @@ const textareaVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-input focus-visible:border-ring dark:border-border dark:focus-visible:border-ring",
-        error: "border-danger focus-visible:ring-danger dark:border-danger dark:focus-visible:ring-danger",
-        success: "border-success focus-visible:ring-success dark:border-success dark:focus-visible:ring-success",
+        default:
+          "border-input focus-visible:border-ring dark:border-border dark:focus-visible:border-ring",
+        error:
+          "border-danger focus-visible:ring-danger dark:border-danger dark:focus-visible:ring-danger",
+        success:
+          "border-success focus-visible:ring-success dark:border-success dark:focus-visible:ring-success",
       },
       size: {
         sm: "px-3 py-2 text-xs min-h-[60px]",
@@ -22,15 +25,16 @@ const textareaVariants = cva(
       variant: "default",
       size: "md",
     },
-  }
+  },
 );
 
 export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  extends
+    React.TextareaHTMLAttributes<HTMLTextAreaElement>,
     VariantProps<typeof textareaVariants>,
     BaseComponentProps {
   error?: string;
-  success?: boolean;  
+  success?: boolean;
   className?: string;
 }
 
@@ -38,22 +42,22 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, variant, size, error, success, ...props }, ref) => {
     // Determine variant based on error/success state
     const textareaVariant = error ? "error" : success ? "success" : variant;
-    
+
     return (
       <div className="relative">
         <textarea
-          className={cn(textareaVariants({ variant: textareaVariant, size, className }))}
+          className={cn(
+            textareaVariants({ variant: textareaVariant, size, className }),
+          )}
           ref={ref}
           {...props}
         />
-        {error && (
-          <p className="mt-1 text-xs text-danger">{error}</p>
-        )}
+        {error && <p className="mt-1 text-xs text-danger">{error}</p>}
       </div>
     );
-  }
+  },
 );
 
 Textarea.displayName = "Textarea";
 
-export { Textarea, textareaVariants }; 
+export { Textarea, textareaVariants };

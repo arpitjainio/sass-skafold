@@ -1,10 +1,19 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { X, Save, User, Eye, EyeOff } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Select } from '@repo/ui';
-import { userApi } from '@/lib/user';
-import { useNotifications } from './Notification';
+import React, { useState } from "react";
+import { X, Save, User, Eye, EyeOff } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Button,
+  Input,
+  Select,
+} from "@repo/ui";
+import { userApi } from "@/lib/user";
+import { useNotifications } from "./Notification";
+import { validatePassword } from "@/lib/password";
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -12,15 +21,19 @@ interface CreateUserModalProps {
   onSuccess: () => void;
 }
 
-const roles = ['admin', 'user', 'premium'];
+const roles = ["admin", "user", "premium"];
 
-export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUserModalProps) {
+export default function CreateUserModal({
+  isOpen,
+  onClose,
+  onSuccess,
+}: CreateUserModalProps) {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: 'user',
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "user",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -32,25 +45,29 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = "Name is required";
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = "Email is invalid";
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = "Password is required";
+    } else {
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.isValid) {
+        newErrors.password =
+          passwordValidation.errors[0] || "Password requirements not met";
+      }
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
+      newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     setErrors(newErrors);
@@ -59,33 +76,37 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     try {
       setIsLoading(true);
-      await userApi.createUser({
+      const response = await userApi.createUser({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         roles: [formData.role],
       });
-      
+
+      if (!response.success) {
+        throw new Error(response.message || "Failed to create user");
+      }
+
       addNotification({
-          type: 'success',
-          message: 'User created successfully',
-          title: 'User created',
+        type: "success",
+        message: "User created successfully",
+        title: "User created",
       });
-      
+
       onSuccess();
       handleClose();
     } catch (error: unknown) {
       addNotification({
-          type: 'error',
-          message: `Failed to create user. Due to: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          title: 'Error',
+        type: "error",
+        message: `Failed to create user. Due to: ${error instanceof Error ? error.message : "Unknown error"}`,
+        title: "Error",
       });
     } finally {
       setIsLoading(false);
@@ -94,11 +115,11 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
 
   const handleClose = () => {
     setFormData({
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      role: 'user',
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "user",
     });
     setErrors({});
     setShowPassword(false);
@@ -107,16 +128,16 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [field]: '',
+        [field]: "",
       }));
     }
   };
@@ -167,9 +188,9 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                   </label>
                   <Input
                     value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    onChange={(e) => handleInputChange("name", e.target.value)}
                     placeholder="Enter full name"
-                    className={errors.name ? 'border-red-500' : ''}
+                    className={errors.name ? "border-red-500" : ""}
                   />
                   {errors.name && (
                     <p className="text-sm text-red-500">{errors.name}</p>
@@ -184,9 +205,9 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                   <Input
                     type="email"
                     value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     placeholder="Enter email address"
-                    className={errors.email ? 'border-red-500' : ''}
+                    className={errors.email ? "border-red-500" : ""}
                   />
                   {errors.email && (
                     <p className="text-sm text-red-500">{errors.email}</p>
@@ -200,11 +221,15 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                   </label>
                   <div className="relative">
                     <Input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       value={formData.password}
-                      onChange={(e) => handleInputChange('password', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("password", e.target.value)
+                      }
                       placeholder="Enter password"
-                      className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
+                      className={
+                        errors.password ? "border-red-500 pr-10" : "pr-10"
+                      }
                     />
                     <button
                       type="button"
@@ -230,16 +255,24 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                   </label>
                   <div className="relative">
                     <Input
-                      type={showConfirmPassword ? 'text' : 'password'}
+                      type={showConfirmPassword ? "text" : "password"}
                       value={formData.confirmPassword}
-                      onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("confirmPassword", e.target.value)
+                      }
                       placeholder="Confirm password"
-                      className={errors.confirmPassword ? 'border-red-500 pr-10' : 'pr-10'}
+                      className={
+                        errors.confirmPassword
+                          ? "border-red-500 pr-10"
+                          : "pr-10"
+                      }
                     />
                     <button
                       type="button"
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="w-4 h-4" />
@@ -249,7 +282,9 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                     </button>
                   </div>
                   {errors.confirmPassword && (
-                    <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.confirmPassword}
+                    </p>
                   )}
                 </div>
 
@@ -260,9 +295,9 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                   </label>
                   <Select
                     value={formData.role}
-                    onChange={(e) => handleInputChange('role', e.target.value)}
+                    onChange={(e) => handleInputChange("role", e.target.value)}
                   >
-                    {roles.map(role => (
+                    {roles.map((role) => (
                       <option key={role} value={role}>
                         {role.charAt(0).toUpperCase() + role.slice(1)}
                       </option>
@@ -287,7 +322,7 @@ export default function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUs
                   className="flex items-center space-x-2"
                 >
                   <Save className="w-4 h-4" />
-                  <span>{isLoading ? 'Creating...' : 'Create User'}</span>
+                  <span>{isLoading ? "Creating..." : "Create User"}</span>
                 </Button>
               </div>
             </form>

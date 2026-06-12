@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { BaseService } from '../common/services/base.service';
 import { LoggerService } from '../common/logger/logger.service';
 import { Role } from '../common/types';
+import { PasswordUtil } from '../common/utils/password.util';
 
 @Injectable()
 export class RoleService extends BaseService {
@@ -95,6 +96,41 @@ export class RoleService extends BaseService {
       roleId,
     });
     return userRole;
+  }
+
+  async ensureRoleAssignedByName(
+    userId: string,
+    roleName: string,
+  ): Promise<{ assigned: boolean }> {
+    const role = await this.prisma.role.findUnique({
+      where: { name: roleName },
+    });
+
+    if (!role) {
+      throw new Error(`Role "${roleName}" not found`);
+    }
+
+    const existingUserRole = await this.prisma.userRole.findUnique({
+      where: {
+        userId_roleId: {
+          userId,
+          roleId: role.id,
+        },
+      },
+    });
+
+    if (existingUserRole) {
+      return { assigned: false };
+    }
+
+    await this.prisma.userRole.create({
+      data: {
+        userId,
+        roleId: role.id,
+      },
+    });
+
+    return { assigned: true };
   }
 
   async removeRoleFromUser(
@@ -211,6 +247,64 @@ export class RoleService extends BaseService {
     return {
       message: 'Development setup completed successfully',
       adminAssigned,
+    };
+  }
+
+  async ensureDevelopmentAdminUser(params?: {
+    email?: string;
+    password?: string;
+    name?: string;
+  }): Promise<{
+    email: string;
+    password: string;
+    created: boolean;
+    passwordReset: boolean;
+    adminAssigned: boolean;
+    userRoleAssigned: boolean;
+  }> {
+    await this.seedRoles();
+
+    const email = params?.email?.trim() || 'admin@saas-skafold.local';
+    const password = params?.password?.trim() || 'Admin123!';
+    const name = params?.name?.trim() || 'Development Admin';
+    const hashedPassword = await PasswordUtil.hash(password);
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    const user = existingUser
+      ? await this.prisma.user.update({
+          where: { email },
+          data: {
+            name,
+            password: hashedPassword,
+          },
+        })
+      : await this.prisma.user.create({
+          data: {
+            email,
+            name,
+            password: hashedPassword,
+          },
+        });
+
+    const { assigned: adminAssigned } = await this.ensureRoleAssignedByName(
+      user.id,
+      'admin',
+    );
+    const { assigned: userRoleAssigned } = await this.ensureRoleAssignedByName(
+      user.id,
+      'user',
+    );
+
+    return {
+      email,
+      password,
+      created: !existingUser,
+      passwordReset: Boolean(existingUser),
+      adminAssigned,
+      userRoleAssigned,
     };
   }
 

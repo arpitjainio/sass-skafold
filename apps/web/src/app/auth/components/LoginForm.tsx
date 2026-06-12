@@ -1,19 +1,23 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button, Input, Checkbox } from '@repo/ui';
-import { SocialLoginButtons } from './SocialLoginButtons';
+import React, { useState } from "react";
+import { Button, Input, Checkbox } from "@repo/ui";
+import { SocialLoginButtons } from "./SocialLoginButtons";
 
 interface LoginFormProps {
-  onSubmit?: (data: { email: string; password: string; rememberMe: boolean }) => void;
+  onSubmit?: (data: {
+    email: string;
+    password: string;
+    rememberMe: boolean;
+  }) => void;
   isLoading?: boolean;
 }
 
 export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    rememberMe: false
+    email: "",
+    password: "",
+    rememberMe: false,
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -21,15 +25,13 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
     const newErrors: { [key: string]: string } = {};
 
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = "Please enter a valid email address";
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = "Password is required";
     }
 
     setErrors(newErrors);
@@ -38,7 +40,7 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     onSubmit?.(formData);
@@ -46,23 +48,26 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const handleCheckboxChange = (checked: boolean) => {
-    setFormData(prev => ({ ...prev, rememberMe: checked }));
+    setFormData((prev) => ({ ...prev, rememberMe: checked }));
   };
 
   return (
     <div className="w-full max-w-md mx-auto">
       <form onSubmit={handleSubmit} noValidate className="space-y-6">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             Email Address
           </label>
           <Input
@@ -78,7 +83,10 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             Password
           </label>
           <Input
@@ -100,33 +108,36 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
               checked={formData.rememberMe}
               onCheckedChange={handleCheckboxChange}
             />
-            <label htmlFor="remember-me" className="text-sm text-gray-600 dark:text-gray-400">
+            <label
+              htmlFor="remember-me"
+              className="text-sm text-gray-600 dark:text-gray-400"
+            >
               Remember me
             </label>
           </div>
-          <a 
-            href="/auth/forgot-password" 
+          <a
+            href="/auth/forgot-password"
             className="text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
           >
             Forgot password?
           </a>
         </div>
 
-        <Button 
-          type="submit" 
-          className="w-full" 
+        <Button
+          type="submit"
+          className="w-full"
           loading={isLoading ?? false}
           disabled={isLoading ?? false}
         >
-          {isLoading ? 'Signing in...' : 'Sign In'}
+          {isLoading ? "Signing in..." : "Sign In"}
         </Button>
 
         <SocialLoginButtons />
 
         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-          Don&apos;t have an account?{' '}
-          <a 
-            href="/auth/register" 
+          Don&apos;t have an account?{" "}
+          <a
+            href="/auth/register"
             className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
           >
             Sign up
@@ -135,4 +146,4 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
       </form>
     </div>
   );
-} 
+}

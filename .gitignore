@@ -31,6 +31,7 @@ build
 dist/
 **/dist/
 **/build/
+apps/api/generated/
 
 # Logs
 logs/
@@ -75,6 +76,7 @@ jspm_packages/
 
 # Optional npm cache directory
 .npm
+.pnpm-store/
 
 # Optional eslint cache
 .eslintcache

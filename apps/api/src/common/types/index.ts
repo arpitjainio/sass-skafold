@@ -5,6 +5,9 @@ export interface UserWithoutPassword {
   id: string;
   email: string;
   name: string | null;
+  phone: string | null;
+  location: string | null;
+  notificationPreferences: unknown;
   stripeCustomerId: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -47,6 +50,13 @@ export interface Subscription {
   currentPeriodEnd: Date;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface NotificationPreferences {
+  email: boolean;
+  push: boolean;
+  sms: boolean;
+  marketing: boolean;
 }
 
 // JWT Payload
@@ -113,6 +123,9 @@ export interface UserResponse {
   id: string;
   email: string;
   name: string | null;
+  phone: string | null;
+  location: string | null;
+  notificationPreferences: NotificationPreferences;
   roles: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -149,7 +162,8 @@ export interface CreateUserData {
 
 export interface UpdateUserData {
   name?: string;
-  email?: string;
+  phone?: string;
+  location?: string;
 }
 
 export interface CreateRoleData {

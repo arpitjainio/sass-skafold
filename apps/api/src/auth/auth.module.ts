@@ -8,10 +8,12 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { UserModule } from '../user/user.module';
 import { AppConfigService } from '../config/config.service';
 import { LoggerModule } from '../common/logger/logger.module';
+import { RoleModule } from '../role/role.module';
 
 @Module({
   imports: [
     UserModule,
+    RoleModule,
     PassportModule,
     LoggerModule,
     JwtModule.registerAsync({

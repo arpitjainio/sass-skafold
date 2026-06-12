@@ -19,25 +19,25 @@
   },
   "scripts": {
     "build": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
-    "lint": "./node_modules/@repo/config-eslint/node_modules/.bin/eslint 'src/**/*.{ts,tsx}'",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
     "dev": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@radix-ui/react-dialog": "^1.0.5",
-    "@radix-ui/react-dropdown-menu": "^2.0.6",
-    "@radix-ui/react-navigation-menu": "^1.1.4",
-    "@radix-ui/react-slot": "^1.0.2",
-    "@radix-ui/react-tabs": "^1.0.4",
-    "@radix-ui/react-toast": "^1.1.5",
+    "@radix-ui/react-dialog": "^1.1.16",
+    "@radix-ui/react-dropdown-menu": "^2.1.17",
+    "@radix-ui/react-navigation-menu": "^1.2.15",
+    "@radix-ui/react-slot": "^1.2.5",
+    "@radix-ui/react-tabs": "^1.1.14",
+    "@radix-ui/react-toast": "^1.2.16",
     "@repo/design-system": "workspace:*",
     "@repo/utils": "workspace:*",
-    "@tailwindcss/cli": "^4.1.11",
-    "@tailwindcss/postcss": "^4.1.11",
+    "@tailwindcss/cli": "^4.3.0",
+    "@tailwindcss/postcss": "^4.3.0",
     "class-variance-authority": "^0.7.0",
-    "lucide-react": "^0.494.0",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.11"
+    "lucide-react": "^1.17.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.0"
   },
   "peerDependencies": {
     "react": "^19.1.0",
@@ -48,6 +48,6 @@
     "@repo/config-typescript": "workspace:*",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }

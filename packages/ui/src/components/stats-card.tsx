@@ -1,12 +1,12 @@
-import React from 'react';
-import { LucideIcon, TrendingUp, TrendingDown } from 'lucide-react';
-import { Card, CardContent } from './card';
+import React from "react";
+import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
+import { Card, CardContent } from "./card";
 
 export interface StatsCardProps {
   title: string;
   value: string | number;
   change?: string;
-  changeType?: 'positive' | 'negative' | 'neutral';
+  changeType?: "positive" | "negative" | "neutral";
   icon: LucideIcon;
   iconColor?: string;
   description?: string;
@@ -17,28 +17,32 @@ export function StatsCard({
   title,
   value,
   change,
-  changeType = 'neutral',
+  changeType = "neutral",
   icon: Icon,
-  iconColor = 'bg-primary-500',
+  iconColor = "bg-primary-500",
   description,
-  className = ''
+  className = "",
 }: StatsCardProps) {
   const getChangeIcon = () => {
-    if (changeType === 'positive') {
-      return <TrendingUp className="w-4 h-4 text-green-500" aria-hidden="true" />;
-    } else if (changeType === 'negative') {
-      return <TrendingDown className="w-4 h-4 text-red-500" aria-hidden="true" />;
+    if (changeType === "positive") {
+      return (
+        <TrendingUp className="w-4 h-4 text-green-500" aria-hidden="true" />
+      );
+    } else if (changeType === "negative") {
+      return (
+        <TrendingDown className="w-4 h-4 text-red-500" aria-hidden="true" />
+      );
     }
     return null;
   };
 
   const getChangeColor = () => {
-    if (changeType === 'positive') {
-      return 'text-green-600 dark:text-green-400';
-    } else if (changeType === 'negative') {
-      return 'text-red-600 dark:text-red-400';
+    if (changeType === "positive") {
+      return "text-green-600 dark:text-green-400";
+    } else if (changeType === "negative") {
+      return "text-red-600 dark:text-red-400";
     }
-    return 'text-gray-600 dark:text-gray-400';
+    return "text-gray-600 dark:text-gray-400";
   };
 
   return (
@@ -62,14 +66,14 @@ export function StatsCard({
             <Icon className="w-6 h-6 text-white" aria-hidden="true" />
           </div>
         </div>
-        
+
         {change && (
           <div className="flex items-center mt-4">
             {getChangeIcon()}
             <span className={`ml-1 text-sm font-medium ${getChangeColor()}`}>
               {change}
             </span>
-            {changeType !== 'neutral' && (
+            {changeType !== "neutral" && (
               <span className="ml-2 text-sm text-primary-950 dark:text-primary-50">
                 from last month
               </span>
@@ -79,4 +83,4 @@ export function StatsCard({
       </CardContent>
     </Card>
   );
-} 
+}

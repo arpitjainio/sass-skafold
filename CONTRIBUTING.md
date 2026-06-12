@@ -15,11 +15,12 @@ pnpm install
 cp .env.example .env
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env.local
-pnpm prisma generate
 pnpm prisma migrate dev
 pnpm --filter api setup
 pnpm dev
 ```
+
+If you change the Prisma schema, run `pnpm prisma generate` before opening a PR.
 
 ## Development expectations
 

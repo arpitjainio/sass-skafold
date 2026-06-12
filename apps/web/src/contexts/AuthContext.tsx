@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { authApi } from '@/lib/auth';
-import { LoginRequest, RegisterRequest } from '@/lib/auth';
-import { setAuthToken, getAuthToken, removeAuthToken } from '@/lib/utils';
-import { ApiError } from '@/lib/api';
-import { useNotifications } from '@/components/Notification';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { authApi } from "@/lib/auth";
+import { LoginRequest, RegisterRequest } from "@/lib/auth";
+import { setAuthToken, getAuthToken, removeAuthToken } from "@/lib/utils";
+import { ApiError } from "@/lib/api";
+import { useNotifications } from "@/components/Notification";
 
 interface User {
   id: string;
@@ -42,7 +42,7 @@ function normalizeAuthUser(authUser: {
 
   return {
     id: authUser.id,
-    name: authUser.name ?? 'User',
+    name: authUser.name ?? "User",
     email: authUser.email,
     roles: authUser.roles ?? [],
     createdAt: authUser.createdAt ?? timestamp,
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           const response = await authApi.getCurrentUser();
           if (response.success) {
-            setUser(response.data);
+            setUser(normalizeAuthUser(response.data));
           } else {
             // Invalid token, remove it
             removeAuthToken();
@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
           // Token validation failed, remove it
           removeAuthToken();
-          console.error('Token validation failed:', error);
+          console.error("Token validation failed:", error);
         }
       }
       setIsLoading(false);
@@ -85,38 +85,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true);
       const response = await authApi.login(data);
-      
+
       if (response.success) {
         const { user: authUser, accessToken } = response.data;
         setAuthToken(accessToken);
 
         const user = normalizeAuthUser(authUser);
-        
+
         setUser(user);
         addNotification({
-          type: 'success',
-          title: 'Login successful',
+          type: "success",
+          title: "Login successful",
           message: `Welcome back, ${user.name}!`,
         });
-        router.push('/dashboard');
+        router.push("/dashboard");
       } else {
-        throw new Error(response.message || 'Login failed');
+        throw new Error(response.message || "Login failed");
       }
     } catch (error) {
       if (error instanceof ApiError) {
         addNotification({
-          type: 'error',
-          title: 'Login failed',
+          type: "error",
+          title: "Login failed",
           message: error.message,
         });
         throw new Error(error.message);
       }
       addNotification({
-        type: 'error',
-        title: 'Login failed',
-        message: 'Please check your credentials and try again.',
+        type: "error",
+        title: "Login failed",
+        message: "Please check your credentials and try again.",
       });
-      throw new Error('Login failed. Please try again.');
+      throw new Error("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -126,38 +126,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true);
       const response = await authApi.register(data);
-      
+
       if (response.success) {
         const { user: authUser, accessToken } = response.data;
         setAuthToken(accessToken);
 
         const user = normalizeAuthUser(authUser);
-        
+
         setUser(user);
         addNotification({
-          type: 'success',
-          title: 'Registration successful',
+          type: "success",
+          title: "Registration successful",
           message: `Welcome to SaaS Skafold, ${user.name}!`,
         });
-        router.push('/dashboard');
+        router.push("/dashboard");
       } else {
-        throw new Error(response.message || 'Registration failed');
+        throw new Error(response.message || "Registration failed");
       }
     } catch (error) {
       if (error instanceof ApiError) {
         addNotification({
-          type: 'error',
-          title: 'Registration failed',
+          type: "error",
+          title: "Registration failed",
           message: error.message,
         });
         throw new Error(error.message);
       }
       addNotification({
-        type: 'error',
-        title: 'Registration failed',
-        message: 'Please check your information and try again.',
+        type: "error",
+        title: "Registration failed",
+        message: "Please check your information and try again.",
       });
-      throw new Error('Registration failed. Please try again.');
+      throw new Error("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -167,22 +167,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await authApi.logout();
       addNotification({
-        type: 'success',
-        title: 'Logged out successfully',
-        message: 'You have been logged out of your account.',
+        type: "success",
+        title: "Logged out successfully",
+        message: "You have been logged out of your account.",
       });
     } catch (error) {
       // Even if logout API fails, we should still clear local state
-      console.error('Logout API error:', error);
+      console.error("Logout API error:", error);
       addNotification({
-        type: 'warning',
-        title: 'Logout warning',
-        message: 'You have been logged out, but there was an issue with the server.',
+        type: "warning",
+        title: "Logout warning",
+        message:
+          "You have been logged out, but there was an issue with the server.",
       });
     } finally {
       removeAuthToken();
       setUser(null);
-      router.push('/auth/login');
+      router.push("/auth/login");
     }
   };
 
@@ -190,36 +191,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true);
       const response = await authApi.forgotPassword(email);
-      
+
       if (!response.success) {
-        throw new Error(response.message || 'Failed to send reset email');
+        throw new Error(response.message || "Failed to send reset email");
       }
-      
+
       addNotification({
-        type: 'success',
-        title: 'Reset email sent',
-        message: 'Please check your email for password reset instructions.',
+        type: "success",
+        title: "Reset email sent",
+        message: "Please check your email for password reset instructions.",
       });
     } catch (error) {
       if (error instanceof ApiError) {
         const message =
           error.status === 404
-            ? 'Password reset endpoints are not implemented in this starter yet.'
+            ? "Password reset endpoints are not implemented in this starter yet."
             : error.message;
 
         addNotification({
-          type: 'error',
-          title: 'Failed to send reset email',
+          type: "error",
+          title: "Failed to send reset email",
           message,
         });
         throw new Error(message);
       }
       addNotification({
-        type: 'error',
-        title: 'Failed to send reset email',
-        message: 'Please check your email address and try again.',
+        type: "error",
+        title: "Failed to send reset email",
+        message: "Please check your email address and try again.",
       });
-      throw new Error('Failed to send reset email. Please try again.');
+      throw new Error("Failed to send reset email. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -229,39 +230,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true);
       const response = await authApi.resetPassword(token, password);
-      
+
       if (!response.success) {
-        throw new Error(response.message || 'Failed to reset password');
+        throw new Error(response.message || "Failed to reset password");
       }
-      
+
       addNotification({
-        type: 'success',
-        title: 'Password reset successful',
-        message: 'Your password has been updated successfully.',
+        type: "success",
+        title: "Password reset successful",
+        message: "Your password has been updated successfully.",
       });
-      
+
       // Redirect to login page after successful password reset
-      router.push('/auth/login');
+      router.push("/auth/login");
     } catch (error) {
       if (error instanceof ApiError) {
         const message =
           error.status === 404
-            ? 'Password reset endpoints are not implemented in this starter yet.'
+            ? "Password reset endpoints are not implemented in this starter yet."
             : error.message;
 
         addNotification({
-          type: 'error',
-          title: 'Failed to reset password',
+          type: "error",
+          title: "Failed to reset password",
           message,
         });
         throw new Error(message);
       }
       addNotification({
-        type: 'error',
-        title: 'Failed to reset password',
-        message: 'Please check your reset token and try again.',
+        type: "error",
+        title: "Failed to reset password",
+        message: "Please check your reset token and try again.",
       });
-      throw new Error('Failed to reset password. Please try again.');
+      throw new Error("Failed to reset password. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -278,17 +279,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     resetPassword,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-} 
+}

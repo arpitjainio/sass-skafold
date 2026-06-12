@@ -6,9 +6,9 @@ The goal of this repository is to give teams a clean starting point for a SaaS p
 
 ## What is included
 
-- Next.js 15 web app with auth screens and dashboard scaffolding
+- Next.js 16 web app with auth screens and dashboard scaffolding
 - NestJS API with JWT auth, user management, roles, and admin endpoints
-- Prisma schema and migrations for PostgreSQL
+- Prisma 7 schema, generated client, and migrations for PostgreSQL
 - Shared design system and UI component packages
 - Optional Stripe subscription scaffolding
 - Turborepo + pnpm monorepo setup
@@ -34,7 +34,7 @@ The goal of this repository is to give teams a clean starting point for a SaaS p
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20.19+
 - pnpm 9+
 - PostgreSQL
 
@@ -43,6 +43,8 @@ The goal of this repository is to give teams a clean starting point for a SaaS p
 ```bash
 pnpm install
 ```
+
+`pnpm install` now generates the Prisma client automatically through the root `postinstall` script.
 
 ### Configure environment variables
 
@@ -61,10 +63,10 @@ Update the copied files with your local values:
 ### Set up the database
 
 ```bash
-pnpm prisma generate
-pnpm prisma migrate dev
-pnpm --filter api setup
+pnpm db:setup
 ```
+
+Run `pnpm db:generate` manually whenever you change `prisma/schema.prisma` without creating a migration.
 
 ### Start the apps
 
@@ -86,9 +88,35 @@ pnpm build
 pnpm lint
 pnpm check-types
 pnpm test
+pnpm db:setup
+pnpm db:migrate -- --name add_user_profile_fields
+pnpm db:migrate:new -- --name add_user_profile_fields
+pnpm db:migrate:reset
+pnpm db:migrate:deploy
 pnpm --filter api test
 pnpm --filter web type-check
 ```
+
+## Database migrations
+
+Use the root migration scripts for Prisma workflows:
+
+```bash
+pnpm db:setup
+pnpm db:migrate -- --name add_user_profile_fields
+pnpm db:migrate:new -- --name add_user_profile_fields
+pnpm db:migrate:reset
+pnpm db:migrate:resolve -- --rolled-back 20250718164617_init
+pnpm db:migrate:status
+pnpm db:migrate:deploy
+```
+
+- `pnpm db:setup`: fresh local setup; runs local migrations and then the API setup script
+- `pnpm db:migrate -- --name <migration_name>`: creates and applies a new migration during development
+- `pnpm db:migrate:new -- --name <migration_name>`: generates a new migration without applying it yet
+- `pnpm db:migrate:reset`: local rollback/reset flow; drops the database, reapplies all migrations, and removes existing data
+- `pnpm db:migrate:resolve -- --rolled-back <migration_id>`: marks a migration as rolled back after you manually undo it in the database
+- `pnpm db:migrate:deploy`: applies pending migrations in staging or production
 
 ## What is production-ready vs scaffolded
 

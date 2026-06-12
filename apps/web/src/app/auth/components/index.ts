@@ -1,8 +1,8 @@
-export { LoginForm } from './LoginForm';
-export { RegisterForm } from './RegisterForm';
-export { ForgotPasswordForm } from './ForgotPasswordForm';
-export { ResetPasswordForm } from './ResetPasswordForm';
-export { PasswordStrengthIndicator } from './PasswordStrengthIndicator';
-export { LoadingSpinner } from './LoadingSpinner';
-export { StatusMessage } from './StatusMessage';
-export { SocialLoginButtons } from './SocialLoginButtons'; 
+export { LoginForm } from "./LoginForm";
+export { RegisterForm } from "./RegisterForm";
+export { ForgotPasswordForm } from "./ForgotPasswordForm";
+export { ResetPasswordForm } from "./ResetPasswordForm";
+export { PasswordStrengthIndicator } from "./PasswordStrengthIndicator";
+export { LoadingSpinner } from "./LoadingSpinner";
+export { StatusMessage } from "./StatusMessage";
+export { SocialLoginButtons } from "./SocialLoginButtons";

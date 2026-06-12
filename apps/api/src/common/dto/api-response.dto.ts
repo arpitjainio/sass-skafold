@@ -10,6 +10,27 @@ export class UserResponseDto {
   @ApiProperty({ example: 'John Doe', nullable: true })
   name: string | null;
 
+  @ApiProperty({ example: '+1 555 010 1234', nullable: true })
+  phone: string | null;
+
+  @ApiProperty({ example: 'San Francisco, CA', nullable: true })
+  location: string | null;
+
+  @ApiProperty({
+    example: {
+      email: true,
+      push: true,
+      sms: false,
+      marketing: false,
+    },
+  })
+  notificationPreferences: {
+    email: boolean;
+    push: boolean;
+    sms: boolean;
+    marketing: boolean;
+  };
+
   @ApiProperty({ example: ['user', 'admin'] })
   roles: string[];
 

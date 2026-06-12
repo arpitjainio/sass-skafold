@@ -1,63 +1,38 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { 
-  TrendingUp, 
-  TrendingDown,
-  Users,
-  CreditCard,
+import React from "react";
+import {
   Activity,
+  CreditCard,
   DollarSign,
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Heading } from '@repo/ui';
-import { useDashboardAnalytics, useRevenueAnalytics, useUserGrowthAnalytics } from '@/lib/hooks/useAnalytics';
-import { useRecentActivity } from '@/lib/hooks/useRecentData';
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Heading,
+  StatsCard,
+} from "@repo/ui";
+import {
+  useDashboardAnalytics,
+  useRevenueAnalytics,
+  useUserGrowthAnalytics,
+} from "@/lib/hooks/useAnalytics";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function AnalyticsPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes("admin") ?? false;
   const { data: analytics, loading, error } = useDashboardAnalytics();
-  const { data: revenueData, loading: revenueLoading } = useRevenueAnalytics();
-  const { data: userGrowthData, loading: userGrowthLoading } = useUserGrowthAnalytics();
-  const { data: recentActivity, loading: activityLoading } = useRecentActivity(5);
+  const { data: revenueData, loading: revenueLoading } =
+    useRevenueAnalytics(isAdmin);
+  const { data: userGrowthData, loading: userGrowthLoading } =
+    useUserGrowthAnalytics(isAdmin);
 
-  // Generate metrics from analytics data
-  const metrics = [
-    {
-      title: 'Total Revenue',
-      value: `$${analytics?.totalRevenue?.toLocaleString() || '0'}`,
-      change: '+20.1%', // This would need to be calculated from historical data
-      changeType: 'positive' as const,
-      icon: DollarSign,
-      color: 'bg-green-500',
-    },
-    {
-      title: 'Total Users',
-      value: analytics?.totalUsers?.toString() || '0',
-      change: '+15.3%', // This would need to be calculated from historical data
-      changeType: 'positive' as const,
-      icon: Users,
-      color: 'bg-blue-500',
-    },
-    {
-      title: 'Active Subscriptions',
-      value: analytics?.activeSubscriptions?.toString() || '0',
-      change: '+8.2%', // This would need to be calculated from historical data
-      changeType: 'positive' as const,
-      icon: CreditCard,
-      color: 'bg-purple-500',
-    },
-    {
-      title: 'User Growth',
-      value: analytics?.userGrowth?.toString() || '0',
-      change: '+12.5%', // This would need to be calculated from historical data
-      changeType: 'positive' as const,
-      icon: Activity,
-      color: 'bg-orange-500',
-    },
-  ];
-
-  const isLoading = loading || revenueLoading || userGrowthLoading || activityLoading;
-
-  if (isLoading) {
+  if (loading || (isAdmin && (revenueLoading || userGrowthLoading))) {
     return (
       <div className="space-y-6">
         <div>
@@ -65,16 +40,6 @@ export default function AnalyticsPage() {
           <p className="text-neutral-600 dark:text-neutral-200">
             Loading analytics data...
           </p>
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
-          ))}
-        </div>
-        <div className="grid lg:grid-cols-2 gap-6">
-          {[...Array(2)].map((_, i) => (
-            <div key={i} className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
-          ))}
         </div>
       </div>
     );
@@ -93,167 +58,172 @@ export default function AnalyticsPage() {
     );
   }
 
+  const stats = isAdmin
+    ? [
+        {
+          title: "Revenue",
+          value: `$${analytics?.totalRevenue?.toLocaleString() || "0"}`,
+          icon: DollarSign,
+          iconColor: "bg-green-500",
+          description: "Platform-wide revenue visibility",
+        },
+        {
+          title: "Users",
+          value: analytics?.totalUsers?.toString() || "0",
+          icon: Users,
+          iconColor: "bg-blue-500",
+          description: "Registered users",
+        },
+        {
+          title: "Active Subscriptions",
+          value: analytics?.activeSubscriptions?.toString() || "0",
+          icon: CreditCard,
+          iconColor: "bg-purple-500",
+          description: "Subscribers currently active",
+        },
+        {
+          title: "Growth",
+          value: analytics?.userGrowth?.toString() || "0",
+          icon: TrendingUp,
+          iconColor: "bg-orange-500",
+          description: "Growth trend",
+        },
+      ]
+    : [
+        {
+          title: "My Account",
+          value: user?.email || "Unavailable",
+          icon: Users,
+          iconColor: "bg-blue-500",
+          description: "Your signed-in account",
+        },
+        {
+          title: "Active Subscriptions",
+          value: analytics?.activeSubscriptions?.toString() || "0",
+          icon: CreditCard,
+          iconColor: "bg-green-500",
+          description: "Subscriptions assigned to you",
+        },
+        {
+          title: "Tracked Statuses",
+          value: Object.keys(
+            analytics?.subscriptionStats ?? {}
+          ).length.toString(),
+          icon: Activity,
+          iconColor: "bg-purple-500",
+          description: "Subscription states returned by the API",
+        },
+      ];
+
   return (
     <div className="space-y-6">
-      {/* Page header */}
       <div>
-        <Heading level="h3">
-          Analytics
-        </Heading>
+        <Heading level="h3">Analytics</Heading>
         <p className="text-neutral-600 dark:text-neutral-200">
-          Track your business performance and growth metrics.
+          {isAdmin
+            ? "Track platform-wide performance trends."
+            : "Review analytics available for your account."}
         </p>
       </div>
 
-      {/* Metrics cards */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map((metric) => (
-          <Card key={metric.title}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    {metric.title}
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {metric.value}
-                  </p>
-                </div>
-                <div className={`p-3 rounded-lg ${metric.color}`}>
-                  <metric.icon className="w-6 h-6 text-white" aria-hidden="true" />
-                </div>
-              </div>
-              <div className="flex items-center mt-4">
-                {metric.changeType === 'positive' ? (
-                  <TrendingUp className="w-4 h-4 text-green-500" aria-hidden="true" />
-                ) : (
-                  <TrendingDown className="w-4 h-4 text-red-500" aria-hidden="true" />
-                )}
-                <span className={`ml-1 text-sm font-medium ${
-                  metric.changeType === 'positive' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                }`}>
-                  {metric.change}
-                </span>
-                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                  from last month
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        {stats.map((stat) => (
+          <StatsCard key={stat.title} {...stat} />
         ))}
       </div>
 
-      {/* Charts section */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Revenue Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white">Revenue Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 flex items-end justify-between space-x-2">
-              {revenueData && revenueData.length > 0 ? revenueData.map((data, index) => {
-                const maxCount = Math.max(...revenueData.map(d => d.count));
-                return (
-                  <div key={index} className="flex flex-col items-center space-y-2">
-                    <div 
-                      className="w-8 bg-primary-600 rounded-t"
-                      style={{ height: `${(data.count / maxCount) * 200}px` }}
-                    />
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {data.month}
+      {isAdmin ? (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-gray-900 dark:text-white">
+                Revenue Overview
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {revenueData.length > 0 ? (
+                revenueData.map((point) => (
+                  <div
+                    key={point.month}
+                    className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-700"
+                  >
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      {point.month}
+                    </span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {point.count}
                     </span>
                   </div>
-                );
-              }) : (
-                <div className="flex items-center justify-center h-full w-full text-gray-500 dark:text-gray-400">
-                  No revenue data available
-                </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No revenue data available.
+                </p>
               )}
-            </div>
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Monthly revenue trend over the last 12 months
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Users Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white">User Growth</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 flex items-end justify-between space-x-2">
-              {userGrowthData && userGrowthData.length > 0 ? userGrowthData.map((data, index) => {
-                const maxCount = Math.max(...userGrowthData.map(d => d.count));
-                return (
-                  <div key={index} className="flex flex-col items-center space-y-2">
-                    <div 
-                      className="w-8 bg-blue-600 rounded-t"
-                      style={{ height: `${(data.count / maxCount) * 200}px` }}
-                    />
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {data.month}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-gray-900 dark:text-white">
+                User Growth
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {userGrowthData.length > 0 ? (
+                userGrowthData.map((point) => (
+                  <div
+                    key={point.month}
+                    className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-700"
+                  >
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      {point.month}
+                    </span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {point.count} new / {point.cumulative} total
                     </span>
                   </div>
-                );
-              }) : (
-                <div className="flex items-center justify-center h-full w-full text-gray-500 dark:text-gray-400">
-                  No user growth data available
-                </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No user growth data available.
+                </p>
               )}
-            </div>
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                New user registrations over the last 12 months
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-gray-900 dark:text-white">
+              Subscription Status Summary
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {Object.entries(analytics?.subscriptionStats ?? {}).length > 0 ? (
+              Object.entries(analytics?.subscriptionStats ?? {}).map(
+                ([status, count]) => (
+                  <div
+                    key={status}
+                    className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3 dark:border-gray-700"
+                  >
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      {status}
+                    </span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {count}
+                    </span>
+                  </div>
+                )
+              )
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                No subscription data available for this account.
               </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-gray-900 dark:text-white">Recent Activity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {recentActivity && recentActivity.length > 0 ? recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  activity.type === 'subscription' ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400' :
-                  activity.type === 'user' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400' :
-                  activity.type === 'payment' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-400' :
-                  'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400'
-                }`}>
-                  {activity.type === 'subscription' && <CreditCard className="w-4 h-4" aria-hidden="true" />}
-                  {activity.type === 'user' && <Users className="w-4 h-4" aria-hidden="true" />}
-                  {activity.type === 'payment' && <DollarSign className="w-4 h-4" aria-hidden="true" />}
-                  {activity.type === 'cancellation' && <Activity className="w-4 h-4" aria-hidden="true" />}
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    {activity.action}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {activity.user}
-                  </p>
-                </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {new Date(activity.time).toLocaleDateString()}
-                </span>
-              </div>
-            )) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                No recent activity found
-              </div>
             )}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
-} 
+}

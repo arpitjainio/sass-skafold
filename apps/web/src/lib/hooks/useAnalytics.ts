@@ -1,7 +1,12 @@
-import { useState, useEffect } from 'react';
-import { analyticsApi, DashboardAnalytics, RevenueAnalytics, UserGrowthAnalytics } from '../analytics';
-import { ApiResponse } from '../api';
-import { useAuth } from '../../contexts/AuthContext';
+import { useState, useEffect } from "react";
+import {
+  analyticsApi,
+  DashboardAnalytics,
+  RevenueAnalytics,
+  UserGrowthAnalytics,
+} from "../analytics";
+import { ApiResponse } from "../api";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function useDashboardAnalytics() {
   const [data, setData] = useState<DashboardAnalytics | null>(null);
@@ -19,20 +24,20 @@ export function useDashboardAnalytics() {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Check if user is admin to determine which endpoint to use
-        const isAdmin = user.roles.includes('admin');
-        const response: ApiResponse<DashboardAnalytics> = isAdmin 
+        const isAdmin = user.roles.includes("admin");
+        const response: ApiResponse<DashboardAnalytics> = isAdmin
           ? await analyticsApi.getAdminDashboardAnalytics()
           : await analyticsApi.getDashboardAnalytics();
-        
+
         if (response.success) {
           setData(response.data);
         } else {
-          setError(response.message || 'Failed to fetch analytics data');
+          setError(response.message || "Failed to fetch analytics data");
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
@@ -44,62 +49,78 @@ export function useDashboardAnalytics() {
   return { data, loading, error };
 }
 
-export function useRevenueAnalytics() {
+export function useRevenueAnalytics(enabled = true) {
   const [data, setData] = useState<RevenueAnalytics[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!enabled) {
+        setData([]);
+        setLoading(false);
+        setError(null);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
-        const response: ApiResponse<RevenueAnalytics[]> = await analyticsApi.getRevenueAnalytics();
-        
+        const response: ApiResponse<RevenueAnalytics[]> =
+          await analyticsApi.getRevenueAnalytics();
+
         if (response.success) {
           setData(response.data);
         } else {
-          setError(response.message || 'Failed to fetch revenue data');
+          setError(response.message || "Failed to fetch revenue data");
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [enabled]);
 
   return { data, loading, error };
 }
 
-export function useUserGrowthAnalytics() {
+export function useUserGrowthAnalytics(enabled = true) {
   const [data, setData] = useState<UserGrowthAnalytics[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!enabled) {
+        setData([]);
+        setLoading(false);
+        setError(null);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
-        const response: ApiResponse<UserGrowthAnalytics[]> = await analyticsApi.getUserGrowthAnalytics();
-        
+        const response: ApiResponse<UserGrowthAnalytics[]> =
+          await analyticsApi.getUserGrowthAnalytics();
+
         if (response.success) {
           setData(response.data);
         } else {
-          setError(response.message || 'Failed to fetch user growth data');
+          setError(response.message || "Failed to fetch user growth data");
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [enabled]);
 
   return { data, loading, error };
-} 
+}

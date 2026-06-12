@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  ConflictException,
   Controller,
   Get,
   Post,
@@ -15,11 +17,12 @@ import {
   ApiOperation,
   ApiQuery,
 } from '@nestjs/swagger';
-import { Prisma, SubscriptionStatus } from '@prisma/client';
+import { Prisma, SubscriptionStatus } from '../../generated/prisma/client';
 import * as bcrypt from 'bcrypt';
 
 import { AdminGuard } from '../common/guards/admin.guard';
 import { PrismaService } from '../prisma/prisma.service';
+import { PasswordUtil } from '../common/utils/password.util';
 
 @Controller('admin')
 @UseGuards(AdminGuard)
@@ -129,11 +132,19 @@ export class AdminController {
     });
 
     if (existingUser) {
-      return {
-        success: false,
-        message: 'User with this email already exists',
-        errors: ['Email already exists'],
-      };
+      throw new ConflictException('User with this email already exists');
+    }
+
+    const passwordValidation = PasswordUtil.validatePassword(
+      createData.password,
+    );
+
+    if (!passwordValidation.isValid) {
+      throw new BadRequestException(
+        `Password does not meet requirements: ${passwordValidation.errors.join(
+          ', ',
+        )}`,
+      );
     }
 
     // Hash password

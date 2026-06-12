@@ -10,6 +10,7 @@ import { RegisterDto } from './dto/register.dto';
 import { PasswordUtil } from '../common/utils/password.util';
 import { UserWithRoles, AuthResponse } from '../common/types';
 import { LoggerService } from '../common/logger/logger.service';
+import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
     private userRepository: UserRepository,
     private jwtService: JwtService,
     private logger: LoggerService,
+    private roleService: RoleService,
   ) {}
 
   async validateUser(
@@ -77,6 +79,14 @@ export class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
+        phone: user.phone,
+        location: user.location,
+        notificationPreferences: {
+          email: true,
+          push: true,
+          sms: false,
+          marketing: false,
+        },
         roles: user.roles.map((ur) => ur.role.name),
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
@@ -123,6 +133,8 @@ export class AuthService {
       password: registerDto.password,
       name: registerDto.name,
     });
+    await this.roleService.seedRoles();
+    await this.roleService.ensureRoleAssignedByName(user.id, 'user');
 
     const payload = { email: user.email, sub: user.id };
     const accessToken = this.jwtService.sign(payload);
@@ -138,7 +150,15 @@ export class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
-        roles: [],
+        phone: user.phone,
+        location: user.location,
+        notificationPreferences: {
+          email: true,
+          push: true,
+          sms: false,
+          marketing: false,
+        },
+        roles: ['user'],
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },

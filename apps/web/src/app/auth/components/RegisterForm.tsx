@@ -1,15 +1,16 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button, Input, Checkbox } from '@repo/ui';
-import { PasswordStrengthIndicator } from './PasswordStrengthIndicator';
-import { SocialLoginButtons } from './SocialLoginButtons';
+import React, { useState } from "react";
+import { Button, Input, Checkbox } from "@repo/ui";
+import { PasswordStrengthIndicator } from "./PasswordStrengthIndicator";
+import { SocialLoginButtons } from "./SocialLoginButtons";
+import { validatePassword } from "@/lib/password";
 
 interface RegisterFormProps {
-  onSubmit?: (data: { 
-    name: string; 
-    email: string; 
-    password: string; 
+  onSubmit?: (data: {
+    name: string;
+    email: string;
+    password: string;
     confirmPassword: string;
     agreeToTerms: boolean;
   }) => void;
@@ -18,11 +19,11 @@ interface RegisterFormProps {
 
 export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    agreeToTerms: false
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    agreeToTerms: false,
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -30,29 +31,33 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
     const newErrors: { [key: string]: string } = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = "Name is required";
     }
 
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = "Please enter a valid email address";
     }
 
     if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = "Password is required";
+    } else {
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.isValid) {
+        newErrors.password =
+          passwordValidation.errors[0] || "Password requirements not met";
+      }
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
+      newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = 'You must agree to the terms and conditions';
+      newErrors.agreeToTerms = "You must agree to the terms and conditions";
     }
 
     setErrors(newErrors);
@@ -61,28 +66,28 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     onSubmit?.(formData);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const handleCheckboxChange = (checked: boolean) => {
-    setFormData(prev => ({ ...prev, agreeToTerms: checked }));
-    
+    setFormData((prev) => ({ ...prev, agreeToTerms: checked }));
+
     // Clear error when user checks the box
     if (errors.agreeToTerms) {
-      setErrors(prev => ({ ...prev, agreeToTerms: '' }));
+      setErrors((prev) => ({ ...prev, agreeToTerms: "" }));
     }
   };
 
@@ -90,7 +95,10 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
     <div className="w-full max-w-md mx-auto">
       <form onSubmit={handleSubmit} noValidate className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             Full Name
           </label>
           <Input
@@ -106,7 +114,10 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             Email Address
           </label>
           <Input
@@ -122,7 +133,10 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             Password
           </label>
           <Input
@@ -141,7 +155,10 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             Confirm Password
           </label>
           <Input
@@ -152,7 +169,9 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
             onChange={handleInputChange}
             placeholder="Confirm your password"
             {...(errors.confirmPassword && { error: errors.confirmPassword })}
-            aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
+            aria-describedby={
+              errors.confirmPassword ? "confirm-password-error" : undefined
+            }
           />
         </div>
 
@@ -164,15 +183,18 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
               onCheckedChange={handleCheckboxChange}
             />
             <div className="flex-1">
-              <label htmlFor="agree-terms" className="text-sm text-gray-600 dark:text-gray-400">
-                I agree to the{' '}
+              <label
+                htmlFor="agree-terms"
+                className="text-sm text-gray-600 dark:text-gray-400"
+              >
+                I agree to the{" "}
                 <a
                   href="/terms"
                   className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
                 >
                   Terms of Service
-                </a>
-                {' '}and{' '}
+                </a>{" "}
+                and{" "}
                 <a
                   href="/privacy"
                   className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
@@ -189,21 +211,21 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
           )}
         </div>
 
-        <Button 
-          type="submit" 
-          className="w-full" 
+        <Button
+          type="submit"
+          className="w-full"
           loading={isLoading ?? false}
           disabled={isLoading ?? false}
         >
-          {isLoading ? 'Creating account...' : 'Create Account'}
+          {isLoading ? "Creating account..." : "Create Account"}
         </Button>
 
         <SocialLoginButtons />
 
         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-          Already have an account?{' '}
-          <a 
-            href="/auth/login" 
+          Already have an account?{" "}
+          <a
+            href="/auth/login"
             className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
           >
             Sign in
@@ -212,4 +234,4 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
       </form>
     </div>
   );
-} 
+}
