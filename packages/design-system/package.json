@@ -30,7 +30,7 @@
   "dependencies": {
     "@repo/utils": "workspace:*",
     "@tailwindcss/cli": "^4.3.0",
-    "@tailwindcss/postcss": "^4.3.0",
+    "@tailwindcss/postcss": "^4.3.1",
     "class-variance-authority": "^0.7.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.0"
